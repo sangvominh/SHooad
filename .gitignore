@@ -1,0 +1,35 @@
+# PHP project ignores
+/vendor/
+*.log
+*.cache
+*.env
+
+# Configuration secrets
+config/.env
+
+# Composer (if used later)
+composer.lock
+
+# OS/Editor junk
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+*.tmp
+
+# Node (if frontend tooling is added)
+node_modules/
+dist/
+build/
+
+# Python (rare, but safe)
+__pycache__/
+*.pyc
+
+# Docker
+*.dockerignore
+Dockerfile*
+
+# Misc
+.env*
