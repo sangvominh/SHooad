@@ -1,12 +1,30 @@
 <?php
+// load controller
+require_once __DIR__ . '/../controllers/SellerController.php';
+$seller_controller = new SellerController();
+
+// Get the current URI and remove the base path
 $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-$scriptDir = dirname($_SERVER['SCRIPT_NAME']); // /SHooad/public
-$path = str_replace($scriptDir, '', $uri);
-$path = trim($path, '/'); // "product/5"
+$basePath = '/SHooad/public/';
+$path = str_replace($basePath, '', $uri);
+$path = trim($path, '/');
 
 switch ($path) {
-    case ($path == 'seller'):
-        require_once '../app/controllers/SellerController.php';
+    case ('seller'):
+    case ('seller/dashboard'):
+        $seller_controller->dashboard();
+        break;
+    case ('seller/login'):
+        $seller_controller->login();
+        break;
+    case ('seller/signup'):
+        $seller_controller->signup();
+        break;
+    case ('seller/logout'):
+        $seller_controller->logout();
+        break;
+    case (''):
+        echo 'hello world';
         break;
     default:
         http_response_code(404);
