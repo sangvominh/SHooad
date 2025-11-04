@@ -1,15 +1,22 @@
 <?php
+require_once __DIR__ . '/../models/Seller.php';
+require_once __DIR__ . '/../models/Shop.php';
 class SellerController {
+    private $sellerModel;
+    private $shopModel;
+
+    public function __construct() {
+        $this->sellerModel = new Seller();
+        $this->shopModel = new Shop();
+    }
+
     public function dashboard() {
         if (!isset($_SESSION["seller_id"])) {
             echo $_SESSION["seller_id"];
             header('Location: /SHooad/public/seller/login');
         } else {
-            $sellerId = $_SESSION["seller_id"];
-            $conn = new Database();
-            $db = $conn->getConnection();
-            $result = $db->query("SELECT * FROM seller_account WHERE id = $sellerId");
-            $seller = $result->fetch_assoc();
+            $seller = $this->sellerModel->getSellers($_SESSION["seller_id"]);
+            $shop = $this->shopModel->getShop($_SESSION["seller_id"]);
             
             include __DIR__ . '/../views/seller/dashboard.php';
         }

@@ -1,25 +1,21 @@
 <?php
-// app/Models/Seller.php
-
-declare(strict_types=1);
-
 class Seller
 {
-    public function __construct(private PDO $db) {}
+    public function __construct() {}
 
-    public function findById(int $id): ?array
-    {
-        $stmt = $this->db->prepare("SELECT id, name, email, account_status FROM sellers WHERE id = ? AND account_status = 'active'");
-        $stmt->execute([$id]);
-        $row = $stmt->fetch(PDO::FETCH_ASSOC);
-        return $row ?: null;
-    }
+    public function getSellers($seller_id){
+        $conn = new Database();
+        $db = $conn->getConnection();
 
-    public function findByEmail(string $email): ?array
-    {
-        $stmt = $this->db->prepare("SELECT id, name, email, account_status FROM sellers WHERE email = ? AND account_status = 'active'");
-        $stmt->execute([$email]);
-        $row = $stmt->fetch(PDO::FETCH_ASSOC);
-        return $row ?: null;
+        $stmt = $db->prepare("SELECT * FROM seller_account WHERE id = ?");
+        $stmt->bind_param("i", $seller_id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        if ($result->num_rows > 0) {
+            return $result->fetch_assoc();
+        } else {
+            return null;
+        }
     }
 }
