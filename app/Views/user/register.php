@@ -14,7 +14,7 @@
     <div class="relative z-10 bg-white p-8 rounded-2xl shadow-2xl w-[90vw] max-w-md">
         <h2 class="text-2xl font-bold text-center text-gray-800 mb-6">Tạo tài khoản mới</h2>
 
-        <form action="/user/register" method="POST" class="space-y-4">
+        <form action="register" method="POST" class="space-y-4">
             <input type="text" name="name" placeholder="Tên người dùng" required
                 class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-600">
 
@@ -32,7 +32,7 @@
 
         <p class="text-center text-gray-600 mt-6">
             Đã có tài khoản?
-            <a href="/user/login" class="text-teal-700 hover:underline font-medium">Đăng nhập</a>
+            <a href="login" class="text-teal-700 hover:underline font-medium">Đăng nhập</a>
         </p>
     </div>
 

@@ -9,7 +9,7 @@
     <div class="home-background">
         <h1>Find the best styles of modern shoes</h1>
         <p>The most wanted styles are waiting for you.</p>
-        <button onclick="window.location.href='/user/login'">Sign In</button>
+        <button onclick="window.location.href='user/login'">Sign In</button>
     </div>
 </body>
 </html>

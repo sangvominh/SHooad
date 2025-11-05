@@ -1,8 +1,5 @@
 <?php
-namespace App\Controllers;
-
 require_once __DIR__ . '/../Models/User.php';
-use App\Models\User;
 
 class UserController {
     private $userModel;
