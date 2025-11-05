@@ -1,39 +1,23 @@
 <?php
-// load controller
-require_once __DIR__ . '/../controllers/SellerController.php';
-$seller_controller = new SellerController();
+$uri = trim(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), '/');
+$parts = explode('/', $uri);  // ví dụ: ['SHooad', 'public', 'seller', 'update-order-status']
 
-// Get the current URI and remove the base path
-$uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-$basePath = '/SHooad/public/';
-$path = str_replace($basePath, '', $uri);
-$path = trim($path, '/');
+$module = $parts[2] ?? ''; // seller / shipper / admin
 
-switch ($path) {
-    case ('seller'):
-    case ('seller/dashboard'):
-        $seller_controller->dashboard();
+switch ($module) {
+    case 'seller':
+        require_once __DIR__ . '/../routes/seller.php';
         break;
-    case ('seller/login'):
-        $seller_controller->login();
+
+    case 'shipper':
+        require_once __DIR__ . '/../routes/shipper.php';
         break;
-    case ('seller/signup'):
-        $seller_controller->signup();
+
+    case 'admin':
+        require_once __DIR__ . '/../routes/admin.php';
         break;
-    case ('seller/logout'):
-        $seller_controller->logout();
-        break;
-    case ('seller/order-detail'):
-        $seller_controller->orderDetail();
-        break;
-    case ('seller/update-order-status'):
-        $seller_controller->updateOrderStatus();
-        break;
-    case (''):
-        echo 'hello world';
-        break;
+
     default:
-        http_response_code(404);
-        echo "<h1>404 Not Found</h1>";
+        echo "404 - Page not found";
+        break;
 }
-?>

@@ -16,6 +16,16 @@ class Order {
         return $result->fetch_all(MYSQLI_ASSOC);
     }
 
+    public function getAllOrders(): array {
+        $conn = new Database();
+        $db = $conn->getConnection();
+
+        $stmt = $db->prepare("SELECT * FROM orders ORDER BY created_at DESC");
+        $stmt->execute();
+        $result = $stmt->get_result();
+        return $result->fetch_all(MYSQLI_ASSOC);
+    }
+
     public function getOrder($order_id): array {
         $conn = new Database();
         $db = $conn->getConnection();
