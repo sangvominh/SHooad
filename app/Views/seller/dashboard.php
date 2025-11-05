@@ -35,19 +35,6 @@ $stats = [
   ]
 ];
 
-require_once __DIR__ . '/../../Models/Order.php';
-
-$orderModel = new Order();
-$orders = $orderModel->getAllOrders();
-// Sample orders data
-// $orders = [
-//   ['id' => 'ORD-001', 'customer' => 'Nguyen Van A', 'amount' => '$245.99', 'status' => 'completed', 'date' => '2024-01-15'],
-//   ['id' => 'ORD-002', 'customer' => 'Tran Thi B', 'amount' => '$156.50', 'status' => 'pending', 'date' => '2024-01-14'],
-//   ['id' => 'ORD-003', 'customer' => 'Le Van C', 'amount' => '$389.00', 'status' => 'completed', 'date' => '2024-01-14'],
-// ];
-
-
-
 $products = [
   ['name' => 'Product A', 'sku' => 'SKU-001', 'price' => '$29.99', 'stock' => 120, 'sales' => 234],
   ['name' => 'Product B', 'sku' => 'SKU-002', 'price' => '$49.99', 'stock' => 45, 'sales' => 156],
@@ -108,6 +95,13 @@ $products = [
         <?php elseif ($current_page === 'products'): ?>
           <h1 class="text-2xl font-bold text-gray-900 mb-6">Products</h1>
           <?php include 'partials/products-table.php'; ?>
+        <?php elseif ($current_page === 'order-detail'): ?>
+          <h1 class="text-2xl font-bold text-gray-900 mb-6">Order Detail</h1>
+          <?php 
+          require_once __DIR__ . '/../../controllers/SellerController.php';
+          $controller = new SellerController();
+          $controller->orderDetail();
+          ?>
         <?php else: ?>
           <div class="bg-white rounded-lg border border-gray-200 p-12 text-center">
             <h1 class="text-gray-600">404 Not Found</h1>
