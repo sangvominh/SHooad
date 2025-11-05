@@ -1,22 +1,38 @@
--- Dữ liệu mẫu cho bảng sellers
-INSERT INTO sellers (name, email, password_hash, account_status)
+-- Sellers
+INSERT INTO seller_account (name, email, password)
 VALUES
-('Nguyen Van A', 'a@example.com', 'hash_a123', 'active'),
-('Tran Thi B', 'b@example.com', 'hash_b123', 'pending'),
-('Le Van C', 'c@example.com', 'hash_c123', 'suspended');
+('Nguyen Van A', 'sang@gmail.com', '1'),
+('Tran Thi B', 'seller_b@example.com', 'abcdef');
 
--- Dữ liệu mẫu cho bảng products
-INSERT INTO products (seller_id, name, description, price, status)
+-- Shops
+INSERT INTO shops (seller_id, name, description, address, phone)
 VALUES
-(1, 'Áo thun nam', 'Áo thun cotton 100%', 150000, 'active'),
-(1, 'Quần jean nữ', 'Quần jean co giãn', 320000, 'paused'),
-(2, 'Giày thể thao', 'Giày sneaker trắng', 450000, 'active'),
-(3, 'Túi xách da', 'Túi xách da bò thật', 800000, 'active');
+(1, 'A Tech Store', 'Cửa hàng đồ điện tử', '123 Lê Lợi, Q1, TP.HCM', '0909123456'),
+(2, 'B Fashion', 'Cửa hàng thời trang nữ', '45 Hai Bà Trưng, Hà Nội', '0912345678');
 
--- Dữ liệu mẫu cho bảng orders
-INSERT INTO orders (product_id, seller_id, buyer_id, quantity, unit_price, total_amount, order_status)
+-- Products
+INSERT INTO products (shop_id, name, description, price)
 VALUES
-(1, 1, 101, 2, 150000, 300000, 'completed'),
-(2, 1, 102, 1, 320000, 320000, 'pending'),
-(3, 2, 103, 1, 450000, 450000, 'cancelled'),
-(4, 3, 104, 2, 800000, 1600000, 'refunded');
+(1, 'Tai nghe Bluetooth', 'Tai nghe không dây chất lượng cao', 350000),
+(1, 'Chuột không dây', 'Chuột Logitech chính hãng', 250000),
+(2, 'Đầm công sở', 'Đầm nữ cao cấp', 500000),
+(2, 'Áo thun nữ', 'Áo cotton thoáng mát', 200000);
+
+-- Orders
+INSERT INTO orders (
+    shop_id, customer_name, customer_email, customer_phone, shipping_address,
+    payment_method, payment_status, subtotal, shipping_fee, tax, total_amount, status
+)
+VALUES
+(1, 'Le Minh Tuan', 'tuanlm@example.com', '0988111222', '12 Nguyễn Huệ, TP.HCM',
+ 'Bank Transfer', 'Paid', 600000, 20000, 10000, 630000, 'Completed'),
+(2, 'Pham Thi Hoa', 'hoapt@example.com', '0977333444', '78 Cầu Giấy, Hà Nội',
+ 'Cash on Delivery', 'Pending', 700000, 30000, 15000, 745000, 'Processing');
+
+-- Order items
+INSERT INTO order_items (order_id, product_id, product_name, quantity, price)
+VALUES
+(1, 1, 'Tai nghe Bluetooth', 1, 350000),
+(1, 2, 'Chuột không dây', 1, 250000),
+(2, 3, 'Đầm công sở', 1, 500000),
+(2, 4, 'Áo thun nữ', 1, 200000);

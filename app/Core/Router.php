@@ -23,6 +23,12 @@ switch ($path) {
     case ('seller/logout'):
         $seller_controller->logout();
         break;
+    case ('seller/order-detail'):
+        $seller_controller->orderDetail();
+        break;
+    case ('seller/update-order-status'):
+        $seller_controller->updateOrderStatus();
+        break;
     case (''):
         echo 'hello world';
         break;

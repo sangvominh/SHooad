@@ -12,7 +12,7 @@ class Shop {
         $conn = new Database();
         $db = $conn->getConnection();
 
-        $stmt = $db->prepare("SELECT * FROM shop WHERE seller_id = ?");
+        $stmt = $db->prepare("SELECT * FROM shops WHERE seller_id = ?");
         $stmt->bind_param("i", $seller_id);
         $stmt->execute();
         $result = $stmt->get_result();
