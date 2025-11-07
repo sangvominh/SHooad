@@ -1,11 +1,10 @@
 <?php
-require_once __DIR__ . '/../Core/Database.php';
-
 class User {
     private $db;
 
     public function __construct() {
-        $this->db = (new \Database())->getConnection();
+        $conn = new Database();
+        $db = $conn->getConnection();
     }
 
     public function register($name, $email, $password) {
