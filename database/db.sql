@@ -2,7 +2,7 @@ SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
 
 -- ===============================
--- Seller accounts
+-- Seller accounts (Vendor)
 -- ===============================
 CREATE TABLE IF NOT EXISTS seller_account (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -16,17 +16,22 @@ CREATE TABLE IF NOT EXISTS seller_account (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ===============================
--- Shipper accounts
+-- Delivery Companies (External Partners)
 -- ===============================
-CREATE TABLE IF NOT EXISTS shipper_account (
+CREATE TABLE IF NOT EXISTS delivery_companies (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(100) NOT NULL,
-    email VARCHAR(100) NOT NULL UNIQUE,
+    name VARCHAR(150) NOT NULL,
+    code VARCHAR(50) UNIQUE NOT NULL,      -- ví dụ: GHTK, GHN, VNPOST
     phone VARCHAR(20),
-    password VARCHAR(255) NOT NULL,
-    status ENUM('available','busy','inactive') DEFAULT 'available',
+    email VARCHAR(100),
+    address VARCHAR(255),
+    website VARCHAR(255),
+    api_endpoint VARCHAR(255),             -- URL API để gọi
+    api_token VARCHAR(255),                -- token xác thực (nếu có)
+    status ENUM('active','inactive','banned') DEFAULT 'active',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    INDEX idx_shipper_status (status)
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    INDEX idx_delivery_status (status)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ===============================
@@ -86,7 +91,8 @@ CREATE TABLE IF NOT EXISTS orders (
     id INT AUTO_INCREMENT PRIMARY KEY,
     order_code VARCHAR(50) UNIQUE,
     shop_id INT NOT NULL,
-    shipper_id INT NULL,
+
+    delivery_company_id INT NULL,            -- công ty giao hàng được shop chọn
 
     customer_id INT NULL,
     customer_name VARCHAR(100) NOT NULL,
@@ -117,11 +123,11 @@ CREATE TABLE IF NOT EXISTS orders (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
     FOREIGN KEY (shop_id) REFERENCES shops(id) ON DELETE CASCADE,
-    FOREIGN KEY (shipper_id) REFERENCES shipper_account(id) ON DELETE SET NULL,
+    FOREIGN KEY (delivery_company_id) REFERENCES delivery_companies(id) ON DELETE SET NULL,
     INDEX idx_shop_status (shop_id, status),
     INDEX idx_orders_shop_status_date (shop_id, status, created_at),
     INDEX idx_payment_status (payment_status),
-    INDEX idx_shipper (shipper_id)
+    INDEX idx_delivery_company (delivery_company_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ===============================
@@ -142,24 +148,14 @@ CREATE TABLE IF NOT EXISTS order_items (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ===============================
--- Inventory log
+-- Users (Customers)
 -- ===============================
-CREATE TABLE IF NOT EXISTS inventory_logs (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    product_id INT NOT NULL,
-    change_amount INT NOT NULL,
-    source ENUM('order','manual','refund'),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (product_id) REFERENCES products(id),
-    INDEX idx_inventory_product (product_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
-
--- User table
-CREATE TABLE users (
+CREATE TABLE IF NOT EXISTS users (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     email VARCHAR(100) UNIQUE NOT NULL,
     password VARCHAR(255) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+SET FOREIGN_KEY_CHECKS = 1;
