@@ -18,7 +18,7 @@ class UserController {
                 // Hiển thị thông báo thành công
                 echo "<script>
                     alert('Đăng ký thành công! Hãy đăng nhập để tiếp tục.');
-                    window.location.href = '/user/login';
+                    window.location.href = '/SHooad/app/Views/user/login.php';
                 </script>";
                 exit;
             } else {
@@ -39,10 +39,11 @@ class UserController {
             if ($this->userModel->login($email, $password)) {
                 session_start();
                 $_SESSION['user'] = $email;
-                header('Location: /');
+                    header('Location: /SHooad/public/user');
                 exit;
             } else {
-                echo "Sai email hoặc mật khẩu!";
+                echo "<script>alert('Sai email hoặc mật khẩu!');</script>";
+                require_once __DIR__ . '/../Views/user/login.php';
             }
         } else {
             require_once __DIR__ . '/../Views/user/login.php';
@@ -52,6 +53,6 @@ class UserController {
     public function logout() {
         session_start();
         session_destroy();
-        header('Location: /user/login');
+        header('Location: /user/login.php');
     }
 }

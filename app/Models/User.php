@@ -4,10 +4,19 @@ class User {
 
     public function __construct() {
         $conn = new Database();
-        $db = $conn->getConnection();
+        $this->db = $conn->getConnection();
     }
 
     public function register($name, $email, $password) {
+        // Check if the email already exists
+        $checkStmt = $this->db->prepare("SELECT * FROM users WHERE email = ?");
+        $checkStmt->bind_param("s", $email);
+        $checkStmt->execute();
+        $result = $checkStmt->get_result();
+        if ($result->num_rows > 0) {
+            return false; // Email already exists
+        }
+        
         $passwordHash = password_hash($password, PASSWORD_DEFAULT);
         $stmt = $this->db->prepare("INSERT INTO users (name, email, password) VALUES (?, ?, ?)");
         $stmt->bind_param("sss", $name, $email, $passwordHash);

@@ -5,6 +5,9 @@ $parts = explode('/', $uri);  // ví dụ: ['SHooad', 'public', 'seller', 'updat
 $module = $parts[2] ?? ''; // seller / shipper / admin / user
 
 switch ($module) {
+    case '':
+        require_once __DIR__ . '/../Views/user/home.php';
+        break;
     case 'seller':
         require_once __DIR__ . '/../routes/seller.php';
         break;

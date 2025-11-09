@@ -69,6 +69,8 @@ CREATE TABLE IF NOT EXISTS products (
     thumbnail_url VARCHAR(255),
     price DECIMAL(10,2) NOT NULL CHECK (price >= 0),
     stock INT DEFAULT 0,
+    sold_quantity INT DEFAULT 0,
+    rating DECIMAL(2,1) DEFAULT 0.0,
     status ENUM('active','paused','deleted') DEFAULT 'active',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     modified_at TIMESTAMP NULL ON UPDATE CURRENT_TIMESTAMP,
@@ -78,6 +80,7 @@ CREATE TABLE IF NOT EXISTS products (
     INDEX idx_shop_status_modified (shop_id, status, modified_at),
     INDEX idx_category (category_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 
 -- ===============================
 -- Orders
@@ -155,11 +158,21 @@ CREATE TABLE IF NOT EXISTS inventory_logs (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
--- User table
+-- Users table
 CREATE TABLE users (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     email VARCHAR(100) UNIQUE NOT NULL,
     password VARCHAR(255) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Banners table (Lưu file ảnh giới thiệu)
+CREATE TABLE banners (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  title VARCHAR(255) DEFAULT NULL,
+  filename VARCHAR(255) NOT NULL,
+  sort_order INT NOT NULL DEFAULT 0,
+  is_active TINYINT(1) NOT NULL DEFAULT 1,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
