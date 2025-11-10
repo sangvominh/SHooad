@@ -8,12 +8,7 @@ switch ($module) {
     case 'seller':
         require_once __DIR__ . '/../routes/seller.php';
         break;
-    case 'shipper':
-        require_once __DIR__ . '/../routes/shipper.php';
-        break;
-    case 'admin':
-        require_once __DIR__ . '/../routes/admin.php';
-        break;
+    case '':
     case 'user':
         require_once __DIR__ . '/../routes/user.php';
         break;

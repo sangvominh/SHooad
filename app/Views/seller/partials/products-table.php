@@ -1,9 +1,10 @@
 <?php
-// Products table partial
-// Variables: $products (array of product data)
-$products = $products ?? [];
+$is_dashboard = $current_page === 'dashboard' ? 'dashboard' : false;
+$shop_products = $data['products'] ?? [];
 ?>
+
 <div class="bg-white rounded-lg border border-gray-200">
+  <?php if (!$is_dashboard): ?>
   <div class="px-6 py-4 border-b border-gray-200">
     <div class="flex items-center justify-between mb-4">
       <h2 class="text-lg font-semibold text-gray-900">Your Products</h2>
@@ -19,6 +20,7 @@ $products = $products ?? [];
       </button>
     </div>
   </div>
+  <?php endif; ?>
 
   <div class="overflow-x-auto">
     <table class="w-full">
@@ -32,14 +34,14 @@ $products = $products ?? [];
         </tr>
       </thead>
       <tbody class="divide-y divide-gray-200">
-        <?php if (empty($products)): ?>
+        <?php if (empty($shop_products)): ?>
           <tr>
             <td colspan="5" class="px-6 py-8 text-center text-gray-500">
               No products yet
             </td>
           </tr>
         <?php else: ?>
-          <?php foreach ($products as $product): ?>
+          <?php foreach ($shop_products as $product): ?>
             <tr class="hover:bg-gray-50 transition-colors">
               <td class="px-6 py-4 text-sm font-medium text-gray-900"><?php echo $product['name'] ?? 'Product'; ?></td>
               <td class="px-6 py-4 text-sm font-medium text-gray-900"><?php echo $product['price'] ?? '$0.00'; ?></td>
@@ -56,7 +58,7 @@ $products = $products ?? [];
               </td>
               <td class="px-6 py-4 text-sm text-gray-700"><?php echo $product['sales'] ?? '0'; ?></td>
               <td class="px-6 py-4 text-sm">
-                <button class="text-teal-600 hover:text-teal-700 font-medium">Edit</button>
+                <a href="?page=product-detail&product_id=<?php echo $product['id']; ?>" class="text-teal-600 hover:text-teal-700 font-medium">Edit</a>
               </td>
             </tr>
           <?php endforeach; ?>

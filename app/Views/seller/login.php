@@ -57,6 +57,10 @@
                     <a href="#" class="text-sm text-teal-600 hover:text-teal-700 font-medium">Forgot password?</a>
                 </div>
 
+                <?php if (!empty($error)): ?>
+                    <div class="text-sm text-red-500 my-2"><?= htmlspecialchars($error) ?></div>
+                <?php endif; ?>
+
                 <!-- Login Button -->
                 <button 
                     type="submit"

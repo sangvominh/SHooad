@@ -45,11 +45,28 @@
                 <input type="password" id="confirm_password" name="confirm_password" placeholder="••••••••" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500">
             </div>
 
+            <!-- Shop Name -->
+            <div>
+                <label for="shop_name" class="block text-sm font-medium text-gray-700 mb-1">Shop Name</label>
+                <input type="text" id="shop_name" name="shop_name" placeholder="My Awesome Shop" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500">
+            </div>
+
+            <!-- Shop Description -->
+            <div>
+                <label for="shop_description" class="block text-sm font-medium text-gray-700 mb-1">Shop Description</label>
+                <textarea id="shop_description" name="shop_description" placeholder="Describe your shop..." class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"></textarea>
+            </div>
+
             <!-- Terms Checkbox -->
             <div class="flex items-start">
                 <input type="checkbox" id="terms" name="terms" class="w-4 h-4 mt-1 text-teal-500 border-gray-300 rounded focus:ring-teal-500">
                 <label for="terms" class="ml-2 text-sm text-gray-600">I agree to the <a href="#" class="text-teal-500 hover:underline">Terms of Service</a> and <a href="#" class="text-teal-500 hover:underline">Privacy Policy</a></label>
             </div>
+
+            <!-- Error Message -->
+            <?php if (isset($error)): ?>
+                <div class="mt-4 text-red-500"><?php echo $error; ?></div>
+            <?php endif; ?>
 
             <!-- Sign Up Button -->
             <button type="submit" class="w-full bg-teal-600 hover:bg-teal-700 text-white font-semibold py-2 rounded-lg transition duration-200">
