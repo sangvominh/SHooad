@@ -1,26 +1,55 @@
 <?php
-
 class Shop {
-    public $id;
-    public $seller_id;
-    public $name;
-    public $address;
+    private $db;
+    protected $id;
+    // TODO: bo xung thuoc tinh con lai
+    private $productModel;
+    private $orderModel;
     public function __construct() {
+        $conn = new Database();
+        $this->db = $conn->getConnection();
     }
 
-    public static function getShop($seller_id) {
-        $conn = new Database();
-        $db = $conn->getConnection();
+    public function insertShop($seller_id, $shop_name, $shop_description) {
+        $stmt = $this->db->prepare("INSERT INTO shops (seller_id, name, description) VALUES (?, ?, ?)");
+        $stmt->bind_param("iss", $seller_id, $shop_name, $shop_description);
+        if ($stmt->execute()) {
+            return [
+                'id' => $stmt->insert_id,
+                'seller_id' => $seller_id,
+                'name' => $shop_name,
+                'description' => $shop_description
+            ];
+        } else {
+            return false;
+        }
+    }
 
-        $stmt = $db->prepare("SELECT * FROM shops WHERE seller_id = ?");
+    public function getInfo ($shop_id) {
+        return [
+            'name' => $this->getName($shop_id),
+            'description'=> $this->getDescription($shop_id),
+        ];
+    }
+
+    public function findShopBySellerId( $seller_id ) {
+        $stmt = $this->db->prepare("SELECT * FROM shops WHERE seller_id = ?");
         $stmt->bind_param("i", $seller_id);
         $stmt->execute();
-        $result = $stmt->get_result();
+        return $stmt->get_result()->fetch_assoc();
+    }
 
-        if ($result->num_rows > 0) {
-            return $result->fetch_assoc();
-        } else {
-            return null;
-        }
+    public function getName($shop_id) {
+        $stmt = $this->db->prepare('SELECT name FROM shops WHERE id = ?');
+        $stmt->bind_param('i', $shop_id);
+        $stmt->execute();
+        return $stmt->get_result()->fetch_assoc();
+    }
+
+    public function getDescription($shop_id) {
+        $stmt = $this->db->prepare("SELECT description FROM shops WHERE id = ?");
+        $stmt->bind_param('i', $shop_id);
+        $stmt->execute();
+        return $stmt->get_result()->fetch_assoc();
     }
 }

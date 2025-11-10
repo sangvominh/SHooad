@@ -1,8 +1,8 @@
 <?php
 // Header partial - Navigation and user info
 $page_title = $page_title ?? 'Dashboard';
-$user_name = $seller['name'];
-$user_email = $seller['email'];
+$user_name = $data['seller']['name'] ?? 'Seller Name';
+$user_email = $data['seller']['email'] ?? 'seller@example.com';
 ?>
 <header class="bg-white border-b border-gray-200">
   <div class="flex items-center justify-between px-6 py-4">

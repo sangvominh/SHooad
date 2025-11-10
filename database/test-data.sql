@@ -1,81 +1,81 @@
-SET FOREIGN_KEY_CHECKS = 0;
+-- ===============================
+-- Sample Data for seller_account
+-- ===============================
+INSERT INTO seller_account (name, email, phone, password, status)
+VALUES 
+('TechZone', 'seller1@techzone.com', '0909123456', '123456', 'active'),
+('BookWorld', 'seller2@bookworld.com', '0909234567', '123456', 'active'),
+('Fashionista', 'seller3@fashionista.com', '0909345678', '123456', 'suspended');
 
 -- ===============================
--- Seller accounts
+-- Sample Data for delivery_companies
 -- ===============================
-INSERT INTO seller_account (name, email, phone, password, status, created_at)
+INSERT INTO delivery_companies (name, code, phone, email, address, website, api_endpoint, api_token, status)
 VALUES
-('Nguyen Van A', 'sellerA@example.com', '0901234567', '123456', 'active', NOW()),
-('Tran Thi B', 'sellerB@example.com', '0907654321', '123456', 'active', NOW());
+('Giao Hàng Nhanh', 'GHN', '19001234', 'support@ghn.vn', '123 Le Loi, HCMC', 'https://ghn.vn', 'https://api.ghn.vn/order', 'TOKEN_GHN_123', 'active'),
+('Giao Hàng Tiết Kiệm', 'GHTK', '19002222', 'support@ghtk.vn', '45 Tran Hung Dao, Hanoi', 'https://ghtk.vn', 'https://api.ghtk.vn/order', 'TOKEN_GHTK_456', 'active'),
+('VNPost Express', 'VNPOST', '19001111', 'cs@vnpost.vn', '1 Dinh Tien Hoang, Hanoi', 'https://vnpost.vn', 'https://api.vnpost.vn', 'TOKEN_VNPOST_789', 'inactive');
 
 -- ===============================
--- Shipper accounts
+-- Sample Data for shops
 -- ===============================
-INSERT INTO shipper_account (name, email, phone, password, status, created_at)
+INSERT INTO shops (seller_id, name, description, address, phone, logo_url, status)
 VALUES
-('Le Van C', 'shipperC@example.com', '0901122334', '123456', 'available', NOW()),
-('Pham Thi D', 'shipperD@example.com', '0902233445', '123456', 'available', NOW());
+(1, 'TechZone Official Store', 'Chuyên laptop, PC, phụ kiện chính hãng', '12 Nguyen Hue, HCMC', '0909123456', 'https://cdn.example.com/logos/techzone.png', 'open'),
+(2, 'BookWorld Store', 'Cung cấp sách văn học, giáo dục, kỹ năng sống', '45 Nguyen Trai, Hanoi', '0909234567', 'https://cdn.example.com/logos/bookworld.png', 'open'),
+(3, 'Fashionista Boutique', 'Shop thời trang nữ hiện đại', '23 Vo Van Tan, HCMC', '0909345678', 'https://cdn.example.com/logos/fashionista.png', 'closed');
 
 -- ===============================
--- Shops
--- ===============================
-INSERT INTO shops (seller_id, name, description, address, phone, status, created_at, updated_at)
-VALUES
-(1, 'TechZone', 'Chuyên đồ công nghệ, phụ kiện điện tử', '123 Le Loi, Q1, TP.HCM', '0901112233', 'open', NOW(), NOW()),
-(2, 'HomeStyle', 'Đồ gia dụng, nội thất hiện đại', '45 Tran Hung Dao, Ha Noi', '0903334455', 'open', NOW(), NOW());
-
--- ===============================
--- Categories
+-- Sample Data for categories
 -- ===============================
 INSERT INTO categories (name)
 VALUES
-('Điện thoại'),
-('Laptop'),
-('Đồ gia dụng');
+('Electronics'),
+('Books'),
+('Clothing'),
+('Accessories');
 
 -- ===============================
--- Products
+-- Sample Data for products
 -- ===============================
-INSERT INTO products (shop_id, category_id, sku, name, description, price, stock, status, created_at)
+INSERT INTO products (shop_id, category_id, sku, name, description, thumbnail_url, price, stock, status)
 VALUES
-(1, 1, 'P1001', 'iPhone 15 Pro', 'Điện thoại cao cấp Apple', 29990000, 10, 'active', NOW()),
-(1, 2, 'P1002', 'MacBook Air M2', 'Laptop Apple mỏng nhẹ', 28990000, 8, 'active', NOW()),
-(2, 3, 'P2001', 'Nồi chiên không dầu Philips', 'Dung tích 5.5L, bảo hành 2 năm', 2990000, 20, 'active', NOW());
+(1, 1, 'LAPTOP-001', 'Laptop ASUS Vivobook', 'Laptop cho sinh viên văn phòng', 'https://cdn.example.com/products/laptop1.jpg', 15990000, 15, 'active'),
+(1, 4, 'MOUSE-002', 'Chuột Logitech M330', 'Chuột không dây, siêu êm', 'https://cdn.example.com/products/mouse1.jpg', 450000, 50, 'active'),
+(2, 2, 'BOOK-101', 'Đắc Nhân Tâm', 'Sách kỹ năng sống nổi tiếng của Dale Carnegie', 'https://cdn.example.com/products/book1.jpg', 85000, 100, 'active'),
+(3, 3, 'DRESS-501', 'Đầm caro cổ vuông', 'Thời trang nữ, chất liệu cotton', 'https://cdn.example.com/products/dress1.jpg', 320000, 30, 'paused');
 
 -- ===============================
--- Orders
+-- Sample Data for users (customers)
 -- ===============================
-INSERT INTO orders (
-    order_code, shop_id, shipper_id, customer_id, customer_name, customer_email, customer_phone,
-    shipping_province, shipping_city, shipping_ward, shipping_detail,
-    payment_method, payment_status, shipping_status,
-    subtotal, shipping_fee, tax, total_amount, status, created_at, updated_at
-)
+INSERT INTO users (name, email, password)
 VALUES
-('ORD001', 1, 1, NULL, 'Le Minh Tuan', 'tuanle@gmail.com', '0905566778',
- 'Ho Chi Minh', 'Quan 1', 'Ben Nghe', '12 Nguyen Hue',
- 'Cash on Delivery', 'Pending', 'Pending',
- 29990000, 30000, 0, 30020000, 'Pending', NOW(), NOW()),
-
-('ORD002', 2, 2, NULL, 'Pham Thi Hoa', 'hoapt@gmail.com', '0909988776',
- 'Ha Noi', 'Hoan Kiem', 'Hang Bong', '56 Hang Dao',
- 'Bank Transfer', 'Paid', 'Shipped',
- 2990000, 20000, 0, 3010000, 'Processing', NOW(), NOW());
+('Nguyen Van A', 'a@gmail.com', '123456'),
+('Tran Thi B', 'b@gmail.com', '123456'),
+('Le Van C', 'c@gmail.com', '123456');
 
 -- ===============================
--- Order Items
+-- Sample Data for orders
 -- ===============================
-INSERT INTO order_items (order_id, product_id, product_name, quantity, price)
+INSERT INTO orders (order_code, shop_id, delivery_company_id, customer_id, customer_name, customer_email, customer_phone,
+shipping_province, shipping_city, shipping_ward, shipping_detail,
+payment_method, payment_status, shipping_status, shipping_tracking_number,
+subtotal, shipping_fee, tax, total_amount, status)
 VALUES
-(1, 1, 'iPhone 15 Pro', 1, 29990000),
-(2, 3, 'Nồi chiên không dầu Philips', 1, 2990000);
+('ORD001', 1, 1, 1, 'Nguyen Van A', 'a@gmail.com', '0909123456',
+'Hồ Chí Minh', 'Quận 1', 'Phường Bến Nghé', '12 Nguyễn Huệ',
+'Cash on Delivery', 'Pending', 'Pending', NULL,
+15990000, 30000, 0, 16020000, 'Pending'),
+
+('ORD002', 2, 2, 2, 'Tran Thi B', 'b@gmail.com', '0909234567',
+'Hà Nội', 'Hoàn Kiếm', 'Phường Tràng Tiền', '45 Nguyễn Trãi',
+'Bank Transfer', 'Paid', 'Delivering', 'GHN12345',
+85000, 25000, 0, 110000, 'Processing');
 
 -- ===============================
--- Inventory Logs
+-- Sample Data for order_items
 -- ===============================
-INSERT INTO inventory_logs (product_id, change_amount, source, created_at)
+INSERT INTO order_items (order_id, product_id, product_name, thumbnail_url, quantity, price)
 VALUES
-(1, -1, 'order', NOW()),
-(3, -1, 'order', NOW());
-
-SET FOREIGN_KEY_CHECKS = 1;
+(1, 1, 'Laptop ASUS Vivobook', 'https://cdn.example.com/products/laptop1.jpg', 1, 15990000),
+(2, 3, 'Đắc Nhân Tâm', 'https://cdn.example.com/products/book1.jpg', 1, 85000);

@@ -1,36 +1,57 @@
 <?php
 class Seller {
-    public function __construct() {}
+    private $db;
+    private $name;
+    private $email;
+    // TODO: them cac thuoc tinh khac o day
 
-    public function getSellers($seller_id){
+    public function __construct() {
         $conn = new Database();
-        $db = $conn->getConnection();
+        $this->db = $conn->getConnection();
+    }
 
-        $stmt = $db->prepare("SELECT * FROM seller_account WHERE id = ?");
-        $stmt->bind_param("i", $seller_id);
+    public function findEmail( $email ) {
+        $stmt = $this->db->prepare("SELECT * FROM seller_account WHERE email = ?");
+        $stmt->bind_param("s", $email);
         $stmt->execute();
-        $result = $stmt->get_result();
+        return $stmt->get_result()->fetch_assoc();
+    }
 
-        if ($result->num_rows > 0) {
-            return $result->fetch_assoc();
+    public function insertSeller($email, $password, $name) {
+        $stmt = $this->db->prepare("INSERT INTO seller_account (email, password, name) VALUES (?, ?, ?)");
+        $stmt->bind_param("sss", $email, $password, $name);
+        if ($stmt->execute()) {
+            return [
+                'id' => $stmt->insert_id,
+                'email' => $email,
+                'name' => $name
+            ];
         } else {
-            return null;
+            return false;
         }
     }
 
-    public function getShop($seller_id){
-        $conn = new Database();
-        $db = $conn->getConnection();
-
-        $stmt = $db->prepare("SELECT * FROM shops WHERE seller_id = ?");
-        $stmt->bind_param("i", $seller_id);
+    public function getInfo($seller_id) {
+        return [
+            'name' => $this->getName($seller_id),
+            'email'=> $this->getEmail($seller_id),
+        ];
+    }
+    
+    public function getName( $seller_id ) {
+        $stmt = $this->db->prepare("SELECT name FROM seller_account WHERE id = ?");
+        $stmt->bind_param('i', $seller_id);
         $stmt->execute();
-        $result = $stmt->get_result();
+        $result = $stmt->get_result()->fetch_assoc();
+        return $result['name'];
+    }
 
-        if ($result->num_rows > 0) {
-            return $result->fetch_assoc();
-        } else {
-            return null;
-        }
+
+    public function getEmail( $seller_id ) {
+        $stmt = $this->db->prepare("SELECT email FROM seller_account WHERE id = ?");
+        $stmt->bind_param('i', $seller_id);
+        $stmt->execute();
+        $result = $stmt->get_result()->fetch_assoc();
+        return $result['email'];
     }
 }

@@ -7,7 +7,7 @@ $path = $parts[3] ?? '';
 switch ($path) {
     case (''):
     case ('dashboard'):
-        $seller_controller->dashboard();
+        $seller_controller->redirect();
         break;
     case ('login'):
         $seller_controller->login();
@@ -17,12 +17,6 @@ switch ($path) {
         break;
     case ('logout'):
         $seller_controller->logout();
-        break;
-    case ('order-detail'):
-        $seller_controller->orderDetail();
-        break;
-    case ('update-order-status'):
-        $seller_controller->updateOrderStatus();
         break;
     default:
         http_response_code(404);
