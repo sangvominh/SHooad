@@ -204,18 +204,18 @@ CREATE TABLE product_images (
 
 -- Carts
 CREATE TABLE `carts` (
-  `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
-  `user_id` BIGINT UNSIGNED NOT NULL,
-  `product_id` BIGINT UNSIGNED NOT NULL,
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `user_id` INT UNSIGNED NOT NULL,
+  `product_id` INT UNSIGNED NOT NULL,
   `color` VARCHAR(100) DEFAULT NULL,
   `size` VARCHAR(100) DEFAULT NULL,
   `quantity` INT UNSIGNED NOT NULL DEFAULT 1,
-  `selected` TINYINT(1) NOT NULL DEFAULT 0, -- có thể dùng để chọn/boỏ chọn khi checkout
+  `selected` TINYINT(1) NOT NULL DEFAULT 0, -- có thể dùng để chọn/bỏ chọn khi checkout
   `note` VARCHAR(255) DEFAULT NULL,
   `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `ux_user_product_color_size` (`user_id`,`product_id`,`color`,`size`), -- đảm bảo 1 user chỉ có 1 dòng cho 1 product + color + size combo
+  UNIQUE KEY `ux_user_product_color_size` (`user_id`,`product_id`,`color`,`size`),
   KEY `idx_user` (`user_id`),
   KEY `idx_product` (`product_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
