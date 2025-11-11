@@ -49,6 +49,21 @@
             }
         ?>
         <div class="flex gap-4 items-center">
+
+            <!-- Cart -->
+            <a href="/SHooad/app/Views/user/cart.php">
+                <button id="cartBtn" class="relative hover:opacity-80 transition hover:scale-150">
+                    <i class="fa-solid fa-cart-shopping" id="cartIcon"></i>
+                    <span id="cartBadge" class="absolute -top-3 -right-5 bg-yellow-400 text-black text-xs font-bold rounded-full px-2 py-0.5" style="<?= $cartCount > 0 ? '' : 'display:none;' ?>"><?= $cartCount ?></span>
+                </button>
+            </a>
+            
+            
+            <!-- Wishlist -->
+            <button class="relative hover:opacity-80 transition hover:scale-150">
+                <!-- <i class="fa-solid fa-heart"></i> -->
+            </button>
+            
             <!-- Account -->
             <?php if ($isLoggedIn): ?>
                 <div class="relative group">
@@ -67,18 +82,6 @@
                     </button>
                 </a>
             <?php endif; ?>
-            
-            
-            <!-- Wishlist -->
-            <button class="relative hover:opacity-80 transition hover:scale-150">
-                <i class="fa-solid fa-heart"></i>
-            </button>
-            
-            <!-- Cart -->
-            <button id="cartBtn" class="relative hover:opacity-80 transition hover:scale-150">
-                <i class="fa-solid fa-cart-shopping" id="cartIcon"></i>
-                <span id="cartBadge" class="absolute -top-3 -right-5 bg-yellow-400 text-black text-xs font-bold rounded-full px-2 py-0.5" style="<?= $cartCount > 0 ? '' : 'display:none;' ?>"><?= $cartCount ?></span>
-            </button>
         </div>
     </div>
     

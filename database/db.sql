@@ -210,7 +210,7 @@ CREATE TABLE `carts` (
   `color` VARCHAR(100) DEFAULT NULL,
   `size` VARCHAR(100) DEFAULT NULL,
   `quantity` INT UNSIGNED NOT NULL DEFAULT 1,
-  `selected` TINYINT(1) NOT NULL DEFAULT 1, -- có thể dùng để chọn/boỏ chọn khi checkout
+  `selected` TINYINT(1) NOT NULL DEFAULT 0, -- có thể dùng để chọn/boỏ chọn khi checkout
   `note` VARCHAR(255) DEFAULT NULL,
   `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,

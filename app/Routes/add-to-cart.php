@@ -55,12 +55,12 @@ try {
         exit();
     }
 
-    // Try to insert or update cart
+    // Try to insert or update cart (default selected = 0)
     $sql = "INSERT INTO carts (user_id, product_id, color, size, quantity, selected)
-            VALUES (:user_id, :product_id, :color, :size, :quantity, 1)
-            ON DUPLICATE KEY UPDATE 
-            quantity = quantity + :quantity_dup,
-            updated_at = CURRENT_TIMESTAMP";
+        VALUES (:user_id, :product_id, :color, :size, :quantity, 0)
+        ON DUPLICATE KEY UPDATE 
+        quantity = quantity + :quantity_dup,
+        updated_at = CURRENT_TIMESTAMP";
 
     $stmt = $pdo->prepare($sql);
     $stmt->execute([
