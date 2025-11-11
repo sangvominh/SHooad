@@ -11,7 +11,7 @@ $shipping_address = $order["shipping_ward"] . ', ' . $order["shipping_city"] . '
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Order Detail #<?php echo $orderId; ?></title>
+    <title>Order Detail #<?php echo $order_id; ?></title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-50">
@@ -54,7 +54,7 @@ $shipping_address = $order["shipping_ward"] . ', ' . $order["shipping_city"] . '
                 <div class="lg:col-span-2 space-y-6">
                     <!-- Order Header Info -->
                     <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                        <h2 class="text-lg font-bold text-gray-900 mb-4">Order #<?php echo $orderId; ?></h2>
+                        <h2 class="text-lg font-bold text-gray-900 mb-4">Order #<?php echo $order_id; ?></h2>
                         <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                             <div>
                                 <p class="text-sm text-gray-600 mb-1">Order Date</p>
@@ -104,8 +104,8 @@ $shipping_address = $order["shipping_ward"] . ', ' . $order["shipping_city"] . '
                         <!-- <button class="w-full px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition-colors font-medium">
                             Print Order
                         </button> -->
-                        <form method="POST" action="/SHooad/public/seller/update-order-status" class="space-y-2">
-                            <input type="hidden" name="order_id" value="<?php echo $orderId; ?>">
+                        <form method="POST" action="" class="space-y-2">
+                            <input type="hidden" name="order_id" value="<?php echo $order_id; ?>">
 
                             <select name="status" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-teal-500">
                                 <option value="Pending" <?php if ($order['status'] == 'Pending') echo 'selected'; ?>>Pending</option>
@@ -114,7 +114,7 @@ $shipping_address = $order["shipping_ward"] . ', ' . $order["shipping_city"] . '
                                 <option value="Cancelled" <?php if ($order['status'] == 'Cancelled') echo 'selected'; ?>>Cancelled</option>
                             </select>
 
-                            <button type="submit" class="w-full px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition-colors font-medium">
+                            <button type="submit" name="update_status_order" class="w-full px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition-colors font-medium">
                                 Update Status
                             </button>
                         </form>
