@@ -72,10 +72,14 @@ CREATE TABLE IF NOT EXISTS products (
     name VARCHAR(255) NOT NULL,
     description TEXT,
     thumbnail_url VARCHAR(255),
+    colors TEXT NULL,
+    sizes TEXT NULL,
     price DECIMAL(10,2) NOT NULL CHECK (price >= 0),
+    original_price DECIMAL(10,2) NULL CHECK (original_price >= 0),
     stock INT DEFAULT 0,
     sold_quantity INT DEFAULT 0,
     rating DECIMAL(2,1) DEFAULT 0.0,
+    reviews_count INT DEFAULT 0,
     status ENUM('active','paused','deleted') DEFAULT 'active',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     modified_at TIMESTAMP NULL ON UPDATE CURRENT_TIMESTAMP,
@@ -184,3 +188,35 @@ CREATE TABLE banners (
   is_active TINYINT(1) NOT NULL DEFAULT 1,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+-- Products - image table
+CREATE TABLE product_images (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  product_id INT NOT NULL,
+  filename VARCHAR(255) NOT NULL,
+  is_primary TINYINT(1) DEFAULT 0,
+  sort_order INT DEFAULT 0,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
+  INDEX (product_id),
+  INDEX (product_id, is_primary)
+);
+
+-- Carts
+CREATE TABLE `carts` (
+  `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `user_id` BIGINT UNSIGNED NOT NULL,
+  `product_id` BIGINT UNSIGNED NOT NULL,
+  `color` VARCHAR(100) DEFAULT NULL,
+  `size` VARCHAR(100) DEFAULT NULL,
+  `quantity` INT UNSIGNED NOT NULL DEFAULT 1,
+  `selected` TINYINT(1) NOT NULL DEFAULT 1, -- có thể dùng để chọn/boỏ chọn khi checkout
+  `note` VARCHAR(255) DEFAULT NULL,
+  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `ux_user_product_color_size` (`user_id`,`product_id`,`color`,`size`), -- đảm bảo 1 user chỉ có 1 dòng cho 1 product + color + size combo
+  KEY `idx_user` (`user_id`),
+  KEY `idx_product` (`product_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+

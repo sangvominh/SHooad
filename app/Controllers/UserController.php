@@ -36,10 +36,13 @@ class UserController {
             $email = $_POST['email'] ?? '';
             $password = $_POST['password'] ?? '';
 
-            if ($this->userModel->login($email, $password)) {
+            $user = $this->userModel->login($email, $password);
+            if ($user) {
                 session_start();
-                $_SESSION['user'] = $email;
-                    header('Location: /SHooad/public/user');
+                $_SESSION['user_id'] = $user['id'];
+                $_SESSION['user'] = $user['email'];
+                $_SESSION['user_name'] = $user['name'];
+                header('Location: /SHooad/public/user');
                 exit;
             } else {
                 echo "<script>alert('Sai email hoặc mật khẩu!');</script>";

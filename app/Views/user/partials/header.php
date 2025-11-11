@@ -2,7 +2,7 @@
     <!-- Top Bar -->
     <div class="container mx-auto px-4 py-4 flex justify-between items-center">
         <!-- Logo -->
-         <a href="#" class="text-2xl font-bold">
+         <a href="/SHooad/public/" class="text-2xl font-bold">
             SHooad
          </a>
         
@@ -23,16 +23,30 @@
         
         <!-- User Icons -->
         <?php
-        // session_start();
-        $isLoggedIn = isset($_SESSION['user']);
-        $avatarPath = "/SHooad/public/assets/logo/default-avatar.png";
-        if ($isLoggedIn) {
-            // Giả sử $_SESSION['user'] là mảng chứa thông tin user, ví dụ: ['name'=>..., 'avatar'=>...]
-            $user = $_SESSION['user'];
-            if (!empty($user['avatar'])) {
-                $avatarPath = $user['avatar'];
+            // session_start();
+            $isLoggedIn = isset($_SESSION['user']);
+            $avatarPath = "/SHooad/public/assets/logo/default-avatar.png";
+            $cartCount = 0;
+            if ($isLoggedIn) {
+                $user = $_SESSION['user'];
+                if (!empty($user['avatar'])) {
+                    $avatarPath = $user['avatar'];
+                }
+                // Get cart count for logged-in user
+                $userId = isset($_SESSION['user_id']) ? $_SESSION['user_id'] : 0;
+                if ($userId) {
+                    $mysqli = new mysqli('localhost', 'root', '', 'SHooad');
+                    if (!$mysqli->connect_error) {
+                        $result = $mysqli->query("SELECT SUM(quantity) AS total FROM carts WHERE user_id = " . intval($userId));
+                        if ($result) {
+                            $row = $result->fetch_assoc();
+                            $cartCount = intval($row['total']);
+                        }
+                        $result->free();
+                        $mysqli->close();
+                    }
+                }
             }
-        }
         ?>
         <div class="flex gap-4 items-center">
             <!-- Account -->
@@ -61,8 +75,9 @@
             </button>
             
             <!-- Cart -->
-            <button class="relative hover:opacity-80 transition hover:scale-150">
-                <i class="fa-solid fa-cart-shopping"></i>
+            <button id="cartBtn" class="relative hover:opacity-80 transition hover:scale-150">
+                <i class="fa-solid fa-cart-shopping" id="cartIcon"></i>
+                <span id="cartBadge" class="absolute -top-3 -right-5 bg-yellow-400 text-black text-xs font-bold rounded-full px-2 py-0.5" style="<?= $cartCount > 0 ? '' : 'display:none;' ?>"><?= $cartCount ?></span>
             </button>
         </div>
     </div>
@@ -71,4 +86,36 @@
     <?php include __DIR__ . '/navigation.php'; ?>
 </header>
 <script src="/SHooad/app/Views/user/js/avatar-dropdown.js"></script>
+<script>
+// Simple shake animation for cart icon
+function shakeCartIcon() {
+    var icon = document.getElementById('cartIcon');
+    if (!icon) return;
+    icon.classList.add('animate-shake');
+    setTimeout(function() {
+        icon.classList.remove('animate-shake');
+    }, 600);
+}
+
+// Update cart badge
+function updateCartBadge(newCount) {
+    var badge = document.getElementById('cartBadge');
+    if (!badge) return;
+    badge.textContent = newCount;
+    badge.classList.remove('hidden');
+}
+</script>
+<style>
+@keyframes shake {
+    0% { transform: translateX(0); }
+    20% { transform: translateX(-4px); }
+    40% { transform: translateX(4px); }
+    60% { transform: translateX(-4px); }
+    80% { transform: translateX(4px); }
+    100% { transform: translateX(0); }
+}
+.animate-shake {
+    animation: shake 0.6s;
+}
+</style>
 </header>

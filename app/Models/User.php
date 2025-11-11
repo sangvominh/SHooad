@@ -31,7 +31,7 @@ class User {
         $user = $result->fetch_assoc();
 
         if ($user && password_verify($password, $user['password'])) {
-            return true;
+            return $user; // Return user data including id
         }
         return false;
     }

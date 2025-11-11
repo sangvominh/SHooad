@@ -1,4 +1,4 @@
-<a href="#" class="block group relative product-card  transition-all duration-200 transform hover:scale-105 overflow-hidden">
+<a href="/SHooad/app/Views/user/product-detail.php?id=<?php echo urlencode($product['id']); ?>" class="block group relative product-card  transition-all duration-200 transform hover:scale-105 overflow-hidden">
     <!-- Product Image Container -->
     <div class="relative bg-gray-100 mb-4">
         <img 
