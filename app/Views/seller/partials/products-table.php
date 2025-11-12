@@ -8,7 +8,7 @@ $shop_products = $data['products'] ?? [];
   <div class="px-6 py-4 border-b border-gray-200">
     <div class="flex items-center justify-between mb-4">
       <h2 class="text-lg font-semibold text-gray-900">Your Products</h2>
-      <a href="?page=products&action=add" class="px-4 py-2 bg-teal-600 text-white rounded-lg text-sm font-medium hover:bg-teal-700">
+      <a href="?page=add-product" class="px-4 py-2 bg-teal-600 text-white rounded-lg text-sm font-medium hover:bg-teal-700">
         Add Product
       </a>
     </div>

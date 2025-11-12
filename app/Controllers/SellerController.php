@@ -55,13 +55,80 @@ class SellerController {
                 $product = $this->productModel->getProductById($product_id);
 
                 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_product'])) {
-                    $newStatus = $_POST['status'];
-                    $update = $this->productModel->updateProduct($product_id, $newStatus);
+                    $newDateUpdate = [
+                        'name' => $_POST['product_name'],
+                        'sku' => $_POST['sku'],
+                        'description' => $_POST['description'],
+                        'thumbnail_url' => $_POST['thumbnail_url'],
+                        'colors' => $_POST['colors'],
+                        'sizes' => $_POST['sizes'],
+                        'price' => $_POST['price'],
+                        'original_price' => $_POST['original_price']
+                    ];
+                    $update = $this->productModel->updateProduct($product_id, $newDateUpdate);
                     header("Location: /SHooad/public/seller/dashboard?page=product-detail&product_id=" . $product_id);
                     exit;
                 }
 
                 include __DIR__ . '/../views/seller/pages/product-detail.php';
+                break;
+            case 'add-product':
+                if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+                    // Get data from form
+                    $shop_id = intval($_POST['shop_id']);
+                    $category_id = intval($_POST['category_id']);
+                    $sku = $_POST['sku'] ?? '';
+                    $name = $_POST['name'] ?? '';
+                    $description = $_POST['description'] ?? '';
+                    $colors = $_POST['colors'] ?? '';
+                    $sizes = $_POST['sizes'] ?? '';
+                    $price = floatval($_POST['price'] ?? 0);
+                    $original_price = floatval($_POST['original_price'] ?? 0);
+                    $stock = intval($_POST['stock'] ?? 0);
+                    $status = $_POST['status'] ?? 'active';
+
+                    if (isset($_FILES['thumbnail']) && $_FILES['thumbnail']['error'] === UPLOAD_ERR_OK) {
+                        $targetDir = "uploads/";
+                        if (!is_dir($targetDir)) mkdir($targetDir, 0777, true);
+
+                        $fileName = basename($_FILES['thumbnail']['name']);
+                        $targetFilePath = $targetDir . uniqid() . '-' . $fileName;
+                        $imageFileType = strtolower(pathinfo($targetFilePath, PATHINFO_EXTENSION));
+
+                        $check = getimagesize($_FILES['thumbnail']['tmp_name']);
+                        $allowedTypes = ['jpg', 'jpeg', 'png', 'gif'];
+
+                        if ($check && in_array($imageFileType, $allowedTypes)) {
+                            if (move_uploaded_file($_FILES['thumbnail']['tmp_name'], $targetFilePath)) {
+                                $uploadedFilePath = $targetFilePath;
+                            } else {
+                                echo "<p class='text-red-500'>Upload thất bại.</p>";
+                            }
+                        } else {
+                            echo "<p class='text-red-500'>Chỉ chấp nhận file ảnh JPG, PNG, GIF.</p>";
+                        }
+                    }
+
+                    $thumbnail_url = $uploadedFilePath ?? '';
+
+                    $this->productModel->insertProduct([
+                        'shop_id' => $shop_id,
+                        'category_id' => $category_id,
+                        'sku' => $sku,
+                        'name' => $name,
+                        'description' => $description,
+                        'thumbnail_url' => $thumbnail_url,
+                        'colors' => $colors,
+                        'sizes' => $sizes,
+                        'price' => $price,
+                        'original_price' => $original_price,
+                        'stock' => $stock,
+                        'status' => $status
+                    ]);
+                    header('Location: /SHooad/public/seller/dashboard?page=products');
+                }
+
+                include __DIR__ . '/../views/seller/pages/add-product.php';
                 break;
             default:
                 include __DIR__ . '/../views/seller/dashboard.php';

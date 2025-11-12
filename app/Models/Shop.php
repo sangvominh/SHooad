@@ -27,6 +27,7 @@ class Shop {
 
     public function getInfo ($shop_id) {
         return [
+            'id'=> $shop_id,
             'name' => $this->getName($shop_id),
             'description'=> $this->getDescription($shop_id),
         ];
