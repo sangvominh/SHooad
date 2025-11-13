@@ -1,14 +1,16 @@
 <?php
-$categories = [
-    ['id'=>1,'name'=>'Men Fashion','active'=>false],
-    ['id'=>2,'name'=>'Women Fashion','active'=>false],
-    ['id'=>3,'name'=>'Kids Fashion','active'=>false],
-    ['id'=>4,'name'=>'Baby Fashion','active'=>false],
-    ['id'=>5,'name'=>'Mobile Device','active'=>false],
-    ['id'=>6,'name'=>'Computer Device','active'=>false],
-    ['id'=>7,'name'=>'Beauty Products','active'=>false],
-    ['id'=>8,'name'=>'Furniture','active'=>false],
-];
+$mysqli =   new mysqli('localhost', 'root', '', 'SHooad');
+$categories = [];
+if (!$mysqli->connect_error) {
+  $catRes = $mysqli->query("SELECT id, name FROM categories ORDER BY name ASC LIMIT 8");
+  if ($catRes) {
+    while ($row = $catRes->fetch_assoc()) {
+      $categories[] = ['id' => $row['id'], 'name' => $row['name'], 'active' => false];
+    }
+    $catRes->free();
+  }
+  $mysqli->close();
+}
 ?>
 <section class="py-16 px-4 bg-gray-50">
   <div class="max-w-7xl mx-auto">
@@ -20,7 +22,13 @@ $categories = [
 
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
       <?php foreach ($categories as $category): ?>
-        <?php include 'category-card.php'; ?>
+        <div class="group">
+          <a href="/SHooad/app/Views/user/products.php?category=<?php echo urlencode($category['name']); ?>" class="block <?php echo $category['active'] ? 'border-4 border-teal-600' : 'border-4 border-transparent'; ?> bg-yellow-100 rounded-lg overflow-hidden transition-transform hover:scale-105 cursor-pointer">
+            <div class="h-48 flex items-center justify-center overflow-hidden bg-yellow-50">
+              <span class="text-lg font-semibold text-gray-900"><?php echo htmlspecialchars($category['name']); ?></span>
+            </div>
+          </a>
+        </div>
       <?php endforeach; ?>
     </div>
   </div>

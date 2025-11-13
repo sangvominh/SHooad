@@ -1,15 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shopping Cart - Pursuit</title>
+    <title>Shopping Cart - SHooad</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <link
-  rel="stylesheet"
-  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
-/>
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" />
+
 <body class="bg-gray-50">
     <!-- Header -->
     <?php
@@ -38,4 +39,5 @@
     <!-- Cart Scripts -->
     <script src="/SHooad/app/Views/user/js/cart.js"></script>
 </body>
+
 </html>
