@@ -1,4 +1,7 @@
 <!-- Profile Page -->
+<?php
+require_once __DIR__ . '/../../Helpers/LanguageHelper.php';
+?>
 <div class="container mx-auto px-4 py-8">
     <div class="max-w-7xl mx-auto">
         <!-- Flash Messages -->
@@ -28,8 +31,8 @@
 
         <!-- Page Title -->
         <div class="mb-8">
-            <h1 class="text-3xl font-bold text-gray-900">My Profile</h1>
-            <p class="text-gray-600 mt-2">Manage your account information and addresses</p>
+            <h1 class="text-3xl font-bold text-gray-900"><?= LanguageHelper::t('profile.title') ?></h1>
+            <p class="text-gray-600 mt-2"><?= LanguageHelper::t('profile.subtitle') ?></p>
         </div>
 
         <?php 

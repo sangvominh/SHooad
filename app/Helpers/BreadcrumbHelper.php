@@ -1,4 +1,6 @@
 <?php
+require_once __DIR__ . '/LanguageHelper.php';
+
 class BreadcrumbHelper {
     public static function generate(): array {
         $uri = $_SERVER['REQUEST_URI'] ?? '';
@@ -13,7 +15,7 @@ class BreadcrumbHelper {
         $segments = array_filter(explode('/', $path));
         
         $breadcrumbs = [
-            ['label' => 'Home', 'url' => '/SHooad/public/customer']
+            ['label' => LanguageHelper::t('breadcrumb.home'), 'url' => '/SHooad/public/customer']
         ];
         
         // If on home page, return only home
@@ -26,7 +28,7 @@ class BreadcrumbHelper {
         
         switch ($section) {
             case 'products':
-                $breadcrumbs[] = ['label' => 'Products', 'url' => '/SHooad/public/customer/products'];
+                $breadcrumbs[] = ['label' => LanguageHelper::t('breadcrumb.products'), 'url' => '/SHooad/public/customer/products'];
                 
                 if (isset($params['category'])) {
                     $breadcrumbs[] = ['label' => $params['category'], 'url' => null];
@@ -34,41 +36,41 @@ class BreadcrumbHelper {
                     $breadcrumbs[] = ['label' => $params['brand'], 'url' => null];
                 } elseif (isset($params['sort'])) {
                     $sortLabel = match($params['sort']) {
-                        'new-arrivals' => 'New Arrivals',
-                        'best-sellers' => 'Best Sellers',
-                        'on-sale' => 'On Sale',
-                        default => 'All Products'
+                        'new-arrivals' => LanguageHelper::t('breadcrumb.new_arrivals'),
+                        'best-sellers' => LanguageHelper::t('breadcrumb.best_sellers'),
+                        'on-sale' => LanguageHelper::t('breadcrumb.on_sale'),
+                        default => LanguageHelper::t('breadcrumb.all_products')
                     };
                     $breadcrumbs[] = ['label' => $sortLabel, 'url' => null];
                 }
                 break;
                 
             case 'product-detail':
-                $breadcrumbs[] = ['label' => 'Products', 'url' => '/SHooad/public/customer/products'];
-                $breadcrumbs[] = ['label' => 'Product Detail', 'url' => null];
+                $breadcrumbs[] = ['label' => LanguageHelper::t('breadcrumb.products'), 'url' => '/SHooad/public/customer/products'];
+                $breadcrumbs[] = ['label' => LanguageHelper::t('breadcrumb.product_detail'), 'url' => null];
                 break;
                 
             case 'cart':
-                $breadcrumbs[] = ['label' => 'Shopping Cart', 'url' => null];
+                $breadcrumbs[] = ['label' => LanguageHelper::t('breadcrumb.cart'), 'url' => null];
                 break;
                 
             case 'checkout':
-                $breadcrumbs[] = ['label' => 'Shopping Cart', 'url' => '/SHooad/public/customer/cart'];
-                $breadcrumbs[] = ['label' => 'Checkout', 'url' => null];
+                $breadcrumbs[] = ['label' => LanguageHelper::t('breadcrumb.cart'), 'url' => '/SHooad/public/customer/cart'];
+                $breadcrumbs[] = ['label' => LanguageHelper::t('breadcrumb.checkout'), 'url' => null];
                 break;
                 
             case 'order-success':
-                $breadcrumbs[] = ['label' => 'Shopping Cart', 'url' => '/SHooad/public/customer/cart'];
-                $breadcrumbs[] = ['label' => 'Checkout', 'url' => '/SHooad/public/customer/checkout'];
-                $breadcrumbs[] = ['label' => 'Order Success', 'url' => null];
+                $breadcrumbs[] = ['label' => LanguageHelper::t('breadcrumb.cart'), 'url' => '/SHooad/public/customer/cart'];
+                $breadcrumbs[] = ['label' => LanguageHelper::t('breadcrumb.checkout'), 'url' => '/SHooad/public/customer/checkout'];
+                $breadcrumbs[] = ['label' => LanguageHelper::t('breadcrumb.order_success'), 'url' => null];
                 break;
                 
             case 'profile':
-                $breadcrumbs[] = ['label' => 'My Profile', 'url' => null];
+                $breadcrumbs[] = ['label' => LanguageHelper::t('breadcrumb.profile'), 'url' => null];
                 break;
                 
             case 'orders':
-                $breadcrumbs[] = ['label' => 'My Orders', 'url' => null];
+                $breadcrumbs[] = ['label' => LanguageHelper::t('breadcrumb.orders'), 'url' => null];
                 
                 if (isset($params['status'])) {
                     $statusLabel = str_replace('_', ' ', $params['status']);
@@ -77,8 +79,8 @@ class BreadcrumbHelper {
                 break;
                 
             case 'order-detail':
-                $breadcrumbs[] = ['label' => 'My Orders', 'url' => '/SHooad/public/customer/orders'];
-                $breadcrumbs[] = ['label' => 'Order Detail', 'url' => null];
+                $breadcrumbs[] = ['label' => LanguageHelper::t('breadcrumb.orders'), 'url' => '/SHooad/public/customer/orders'];
+                $breadcrumbs[] = ['label' => LanguageHelper::t('breadcrumb.order_detail'), 'url' => null];
                 break;
                 
             default:

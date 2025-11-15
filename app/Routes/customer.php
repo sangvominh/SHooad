@@ -68,6 +68,14 @@ switch ($path) {
     case 'orders':
         $customerController->orders();
         break;
+    
+    case 'set-language':
+        require_once __DIR__ . '/../Helpers/LanguageHelper.php';
+        $lang = $_GET['lang'] ?? 'vi';
+        LanguageHelper::setLanguage($lang);
+        $redirect = $_GET['redirect'] ?? '/SHooad/public/customer';
+        header('Location: ' . $redirect);
+        exit;
 
     default:
         $customerController->home();
