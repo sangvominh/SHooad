@@ -70,7 +70,7 @@ INSERT INTO product_images (product_id, filename) VALUES
 -- Product 1
 (1, 'ao-thun-nam-1.jpg'), (1, 'ao-thun-nam-2.jpg'), (1, 'ao-thun-nam-3.jpg'),
 -- Product 2
-(2, 'ao-somi-nam-1.jpg'), (2, 'ao-somi-nam-2.jpg'), (2, 'ao-somi-nam-3.jpg'), (2, 'ao-somi-nam-4.jpg'),
+(2, 'ao-somi-nam-1.webp'), (2, 'ao-somi-nam-2.webp'), (2, 'ao-somi-nam-3.webp'),
 -- Product 3
 (3, 'ao-polo-1.jpg'), (3, 'ao-polo-2.jpg'), (3, 'ao-polo-3.jpg'),
 -- Product 4
