@@ -20,12 +20,20 @@ class SellerService {
     /**
      * Get dashboard data for seller
      */
-    public function getDashboardData(int $seller_id, int $shop_id): array {
+    public function getDashboardData(int $seller_id, int $shop_id, bool $limit_for_dashboard = false): array {
+        $orders = $limit_for_dashboard 
+            ? $this->orderModel->getOrderByShop($shop_id, 5)
+            : $this->orderModel->getOrderByShop($shop_id);
+            
+        $products = $limit_for_dashboard
+            ? $this->productModel->getProductByShop($shop_id, 5, 'top_sold')
+            : $this->productModel->getProductByShop($shop_id);
+            
         return [
             'seller' => $this->sellerModel->getInfo($seller_id),
             'shop' => $this->shopModel->getInfo($shop_id),
-            'orders' => $this->orderModel->getOrderByShop($shop_id),
-            'products' => $this->productModel->getProductByShop($shop_id)
+            'orders' => $orders,
+            'products' => $products
         ];
     }
 

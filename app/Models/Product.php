@@ -7,9 +7,24 @@ class Product {
         $this->db = $conn->getConnection();
     }
 
-    public function getProductByShop($shop_id) {
-        $stmt = $this->db->prepare("SELECT * FROM products WHERE shop_id = ?");
-        $stmt->bind_param("i", $shop_id);
+    public function getProductByShop($shop_id, $limit = null, $orderBy = null) {
+        $sql = "SELECT * FROM products WHERE shop_id = ?";
+        
+        if ($orderBy === 'top_sold') {
+            $sql .= " ORDER BY sold DESC";
+        }
+        
+        if ($limit !== null) {
+            $sql .= " LIMIT ?";
+        }
+        
+        $stmt = $this->db->prepare($sql);
+        if ($limit !== null) {
+            $stmt->bind_param("ii", $shop_id, $limit);
+        } else {
+            $stmt->bind_param("i", $shop_id);
+        }
+        
         $stmt->execute();
         return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
     }

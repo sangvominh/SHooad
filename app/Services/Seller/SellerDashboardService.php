@@ -32,8 +32,8 @@ class SellerDashboardService {
         return [
             'seller' => $this->sellerModel->getInfo($auth['seller_id']),
             'shop' => $this->shopModel->getInfo($auth['shop_id']),
-            'orders' => $this->orderModel->getOrderByShop($auth['shop_id']),
-            'products' => $this->productModel->getProductByShop($auth['shop_id'])
+            'orders' => $this->orderModel->getOrderByShop($auth['shop_id'], 5),
+            'products' => $this->productModel->getProductByShop($auth['shop_id'], 5, 'top_sold')
         ];
     }
 }

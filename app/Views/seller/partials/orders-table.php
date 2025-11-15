@@ -104,7 +104,7 @@ $shop_orders = $data['orders'] ?? [];
                 data-status="<?php echo htmlspecialchars($order['status'] ?? 'Pending'); ?>"
                 data-payment-status="<?php echo htmlspecialchars($order['payment_status'] ?? 'Pending'); ?>"
                 data-total="<?php echo $order['total_amount'] ?? 0; ?>"
-                data-date="<?php echo $order['created_at'] ?? date('Y-m-d H:i:s'); ?>"
+                data-date="<?php echo $order['date'] ?? date('Y-m-d H:i:s'); ?>"
                 class="hover:bg-gray-50 transition-colors">
               <td class="px-6 py-4 text-sm text-gray-700"><?php echo htmlspecialchars($order['customer_name'] ?? 'Customer'); ?></td>
               <?php if (!$is_dashboard): ?>
@@ -141,7 +141,7 @@ $shop_orders = $data['orders'] ?? [];
               <?php endif; ?>
               <td class="px-6 py-4 text-sm text-gray-700">
                 <?php 
-                  $date = new DateTime($order['created_at'] ?? 'now');
+                  $date = new DateTime($order['date'] ?? 'now');
                   echo $date->format('M d, Y');
                 ?>
               </td>

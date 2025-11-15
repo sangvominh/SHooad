@@ -1,6 +1,5 @@
 <?php
-$shop_logo = 'New logo';
-$shop_name = $shop['name'] ?? 'New Shop';
+$shop_name = $data['shop']['name']['name'] ?? 'Shop Name';
 
 // Sidebar partial - Navigation menu
 $current_page = $current_page ?? 'dashboard';
@@ -21,10 +20,9 @@ $management_items = [
 ?>
 <aside class="w-60 h-full flex flex-col">
   <div class="p-3 flex-1 overflow-y-auto">
-    <!-- Logo -->
-    <a href="/SHooad/public/seller/" class="flex items-center gap-2 mb-8">
-      <div class="bg-teal-600 text-white px-2 py-1 rounded font-bold text-sm"><?php echo $shop_logo ?></div>
-      <span class="font-semibold text-gray-900"><?php echo $shop_name ?></span>
+    <!-- Shop Name -->
+    <a href="/SHooad/public/seller/dashboard" class="flex items-center gap-2 mb-8">
+      <span class="font-bold text-xl text-teal-600"><?php echo $shop_name ?></span>
     </a>
 
     <!-- Main Menu -->

@@ -4,6 +4,15 @@ $shop_products = $data['products'] ?? [];
 ?>
 
 <div class="bg-white rounded-lg border border-gray-200">
+  <?php if ($is_dashboard): ?>
+  <div class="px-6 py-4 border-b border-gray-200">
+    <div class="flex items-center justify-between">
+      <h2 class="text-lg font-semibold text-gray-900">Top Sold Products</h2>
+      <a href="/SHooad/public/seller/products" class="text-sm text-teal-600 hover:text-teal-700 font-medium">View All</a>
+    </div>
+  </div>
+  <?php endif; ?>
+  
   <?php if (!$is_dashboard): ?>
   <div class="px-6 py-4 border-b border-gray-200">
     <div class="flex items-center justify-between mb-4">

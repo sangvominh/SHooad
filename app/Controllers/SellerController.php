@@ -35,13 +35,14 @@ class SellerController {
         return ['seller_id' => $seller_id, 'shop_id' => $shop_id];
     }
 
-    private function loadDashboardData(): array {
+    private function loadDashboardData(bool $limit_for_dashboard = false): array {
         $session = $this->getSessionData();
-        return $this->sellerService->getDashboardData($session['seller_id'], $session['shop_id']);
+        return $this->sellerService->getDashboardData($session['seller_id'], $session['shop_id'], $limit_for_dashboard);
     }
 
     private function renderDashboard(string $page = 'dashboard'): void {
-        $data = $this->loadDashboardData();
+        $limit_for_dashboard = ($page === 'dashboard');
+        $data = $this->loadDashboardData($limit_for_dashboard);
         $current_page = $page;
         include __DIR__ . '/../Views/seller/dashboard.php';
     }

@@ -29,9 +29,19 @@ class Order {
         return $result ?: null;
     }
 
-    public function getOrderByShop(int $shop_id): array {
-        $stmt = $this->db->prepare("SELECT * FROM orders WHERE shop_id = ? ORDER BY date DESC");
-        $stmt->bind_param("i", $shop_id);
+    public function getOrderByShop(int $shop_id, ?int $limit = null): array {
+        $sql = "SELECT * FROM orders WHERE shop_id = ? ORDER BY date DESC";
+        if ($limit !== null) {
+            $sql .= " LIMIT ?";
+        }
+        
+        $stmt = $this->db->prepare($sql);
+        if ($limit !== null) {
+            $stmt->bind_param("ii", $shop_id, $limit);
+        } else {
+            $stmt->bind_param("i", $shop_id);
+        }
+        
         $stmt->execute();
         $result = $stmt->get_result();
         return $result->fetch_all(MYSQLI_ASSOC);
