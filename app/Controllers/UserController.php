@@ -18,6 +18,18 @@ class UserController {
         exit;
     }
 
+    private function renderWithLayout(string $view, array $data, string $pageTitle = 'SHooad') {
+        $bodyClass = $data['bodyClass'] ?? 'bg-white';
+        $additionalScripts = $data['additionalScripts'] ?? '';
+        $additionalStyles = $data['additionalStyles'] ?? '';
+        
+        ob_start();
+        include __DIR__ . '/../Views/customer/' . $view . '.php';
+        $content = ob_get_clean();
+        
+        include __DIR__ . '/../Views/customer/layout.php';
+    }
+
     public function home() {
         $data = $this->pageService->getHomePageData();
         include __DIR__ . '/../Views/customer/home.php';
@@ -26,12 +38,12 @@ class UserController {
     public function cart() {
         AuthMiddleware::checkUserAuth();
         $data = $this->pageService->getCartData();
-        include __DIR__ . '/../Views/customer/cart.php';
+        $this->renderWithLayout('cart', $data, 'Shopping Cart - SHooad');
     }
 
     public function products() {
         $data = $this->pageService->getProductsPageData();
-        include __DIR__ . '/../Views/customer/products.php';
+        $this->renderWithLayout('products', $data, 'Products - SHooad');
     }
 
     public function productDetail() {
@@ -41,13 +53,13 @@ class UserController {
             $this->redirectTo('/SHooad/public/customer');
         }
 
-        $product = $this->pageService->getProductDetailData((int)$product_id);
+        $data = $this->pageService->getProductDetailPageData((int)$product_id);
         
-        if (!$product) {
+        if (!$data || !isset($data['product'])) {
             $this->redirectTo('/SHooad/public/customer');
         }
 
-        include __DIR__ . '/../Views/customer/product-detail.php';
+        $this->renderWithLayout('product-detail', $data, ($data['product']['name'] ?? 'Product') . ' - SHooad');
     }
 
     public function register() {

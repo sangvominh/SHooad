@@ -12,8 +12,13 @@
     <?php endif; ?>
 </head>
 <body class="<?php echo $bodyClass ?? 'bg-white'; ?>">
-    <!-- Header & Navigation -->
+    <?php if (session_status() == PHP_SESSION_NONE) session_start(); ?>
+    
+    <!-- Header -->
     <?php include __DIR__ . '/partials/header.php'; ?>
+    
+    <!-- Navigation -->
+    <?php include __DIR__ . '/partials/navigation.php'; ?>
     
     <!-- Main Content -->
     <main>
