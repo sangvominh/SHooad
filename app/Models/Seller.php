@@ -11,14 +11,14 @@ class Seller {
     }
 
     public function findEmail( $email ) {
-        $stmt = $this->db->prepare("SELECT * FROM seller_account WHERE email = ?");
+        $stmt = $this->db->prepare("SELECT * FROM seller WHERE email = ?");
         $stmt->bind_param("s", $email);
         $stmt->execute();
         return $stmt->get_result()->fetch_assoc();
     }
 
     public function insertSeller($email, $password, $name) {
-        $stmt = $this->db->prepare("INSERT INTO seller_account (email, password, name) VALUES (?, ?, ?)");
+        $stmt = $this->db->prepare("INSERT INTO seller (email, password, name) VALUES (?, ?, ?)");
         $stmt->bind_param("sss", $email, $password, $name);
         if ($stmt->execute()) {
             return [
@@ -39,7 +39,7 @@ class Seller {
     }
     
     public function getName( $seller_id ) {
-        $stmt = $this->db->prepare("SELECT name FROM seller_account WHERE id = ?");
+        $stmt = $this->db->prepare("SELECT name FROM seller WHERE id = ?");
         $stmt->bind_param('i', $seller_id);
         $stmt->execute();
         $result = $stmt->get_result()->fetch_assoc();
@@ -48,7 +48,7 @@ class Seller {
 
 
     public function getEmail( $seller_id ) {
-        $stmt = $this->db->prepare("SELECT email FROM seller_account WHERE id = ?");
+        $stmt = $this->db->prepare("SELECT email FROM seller WHERE id = ?");
         $stmt->bind_param('i', $seller_id);
         $stmt->execute();
         $result = $stmt->get_result()->fetch_assoc();

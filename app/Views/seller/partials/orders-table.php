@@ -15,6 +15,7 @@ $shop_orders = $data['orders'] ?? [];
       <?php endif; ?>
     </div>
     
+    <?php if(!$is_dashboard): ?>
     <div class="flex gap-3">
       <input type="text" placeholder="Search orders..." class="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:border-teal-600">
       <button class="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50">
@@ -24,6 +25,7 @@ $shop_orders = $data['orders'] ?? [];
         Sort
       </button>
     </div>
+    <?php endif; ?>
   </div>
 
   <div class="overflow-x-auto">

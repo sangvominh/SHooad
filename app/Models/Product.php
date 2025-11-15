@@ -21,62 +21,28 @@ class Product {
         return $stmt->get_result()->fetch_assoc();
     }
 
-    public function updateProduct($product_id, $data) {
-        $sql = "UPDATE products SET 
-                    sku = ?, 
-                    name = ?, 
-                    description = ?, 
-                    thumbnail_url = ?, 
-                    colors = ?, 
-                    sizes = ?, 
-                    price = ?, 
-                    original_price = ?, 
-                    stock = ?, 
-                    sold_quantity = ?, 
-                    status = ? 
-                WHERE id = ?";
+    public function updateProduct($product_id, $data): bool {
+        if (empty($data)) {
+            return false;
+        }
 
+        $fields = [];
+        $values = [];
+        $types = '';
+
+        foreach ($data as $key => $value) {
+            $fields[] = "$key = ?";
+            $values[] = $value;
+            $types .= is_int($value) ? 'i' : (is_float($value) ? 'd' : 's');
+        }
+
+        $values[] = $product_id;
+        $types .= 'i';
+
+        $sql = "UPDATE products SET " . implode(', ', $fields) . " WHERE id = ?";
         $stmt = $this->db->prepare($sql);
-
-        $sku = $data['sku'] ?? null;
-        $name = $data['name'] ?? null;
-        $description = $data['description'] ?? null;
-        $thumbnail_url = $data['thumbnail_url'] ?? null;
-        $colors = $data['colors'] ?? null;
-        $sizes = $data['sizes'] ?? null;
-        $price = $data['price'] ?? null;
-        $original_price = $data['original_price'] ?? null;
-        $stock = $data['stock'] ?? null;
-        $sold_quantity = $data['sold_quantity'] ?? null;
-        $status = $data['status'] ?? null;
-
-        $stmt->bind_param(
-            "sssssssddiis", 
-            $sku, $name, $description, $thumbnail_url, $colors, $sizes, 
-            $price, $original_price, $stock, $sold_quantity, $status, $product_id
-        );
-
-        return $stmt->execute();
-    }
-
-    public function insertProduct($data) {
-        $stmt = $this->db->prepare("INSERT INTO products (shop_id, category_id, sku, name, description, thumbnail_url, colors, sizes, price, original_price, stock, status, created_at) 
-                                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())");
-        $stmt->bind_param(
-            "iissssssddss",
-            $data['shop_id'],
-            $data['category_id'],
-            $data['sku'],
-            $data['name'],
-            $data['description'],
-            $data['thumbnail_url'],
-            $data['colors'],
-            $data['sizes'],
-            $data['price'],
-            $data['original_price'],
-            $data['stock'],
-            $data['status']
-        );
+        $stmt->bind_param($types, ...$values);
+        
         return $stmt->execute();
     }
 

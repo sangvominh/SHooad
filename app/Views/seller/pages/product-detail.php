@@ -81,36 +81,34 @@
                         <input type="number" id="stock" name="stock" value="<?php echo htmlspecialchars($product['stock'] ?? '0'); ?>" min="0" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-teal-600">
                     </div>
 
-                    <div>
-                        <label for="category_id" class="block text-sm font-medium text-gray-900 mb-2">Category</label>
-                        <input type="number" id="category_id" name="category_id" value="<?php echo htmlspecialchars($product['category_id'] ?? ''); ?>" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-teal-600">
-                    </div>
-                </div>
+                                <div>
+                                    <label for="status" class="block text-sm font-medium text-gray-900 mb-2">Status</label>
+                                    <select id="status" name="status" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-teal-600">
+                                        <option value="active" <?php echo ($product['status'] ?? '') === 'active' ? 'selected' : ''; ?>>Active</option>
+                                        <option value="paused" <?php echo ($product['status'] ?? '') === 'paused' ? 'selected' : ''; ?>>Paused</option>
+                                        <option value="deleted" <?php echo ($product['status'] ?? '') === 'deleted' ? 'selected' : ''; ?>>Deleted</option>
+                                    </select>
+                                </div>
+                            </div>
 
-                <!-- Status -->
-                <div>
-                    <label for="status" class="block text-sm font-medium text-gray-900 mb-2">Status</label>
-                    <select id="status" name="status" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-teal-600">
-                        <option value="active" <?php echo ($product['status'] ?? '') === 'active' ? 'selected' : ''; ?>>Active</option>
-                        <option value="inactive" <?php echo ($product['status'] ?? '') === 'inactive' ? 'selected' : ''; ?>>Inactive</option>
-                        <option value="out_of_stock" <?php echo ($product['status'] ?? '') === 'out_of_stock' ? 'selected' : ''; ?>>Out of Stock</option>
-                    </select>
-                </div>
-
-                <!-- Product Info -->
-                <div class="bg-gray-50 rounded-lg p-4">
-                    <h3 class="font-semibold text-gray-900 mb-4">Product Information</h3>
-                    <div class="grid grid-cols-2 gap-4 text-sm">
-                        <div>
-                            <span class="text-gray-600">Sales:</span>
-                            <span class="font-semibold text-gray-900"><?php echo $product['sold_quantity'] ?? '0'; ?> units</span>
-                        </div>
-                        <div>
-                            <span class="text-gray-600">Created:</span>
-                            <span class="font-semibold text-gray-900"><?php echo $product['created_at'] ?? 'N/A'; ?></span>
-                        </div>
-                    </div>
-                </div>
+                            <!-- Product Info -->
+                            <div class="bg-gray-50 rounded-lg p-4">
+                                <h3 class="font-semibold text-gray-900 mb-4">Product Information</h3>
+                                <div class="grid grid-cols-2 gap-4 text-sm">
+                                    <div>
+                                        <span class="text-gray-600">Sold:</span>
+                                        <span class="font-semibold text-gray-900"><?php echo $product['sold'] ?? '0'; ?> units</span>
+                                    </div>
+                                    <div>
+                                        <span class="text-gray-600">Created:</span>
+                                        <span class="font-semibold text-gray-900"><?php echo $product['created_at'] ?? 'N/A'; ?></span>
+                                    </div>
+                                    <div>
+                                        <span class="text-gray-600">Last Updated:</span>
+                                        <span class="font-semibold text-gray-900"><?php echo $product['modified_at'] ?? 'N/A'; ?></span>
+                                    </div>
+                                </div>
+                            </div>
 
                 <!-- Action Buttons -->
                 <div class="flex gap-3 pt-4">

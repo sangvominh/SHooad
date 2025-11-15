@@ -1,6 +1,6 @@
 <?php
 // Main dashboard file
-$current_page = $_GET['page'] ?? 'dashboard';
+// $current_page is set by SellerPageService
 $page_title = 'Dashboard';
 
 // Sample data (replace with database queries)
@@ -84,10 +84,8 @@ $stats = [
             </div>
           </div>
         <?php elseif ($current_page === 'orders'): ?>
-          <h1 class="text-2xl font-bold text-gray-900 mb-6">Orders</h1>
           <?php include 'partials/orders-table.php'; ?>
         <?php elseif ($current_page === 'products'): ?>
-          <h1 class="text-2xl font-bold text-gray-900 mb-6">Products</h1>
           <?php include 'partials/products-table.php'; ?>
         <?php else: ?>
           <div class="bg-white rounded-lg border border-gray-200 p-12 text-center">

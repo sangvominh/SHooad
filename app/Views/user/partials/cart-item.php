@@ -6,15 +6,14 @@ $has_sale = isset($item['original_price']) && $item['original_price'] != $item['
     <div class="flex gap-4">
         <!-- Checkbox -->
         <div class="flex items-start pt-2">
-            <input 
-                type="checkbox" 
-                class="w-5 h-5 text-teal-600 rounded cursor-pointer cart-select" 
+            <input
+                type="checkbox"
+                class="w-5 h-5 text-teal-600 rounded cursor-pointer cart-select"
                 data-item-id="<?php echo $item['cart_id']; ?>"
                 data-price="<?php echo $item['price']; ?>"
                 data-original-price="<?php echo $item['original_price']; ?>"
                 data-quantity="<?php echo $item['quantity']; ?>"
-                <?php echo (isset($item['selected']) && $item['selected']) ? 'checked' : ''; ?>
-            >
+                <?php echo (isset($item['selected']) && $item['selected']) ? 'checked' : ''; ?>>
         </div>
 
         <!-- Product Image -->
@@ -39,7 +38,7 @@ $has_sale = isset($item['original_price']) && $item['original_price'] != $item['
         <!-- Product Details -->
         <div class="flex-1">
             <h3 class="text-lg font-semibold text-gray-900"><?php echo htmlspecialchars($item['name']); ?></h3>
-            
+
             <!-- Size and Color -->
             <div class="flex gap-6 mt-2 text-sm text-gray-600">
                 <span><strong>Size:</strong> <?php echo htmlspecialchars($item['size']); ?></span>
@@ -61,21 +60,20 @@ $has_sale = isset($item['original_price']) && $item['original_price'] != $item['
                 <div class="flex items-center gap-2">
                     <span class="text-sm font-semibold text-gray-600">Quantity:</span>
                     <button class="w-8 h-8 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition qty-minus" data-item-id="<?php echo $item['cart_id']; ?>">−</button>
-                    <input 
-                        type="number" 
-                        value="<?php echo $item['quantity']; ?>" 
-                        class="w-12 text-center border border-gray-300 rounded qty-input no-spinner" 
+                    <input
+                        type="number"
+                        value="<?php echo $item['quantity']; ?>"
+                        class="w-12 text-center border border-gray-300 rounded qty-input no-spinner"
                         min="1"
                         max="<?php echo isset($item['stock']) ? intval($item['stock']) : 9999; ?>"
                         data-item-id="<?php echo $item['cart_id']; ?>"
-                        data-stock="<?php echo isset($item['stock']) ? intval($item['stock']) : 0; ?>"
-                    >
+                        data-stock="<?php echo isset($item['stock']) ? intval($item['stock']) : 0; ?>">
                     <button class="w-8 h-8 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition qty-plus" data-item-id="<?php echo $item['cart_id']; ?>">+</button>
                 </div>
 
                 <!-- Edit and Remove Buttons -->
                 <div class="flex gap-2 ml-auto">
-                    <button class="px-4 py-1 text-teal-600 border border-teal-600 rounded hover:bg-teal-50 transition text-sm font-medium edit-btn" data-item-id="<?php echo $item['cart_id']; ?>" data-available-colors="<?php echo htmlspecialchars($item['available_colors']); ?>" data-available-sizes="<?php echo htmlspecialchars($item['available_sizes']); ?>">Edit</button>
+
                     <button class="px-4 py-1 text-red-600 border border-red-600 rounded hover:bg-red-50 transition text-sm font-medium remove-btn" data-item-id="<?php echo $item['cart_id']; ?>">Remove</button>
                 </div>
             </div>

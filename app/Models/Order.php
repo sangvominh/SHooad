@@ -9,14 +9,14 @@ class Order {
     }
 
     public function createOrder(array $data): int|false {
-        $stmt = $this->db->prepare("INSERT INTO orders (shop_id, customer_id, status, total, created_at) VALUES (?, ?, ?, ?, ?)");
+        $stmt = $this->db->prepare("INSERT INTO orders (shop_id, customer_id, status, total, date) VALUES (?, ?, ?, ?, ?)");
         $stmt->bind_param(
             "iisd s",
             $data['shop_id'],
             $data['customer_id'],
             $data['status'],
             $data['total'],
-            $data['created_at']
+            $data['date']
         );
         return $stmt->execute() ? $this->db->insert_id : false;
     }
@@ -30,7 +30,7 @@ class Order {
     }
 
     public function getOrderByShop(int $shop_id): array {
-        $stmt = $this->db->prepare("SELECT * FROM orders WHERE shop_id = ? ORDER BY created_at DESC");
+        $stmt = $this->db->prepare("SELECT * FROM orders WHERE shop_id = ? ORDER BY date DESC");
         $stmt->bind_param("i", $shop_id);
         $stmt->execute();
         $result = $stmt->get_result();
