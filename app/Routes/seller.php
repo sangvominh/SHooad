@@ -53,6 +53,19 @@ switch ($path) {
         $seller_controller->addProduct();
         break;
         
+    case 'analysis':
+        $seller_controller->analysis();
+        break;
+    
+    // Coming soon pages
+    case 'messages':
+    case 'inventory':
+    case 'pricing':
+    case 'promotions':
+    case 'settings':
+        $seller_controller->comingSoon($path);
+        break;
+        
     default:
         http_response_code(404);
         echo "<h1>404 Not Found</h1>";
