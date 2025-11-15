@@ -1,223 +1,130 @@
-SET NAMES utf8mb4;
-SET FOREIGN_KEY_CHECKS = 0;
-
--- ===============================
--- Seller accounts (Vendor)
--- ===============================
-CREATE TABLE IF NOT EXISTS seller_account (
+CREATE TABLE IF NOT EXISTS seller (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     email VARCHAR(100) NOT NULL UNIQUE,
     phone VARCHAR(20),
     password VARCHAR(255) NOT NULL,
-    status ENUM('active','suspended') DEFAULT 'active',
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    INDEX idx_seller_status (status)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    status ENUM('open','closed','banned') DEFAULT 'open',
+)
 
--- ===============================
--- Delivery Companies (External Partners)
--- ===============================
+CREATE TABLE IF NOT EXISTS shops (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    address VARCHAR(255),
+    phone VARCHAR(20),
+    status ENUM('open','closed','banned') DEFAULT 'open',
+)
+
 CREATE TABLE IF NOT EXISTS delivery_companies (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(150) NOT NULL,
-    code VARCHAR(50) UNIQUE NOT NULL,      -- ví dụ: GHTK, GHN, VNPOST
-    phone VARCHAR(20),
-    email VARCHAR(100),
-    address VARCHAR(255),
-    website VARCHAR(255),
-    api_endpoint VARCHAR(255),             -- URL API để gọi
-    api_token VARCHAR(255),                -- token xác thực (nếu có)
-    status ENUM('active','inactive','banned') DEFAULT 'active',
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    INDEX idx_delivery_status (status)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+)
 
--- ===============================
--- Shops
--- ===============================
-CREATE TABLE IF NOT EXISTS shops (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    seller_id INT NOT NULL,
-    name VARCHAR(255) NOT NULL,
-    description TEXT,
-    address VARCHAR(255),
-    phone VARCHAR(20),
-    logo_url VARCHAR(255),
-    status ENUM('open','closed','banned') DEFAULT 'open',
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (seller_id) REFERENCES seller_account(id) ON DELETE CASCADE,
-    INDEX idx_seller (seller_id),
-    INDEX idx_shop_status (status)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- ===============================
--- Categories
--- ===============================
 CREATE TABLE IF NOT EXISTS categories (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL UNIQUE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+)
 
--- ===============================
--- Products
--- ===============================
 CREATE TABLE IF NOT EXISTS products (
     id INT AUTO_INCREMENT PRIMARY KEY,
     shop_id INT NOT NULL,
     category_id INT NULL,
-    brand VARCHAR(100) NULL,
-    sku VARCHAR(100),
+
     name VARCHAR(255) NOT NULL,
+    brand VARCHAR(100) NULL,
     description TEXT,
-    thumbnail_url VARCHAR(255),
-    colors TEXT NULL,
-    sizes TEXT NULL,
-    price DECIMAL(10,2) NOT NULL CHECK (price >= 0),
-    original_price DECIMAL(10,2) NULL CHECK (original_price >= 0),
-    stock INT DEFAULT 0,
-    sold_quantity INT DEFAULT 0,
-    rating DECIMAL(2,1) DEFAULT 0.0,
-    reviews_count INT DEFAULT 0,
+    colors TEXT,
+    sizes TEXT,
+    price DECIMAL(10,2),
+    original_price DECIMAL(10,2),
+    stock INT,
+    sold INT,
     status ENUM('active','paused','deleted') DEFAULT 'active',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     modified_at TIMESTAMP NULL ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (shop_id) REFERENCES shops(id) ON DELETE CASCADE,
     FOREIGN KEY (category_id) REFERENCES categories(id),
-    UNIQUE KEY idx_sku (sku),
-    INDEX idx_shop_status_modified (shop_id, status, modified_at),
-    INDEX idx_category (category_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+)
 
-
--- ===============================
--- Orders
--- ===============================
-CREATE TABLE IF NOT EXISTS orders (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    order_code VARCHAR(50) UNIQUE,
-    shop_id INT NOT NULL,
-
-    delivery_company_id INT NULL,            -- công ty giao hàng được shop chọn
-
-    customer_id INT NULL,
-    customer_name VARCHAR(100) NOT NULL,
-    customer_email VARCHAR(100),
-    customer_phone VARCHAR(20),
-
-    shipping_province VARCHAR(100),
-    shipping_city VARCHAR(100),
-    shipping_ward VARCHAR(100),
-    shipping_detail VARCHAR(255),
-
-    payment_method ENUM('Cash on Delivery','Bank Transfer','Credit Card') DEFAULT 'Cash on Delivery',
-    payment_transaction_id VARCHAR(100),
-    payment_status ENUM('Pending','Paid','Refunded') DEFAULT 'Pending',
-
-    shipping_status ENUM('Pending','Assigned','Picked Up','Delivering','Delivered','Failed','Returned') DEFAULT 'Pending',
-    shipping_tracking_number VARCHAR(100),
-
-    subtotal DECIMAL(10,2) DEFAULT 0,
-    shipping_fee DECIMAL(10,2) DEFAULT 0,
-    tax DECIMAL(10,2) DEFAULT 0,
-    total_amount DECIMAL(10,2) DEFAULT 0,
-
-    status ENUM('Pending','Processing','Completed','Cancelled') DEFAULT 'Pending',
-    cancel_reason VARCHAR(255),
-
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-
-    FOREIGN KEY (shop_id) REFERENCES shops(id) ON DELETE CASCADE,
-    FOREIGN KEY (delivery_company_id) REFERENCES delivery_companies(id) ON DELETE SET NULL,
-    INDEX idx_shop_status (shop_id, status),
-    INDEX idx_orders_shop_status_date (shop_id, status, created_at),
-    INDEX idx_payment_status (payment_status),
-    INDEX idx_delivery_company (delivery_company_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- ===============================
--- Order Items
--- ===============================
-CREATE TABLE IF NOT EXISTS order_items (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    order_id INT NOT NULL,
-    product_id INT NULL,
-    variant_id INT NULL,
-    product_name VARCHAR(255) NOT NULL,
-    thumbnail_url VARCHAR(255),
-    quantity INT DEFAULT 1 CHECK (quantity > 0),
-    price DECIMAL(10,2) DEFAULT 0 CHECK (price >= 0),
-    FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE,
-    FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE SET NULL,
-    INDEX idx_product (product_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- ===============================
--- Users (Customers)
--- ===============================
-CREATE TABLE IF NOT EXISTS inventory_logs (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    product_id INT NOT NULL,
-    change_amount INT NOT NULL,
-    source ENUM('order','manual','refund'),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (product_id) REFERENCES products(id),
-    INDEX idx_inventory_product (product_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
-
--- User table
-CREATE TABLE users (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(100) NOT NULL,
-    email VARCHAR(100) UNIQUE NOT NULL,
-    password VARCHAR(255) NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
-SET FOREIGN_KEY_CHECKS = 1;
-
--- Banners table (Lưu file ảnh giới thiệu)
-CREATE TABLE banners (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  title VARCHAR(255) DEFAULT NULL,
-  filename VARCHAR(255) NOT NULL,
-  sort_order INT NOT NULL DEFAULT 0,
-  is_active TINYINT(1) NOT NULL DEFAULT 1,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
--- Products - image table
 CREATE TABLE product_images (
   id INT AUTO_INCREMENT PRIMARY KEY,
   product_id INT NOT NULL,
   filename VARCHAR(255) NOT NULL,
-  is_primary TINYINT(1) DEFAULT 0,
-  sort_order INT DEFAULT 0,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
-  INDEX (product_id),
-  INDEX (product_id, is_primary)
+)
+
+CREATE TABLE IF NOT EXISTS reviews (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    product_id INT NOT NULL,
+    customer_id INT NOT NULL,
+    rating INT CHECK (rating >= 1 AND rating <= 5),
+    comment TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
+)
+
+CREATE TABLE IF NOT EXISTS orders (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    shop_id INT NOT NULL,                     -- để shop quản lý
+    customer_phone VARCHAR(20) NOT NULL,      -- snapshot
+    shipping_address VARCHAR(255) NOT NULL,     -- snapshot
+    date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    status ENUM(
+        'Pending_Transfer',   -- chờ thanh toán chuyển khoản
+        'Paid',               -- đã thanh toán
+        'Processing',         -- đang xử lý đơn
+        'Delivering',         -- đang vận chuyển
+        'Pending_COD',        -- chờ thanh toán COD
+        'Completed',          -- hoàn tất
+        'Cancelled',          -- hủy
+        'Failed'              -- thanh toán hoặc giao hàng thất bại
+    )
+
+    FOREIGN KEY (shop_id) REFERENCES shops(id)
+)
+
+CREATE TABLE IF NOT EXISTS order_items (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    order_id INT NOT NULL,
+    product_id INT NULL,
+    quantity INT DEFAULT 1 CHECK (quantity > 0),
+    price DECIMAL(10,2) DEFAULT 0 CHECK (price >= 0),
+    -- cần thêm snapshot khác
+    FOREIGN KEY (order_id) REFERENCES orders(id),
+    FOREIGN KEY (product_id) REFERENCES products(id)
+)
+
+CREATE TABLE IF NOT EXISTS customers (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    email VARCHAR(100) UNIQUE NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    status ENUM('active','inactive','banned') DEFAULT 'active'
 );
 
--- Carts
-CREATE TABLE `carts` (
-  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-  `user_id` INT UNSIGNED NOT NULL,
-  `product_id` INT UNSIGNED NOT NULL,
-  `color` VARCHAR(100) DEFAULT NULL,
-  `size` VARCHAR(100) DEFAULT NULL,
-  `quantity` INT UNSIGNED NOT NULL DEFAULT 1,
-  `selected` TINYINT(1) NOT NULL DEFAULT 0, -- có thể dùng để chọn/bỏ chọn khi checkout
-  `note` VARCHAR(255) DEFAULT NULL,
-  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `ux_user_product_color_size` (`user_id`,`product_id`,`color`,`size`),
-  KEY `idx_user` (`user_id`),
-  KEY `idx_product` (`product_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+CREATE TABLE IF NOT EXISTS carts (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  customer_id INT UNSIGNED NOT NULL,
 
+  FOREIGN KEY (customer_id) REFERENCES customers(id)
+);
+
+CREATE TABLE IF NOT EXISTS cart_items (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    cart_id INT NOT NULL,
+    product_id INT NOT NULL,
+    quantity INT DEFAULT 1 CHECK (quantity > 0) NOT NULL,
+    color VARCHAR(100) NOT NULL,
+    size VARCHAR(100) NOT NULL,
+
+    FOREIGN KEY (cart_id) REFERENCES carts(id) ON DELETE CASCADE,
+    FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
+);
+
+CREATE TABLE IF NOT EXISTS banners (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  title VARCHAR(255) DEFAULT NULL,
+  filename VARCHAR(255) NOT NULL,
+  is_active TINYINT(1) NOT NULL DEFAULT 1
+);
