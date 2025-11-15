@@ -134,7 +134,7 @@ try {
     <title><?php echo htmlspecialchars($product['name']); ?> - Pursuit</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" />
-    <link rel="stylesheet" href="assets/css/custom.css">
+    <link rel="stylesheet" href="/SHooad/public/assets/css/custom.css">
 </head>
 </head>
 <body class="bg-white" data-stock="<?php echo htmlspecialchars($product['stock'] ?? 0); ?>" data-product-id="<?php echo $productId; ?>">
@@ -162,7 +162,7 @@ try {
     <?php include 'partials/footer.php'; ?>
     
     <!-- Scripts -->
-    <script src="/SHooad/app/Views/user/js/dropdown.js"></script>
-    <script src="/SHooad/app/Views/user/js/product-gallery.js"></script>
+    <script src="/SHooad/public/assets/js/user/dropdown.js"></script>
+    <script src="/SHooad/public/assets/js/user/product-gallery.js"></script>
 </body>
 </html>

@@ -95,7 +95,7 @@
     <!-- Navigation Menu -->
     <?php include __DIR__ . '/navigation.php'; ?>
 </header>
-<script src="/SHooad/app/Views/user/js/avatar-dropdown.js"></script>
+<script src="/SHooad/public/assets/js/user/avatar-dropdown.js"></script>
 <script>
     // Simple shake animation for cart icon
     function shakeCartIcon() {

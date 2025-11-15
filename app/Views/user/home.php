@@ -15,7 +15,7 @@ $banners = $bannerModel->getActive(); // mảng [ ['title'=>..., 'filename'=>...
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SHooad</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="assets/css/custom.css">
+    <link rel="stylesheet" href="/SHooad/public/assets/css/custom.css">
 </head>
 <body class="bg-white">
     <!-- Header & Navigation -->
@@ -37,8 +37,8 @@ $banners = $bannerModel->getActive(); // mảng [ ['title'=>..., 'filename'=>...
     <?php include 'partials/footer.php'; ?>
     
     <!-- Scripts -->
-    <script src="assets/js/dropdown.js"></script>
-    <script src="assets/js/product-hover.js"></script>
+    <script src="/SHooad/public/assets/js/user/dropdown.js"></script>
+    <script src="/SHooad/public/assets/js/user/product-hover.js"></script>
 
 
 </body>

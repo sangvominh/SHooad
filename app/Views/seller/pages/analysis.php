@@ -273,6 +273,6 @@
         console.log('Analysis Type:', currentAnalysisType);
         console.log('Analysis Data:', initialAnalysisData);
     </script>
-    <script src="/SHooad/public/js/seller/analysis-filter.js"></script>
+    <script src="/SHooad/public/assets/js/seller/analysis-filter.js"></script>
 </body>
 </html>
