@@ -185,6 +185,20 @@ return [
         'new_address' => 'Enter New Address',
     ],
     
+    'shop' => [
+        'verified' => 'Verified',
+        'products' => 'Products',
+        'rating' => 'Rating',
+        'followers' => 'Followers',
+        'orders_completed' => 'Orders',
+        'visit_shop' => 'Visit Shop',
+        'follow' => 'Follow',
+        'chat' => 'Chat',
+        'all_products' => 'All Products',
+        'about' => 'About',
+        'no_products' => 'No products available',
+    ],
+    
     'footer' => [
         'about_us' => 'About Us',
         'about_desc' => 'We provide high-quality products at the most reasonable prices.',
@@ -220,6 +234,7 @@ return [
         'no_reviews' => 'No reviews yet',
         'rating' => 'Rating',
         'related_products' => 'Related Products',
+        'sold' => 'Sold',
     ],
     
     'auth' => [

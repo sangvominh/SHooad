@@ -11,7 +11,7 @@
             <p class="text-gray-700 text-sm flex items-center gap-2 bg-gray-50 px-3 py-1.5 rounded-lg border border-gray-200">
                 <i class="fas fa-store text-blue-600"></i>
                 <span class="text-gray-600">Shop:</span>
-                <a href="#" class="text-blue-600 hover:underline font-medium"><?php echo htmlspecialchars($product['shop_name']); ?></a>
+                <a href="/SHooad/public/customer/shop-detail?shop_id=<?php echo $product['shop_id'] ?? ''; ?>" class="text-blue-600 hover:underline font-medium"><?php echo htmlspecialchars($product['shop_name']); ?></a>
             </p>
         </div>
         <?php endif; ?>
@@ -77,15 +77,23 @@
     <!-- Color Selection -->
     <?php if (!empty($product['colors'])): ?>
     <div>
-        <p class="font-semibold mb-3">Color: <span class="text-red-500">*</span></p>
+        <p class="font-semibold mb-3">Màu sắc: <span class="text-red-500">*</span></p>
         <div class="flex gap-3 flex-wrap" id="colorGroup">
             <?php foreach ($product['colors'] as $idx => $color): ?>
             <div class="relative">
-                <input type="radio" id="color_<?php echo $idx; ?>" name="color" value="<?php echo htmlspecialchars($color['name']); ?>" 
+                <input type="radio" id="color_<?php echo $idx; ?>" name="color" 
+                       value="<?php echo htmlspecialchars($color['name']); ?>" 
+                       data-color-id="<?php echo $color['id']; ?>"
+                       data-stock="<?php echo $color['stock']; ?>"
                        class="sr-only color-radio" <?php echo $idx === 0 ? 'checked' : ''; ?>>
-                <label for="color_<?php echo $idx; ?>" class="color-label w-10 h-10 rounded-full cursor-pointer border-2 <?php echo $idx === 0 ? 'border-gray-600 border-4' : 'border-gray-300'; ?> hover:border-gray-600 transition block"
-                       style="background-color: <?php echo htmlspecialchars($color['code']); ?>;"
-                       title="<?php echo htmlspecialchars($color['name']); ?>">
+                <label for="color_<?php echo $idx; ?>" 
+                       class="color-label flex items-center gap-2 px-4 py-2 rounded-lg cursor-pointer border-2 <?php echo $idx === 0 ? 'border-blue-600 bg-blue-50' : 'border-gray-300'; ?> hover:border-blue-600 hover:bg-blue-50 transition">
+                    <span class="w-6 h-6 rounded-full border border-gray-300 flex-shrink-0" 
+                          style="background-color: <?php echo htmlspecialchars($color['code']); ?>;"></span>
+                    <span class="text-sm font-medium"><?php echo htmlspecialchars($color['name']); ?></span>
+                    <?php if ($color['stock'] <= 0): ?>
+                    <span class="text-xs text-red-500">(Hết hàng)</span>
+                    <?php endif; ?>
                 </label>
             </div>
             <?php endforeach; ?>
@@ -96,14 +104,22 @@
     <!-- Size Selection -->
     <?php if (!empty($product['sizes'])): ?>
     <div>
-        <p class="font-semibold mb-3">Size: <span class="text-red-500">*</span></p>
+        <p class="font-semibold mb-3">Kích thước: <span class="text-red-500">*</span></p>
         <div class="flex gap-2 flex-wrap" id="sizeGroup">
-            <?php $sizeIdx = 0; foreach ($product['sizes'] as $size): ?>
-            <label for="size_<?php echo $sizeIdx; ?>" class="size-label w-12 h-10 flex items-center justify-center border-2 <?php echo $sizeIdx === 0 ? 'border-gray-600 border-4' : 'border-gray-300'; ?> rounded cursor-pointer hover:border-gray-600 transition">
-                <input type="radio" id="size_<?php echo $sizeIdx; ?>" name="size" value="<?php echo htmlspecialchars($size); ?>" class="sr-only size-radio" <?php echo $sizeIdx === 0 ? 'checked' : ''; ?>>
-                <span class="text-sm font-medium"><?php echo htmlspecialchars($size); ?></span>
+            <?php foreach ($product['sizes'] as $idx => $size): ?>
+            <label for="size_<?php echo $idx; ?>" 
+                   class="size-label min-w-[50px] h-10 px-3 flex items-center justify-center border-2 <?php echo $idx === 0 ? 'border-blue-600 bg-blue-50' : 'border-gray-300'; ?> rounded-lg cursor-pointer hover:border-blue-600 hover:bg-blue-50 transition">
+                <input type="radio" id="size_<?php echo $idx; ?>" name="size" 
+                       value="<?php echo htmlspecialchars($size['name']); ?>" 
+                       data-size-id="<?php echo $size['id']; ?>"
+                       data-stock="<?php echo $size['stock']; ?>"
+                       class="sr-only size-radio" <?php echo $idx === 0 ? 'checked' : ''; ?>>
+                <span class="text-sm font-medium"><?php echo htmlspecialchars($size['name']); ?></span>
+                <?php if ($size['stock'] <= 0): ?>
+                <span class="ml-1 text-xs text-red-500">✗</span>
+                <?php endif; ?>
             </label>
-            <?php $sizeIdx++; endforeach; ?>
+            <?php endforeach; ?>
         </div>
     </div>
     <?php endif; ?>
@@ -193,15 +209,15 @@
       var checkedRadio = document.querySelector('input[name="color"]:checked');
       
       labels.forEach(function(label) {
-        label.classList.remove('border-gray-600', 'border-4');
-        label.classList.add('border-gray-300', 'border-2');
+        label.classList.remove('border-blue-600', 'bg-blue-50');
+        label.classList.add('border-gray-300');
       });
       
       if (checkedRadio) {
         var checkedLabel = document.querySelector('label[for="' + checkedRadio.id + '"]');
         if (checkedLabel) {
-          checkedLabel.classList.remove('border-gray-300', 'border-2');
-          checkedLabel.classList.add('border-gray-600', 'border-4');
+          checkedLabel.classList.remove('border-gray-300');
+          checkedLabel.classList.add('border-blue-600', 'bg-blue-50');
         }
       }
     }
@@ -213,15 +229,15 @@
       var checkedRadio = document.querySelector('input[name="size"]:checked');
       
       labels.forEach(function(label) {
-        label.classList.remove('border-gray-600', 'border-4');
-        label.classList.add('border-gray-300', 'border-2');
+        label.classList.remove('border-blue-600', 'bg-blue-50');
+        label.classList.add('border-gray-300');
       });
       
       if (checkedRadio) {
         var checkedLabel = document.querySelector('label[for="' + checkedRadio.id + '"]');
         if (checkedLabel) {
-          checkedLabel.classList.remove('border-gray-300', 'border-2');
-          checkedLabel.classList.add('border-gray-600', 'border-4');
+          checkedLabel.classList.remove('border-gray-300');
+          checkedLabel.classList.add('border-blue-600', 'bg-blue-50');
         }
       }
     }

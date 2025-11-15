@@ -118,4 +118,104 @@ class ProductService {
 
         return $success;
     }
+
+    /**
+     * Get product colors from database
+     */
+    public function getProductColors(int $productId): array {
+        $mysqli = new mysqli('localhost', 'root', '', 'SHooad');
+        
+        if ($mysqli->connect_error) {
+            return [];
+        }
+        
+        $stmt = $mysqli->prepare("
+            SELECT c.id, c.name, c.hex_code, pc.stock
+            FROM product_colors pc
+            JOIN colors c ON pc.color_id = c.id
+            WHERE pc.product_id = ?
+            ORDER BY c.name
+        ");
+        
+        $stmt->bind_param("i", $productId);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        
+        $colors = [];
+        while ($row = $result->fetch_assoc()) {
+            $colors[] = [
+                'id' => $row['id'],
+                'name' => $row['name'],
+                'code' => $row['hex_code'],
+                'stock' => $row['stock']
+            ];
+        }
+        
+        $mysqli->close();
+        return $colors;
+    }
+
+    /**
+     * Get product sizes from database
+     */
+    public function getProductSizes(int $productId): array {
+        $mysqli = new mysqli('localhost', 'root', '', 'SHooad');
+        
+        if ($mysqli->connect_error) {
+            return [];
+        }
+        
+        $stmt = $mysqli->prepare("
+            SELECT s.id, s.name, ps.stock
+            FROM product_sizes ps
+            JOIN sizes s ON ps.size_id = s.id
+            WHERE ps.product_id = ?
+            ORDER BY s.sort_order
+        ");
+        
+        $stmt->bind_param("i", $productId);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        
+        $sizes = [];
+        while ($row = $result->fetch_assoc()) {
+            $sizes[] = [
+                'id' => $row['id'],
+                'name' => $row['name'],
+                'stock' => $row['stock']
+            ];
+        }
+        
+        $mysqli->close();
+        return $sizes;
+    }
+
+    /**
+     * Get product variant stock for specific color-size combination
+     */
+    public function getVariantStock(int $productId, int $colorId, int $sizeId): int {
+        $mysqli = new mysqli('localhost', 'root', '', 'SHooad');
+        
+        if ($mysqli->connect_error) {
+            return 0;
+        }
+        
+        $stmt = $mysqli->prepare("
+            SELECT stock
+            FROM product_variants
+            WHERE product_id = ? AND color_id = ? AND size_id = ?
+        ");
+        
+        $stmt->bind_param("iii", $productId, $colorId, $sizeId);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        
+        $stock = 0;
+        if ($row = $result->fetch_assoc()) {
+            $stock = (int)$row['stock'];
+        }
+        
+        $mysqli->close();
+        return $stock;
+    }
 }

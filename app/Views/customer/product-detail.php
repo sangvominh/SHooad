@@ -34,12 +34,12 @@ $productId = $product['id'] ?? 0;
     
     <!-- Product Description -->
     <?php include __DIR__ . '/components/product-description.php'; ?>
+    
+    <!-- Shop Information -->
+    <?php include __DIR__ . '/components/shop-info.php'; ?>
+    
+    <!-- Product Rating -->
+    <?php include __DIR__ . '/components/product-rating.php'; ?>
 </div>
 
-<!-- Product Rating -->
-<?php include __DIR__ . '/components/product-rating.php'; ?>
-
-<!-- Scripts -->
-<script src="/SHooad/public/assets/js/customer/dropdown.js"></script>
 <script src="/SHooad/public/assets/js/customer/product-gallery.js"></script>
-<link rel="stylesheet" href="/SHooad/public/assets/css/custom.css">

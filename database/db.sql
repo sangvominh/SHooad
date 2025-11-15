@@ -80,6 +80,69 @@ CREATE TABLE IF NOT EXISTS product_images (
 );
 
 -- ============================
+-- COLORS (for product variants)
+-- ============================
+CREATE TABLE IF NOT EXISTS colors (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(50) NOT NULL UNIQUE,
+    hex_code VARCHAR(7) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- ============================
+-- SIZES (for product variants)
+-- ============================
+CREATE TABLE IF NOT EXISTS sizes (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(20) NOT NULL UNIQUE,
+    sort_order INT DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- ============================
+-- PRODUCT COLORS (junction table)
+-- ============================
+CREATE TABLE IF NOT EXISTS product_colors (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    product_id INT NOT NULL,
+    color_id INT NOT NULL,
+    stock INT DEFAULT 0,
+    FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
+    FOREIGN KEY (color_id) REFERENCES colors(id) ON DELETE CASCADE,
+    UNIQUE KEY unique_product_color (product_id, color_id)
+);
+
+-- ============================
+-- PRODUCT SIZES (junction table)
+-- ============================
+CREATE TABLE IF NOT EXISTS product_sizes (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    product_id INT NOT NULL,
+    size_id INT NOT NULL,
+    stock INT DEFAULT 0,
+    FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
+    FOREIGN KEY (size_id) REFERENCES sizes(id) ON DELETE CASCADE,
+    UNIQUE KEY unique_product_size (product_id, size_id)
+);
+
+-- ============================
+-- PRODUCT VARIANTS (color-size combinations)
+-- ============================
+CREATE TABLE IF NOT EXISTS product_variants (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    product_id INT NOT NULL,
+    color_id INT,
+    size_id INT,
+    sku VARCHAR(100),
+    stock INT DEFAULT 0,
+    price_adjustment DECIMAL(10,2) DEFAULT 0,
+    FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
+    FOREIGN KEY (color_id) REFERENCES colors(id) ON DELETE SET NULL,
+    FOREIGN KEY (size_id) REFERENCES sizes(id) ON DELETE SET NULL,
+    UNIQUE KEY unique_variant (product_id, color_id, size_id)
+);
+
+-- ============================
 -- CUSTOMERS
 -- ============================
 CREATE TABLE IF NOT EXISTS customers (

@@ -185,6 +185,20 @@ return [
         'new_address' => 'Nhập địa chỉ mới',
     ],
     
+    'shop' => [
+        'verified' => 'Đã xác thực',
+        'products' => 'Sản phẩm',
+        'rating' => 'Đánh giá',
+        'followers' => 'Người theo dõi',
+        'orders_completed' => 'Đơn hàng',
+        'visit_shop' => 'Xem Shop',
+        'follow' => 'Theo dõi',
+        'chat' => 'Chat',
+        'all_products' => 'Tất cả sản phẩm',
+        'about' => 'Giới thiệu',
+        'no_products' => 'Shop chưa có sản phẩm nào',
+    ],
+    
     'footer' => [
         'about_us' => 'Về chúng tôi',
         'about_desc' => 'Chúng tôi cung cấp những sản phẩm chất lượng cao với giá cả hợp lý nhất.',
@@ -220,6 +234,7 @@ return [
         'no_reviews' => 'Chưa có đánh giá nào',
         'rating' => 'Xếp hạng',
         'related_products' => 'Sản phẩm liên quan',
+        'sold' => 'Đã bán',
     ],
     
     'auth' => [

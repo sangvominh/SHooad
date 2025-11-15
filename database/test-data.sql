@@ -1,4 +1,41 @@
 -- ============================
+-- 0. COLORS & SIZES (Master data)
+-- ============================
+INSERT INTO colors (name, hex_code) VALUES
+('Đen', '#000000'),
+('Trắng', '#FFFFFF'),
+('Đỏ', '#FF0000'),
+('Xanh Dương', '#0000FF'),
+('Xanh Navy', '#000080'),
+('Xanh Lá', '#008000'),
+('Vàng', '#FFFF00'),
+('Cam', '#FFA500'),
+('Hồng', '#FFC0CB'),
+('Tím', '#800080'),
+('Nâu', '#8B4513'),
+('Xám', '#808080'),
+('Be', '#F5F5DC'),
+('Xanh Rêu', '#556B2F'),
+('Hồng Nhạt', '#FFB6C1'),
+('Xanh Nhạt', '#87CEEB'),
+('Xanh Đậm', '#00008B');
+
+INSERT INTO sizes (name, sort_order) VALUES
+('XS', 1),
+('S', 2),
+('M', 3),
+('L', 4),
+('XL', 5),
+('XXL', 6),
+('XXXL', 7),
+('29', 10),
+('30', 11),
+('31', 12),
+('32', 13),
+('33', 14),
+('34', 15);
+
+-- ============================
 -- 1. SELLER (1 người bán)
 -- ============================
 INSERT INTO seller (name, email, phone, password, status) VALUES
@@ -62,6 +99,115 @@ INSERT INTO products (shop_id, category_id, name, brand, description, colors, si
 -- Phụ Kiện
 (1, 5, 'Nón Snapback', 'MLB', 'Nón lưỡi trai phong cách thể thao', 'Đen,Trắng,Xanh,Đỏ', 'Freesize', 180000, 280000, 120, 88, 'active'),
 (1, 5, 'Túi Tote Canvas', 'CANVAS', 'Túi vải canvas đa năng', 'Trắng,Be,Đen', 'Freesize', 120000, 200000, 150, 145, 'active');
+
+-- ============================
+-- 5B. PRODUCT COLORS (màu sắc cho từng sản phẩm)
+-- ============================
+-- Product 1: Áo Thun Nam Basic - Đen, Trắng, Xám, Xanh Navy
+INSERT INTO product_colors (product_id, color_id, stock) VALUES
+(1, 1, 40), (1, 2, 35), (1, 12, 40), (1, 5, 35),
+-- Product 2: Áo Sơ Mi - Trắng, Xanh Dương, Hồng Nhạt  
+(2, 2, 35), (2, 4, 35), (2, 15, 30),
+-- Product 3: Áo Polo - Đen, Trắng, Xanh Lá, Đỏ
+(3, 1, 20), (3, 2, 20), (3, 6, 20), (3, 3, 20),
+-- Product 4: Áo Khoác Jean - Xanh Đậm, Xanh Nhạt, Đen
+(4, 17, 20), (4, 16, 20), (4, 1, 20),
+-- Product 5: Áo Hoodie - Đen, Xám, Xanh Rêu
+(5, 1, 30), (5, 12, 30), (5, 14, 30),
+-- Product 6: Quần Jean - Xanh Đậm, Xanh Nhạt, Đen
+(6, 17, 40), (6, 16, 40), (6, 1, 40),
+-- Product 7: Quần Kaki - Be, Xám, Xanh Navy, Đen
+(7, 13, 24), (7, 12, 24), (7, 5, 24), (7, 1, 23),
+-- Product 8: Quần Short - Đen, Xám, Xanh Lá
+(8, 1, 37), (8, 12, 37), (8, 6, 36),
+-- Product 9: Quần Jogger - Đen, Xám, Xanh Rêu
+(9, 1, 25), (9, 12, 25), (9, 14, 25),
+-- Product 10: Áo Thun Nữ - Trắng, Đen, Hồng, Be
+(10, 2, 35), (10, 1, 35), (10, 9, 35), (10, 13, 35),
+-- Product 11: Áo Kiểu Nữ - Trắng, Hồng Nhạt
+(11, 2, 43), (11, 15, 42),
+-- Product 12: Áo Croptop - Đen, Trắng, Xanh Lá, Hồng
+(12, 1, 25), (12, 2, 25), (12, 6, 25), (12, 9, 25),
+-- Product 13: Cardigan - Be, Xám, Hồng, Xanh Lá
+(13, 13, 18), (13, 12, 17), (13, 9, 18), (13, 6, 17),
+-- Product 14: Blazer - Đen, Xám, Be
+(14, 1, 17), (14, 12, 17), (14, 13, 16),
+-- Product 15: Quần Jean Nữ - Xanh Đậm, Xanh Nhạt, Đen
+(15, 17, 35), (15, 16, 35), (15, 1, 35),
+-- Product 16: Quần Ống Rộng - Đen, Be, Xám
+(16, 1, 27), (16, 13, 27), (16, 12, 26),
+-- Product 17: Short Jean Nữ - Xanh Dương, Đen, Trắng
+(17, 4, 32), (17, 1, 32), (17, 2, 31),
+-- Product 18: Váy Jean - Xanh Đậm, Xanh Nhạt
+(18, 17, 33), (18, 16, 32),
+-- Product 19: Nón - Đen, Trắng, Xanh Lá, Đỏ
+(19, 1, 30), (19, 2, 30), (19, 6, 30), (19, 3, 30),
+-- Product 20: Túi - Trắng, Be, Đen
+(20, 2, 50), (20, 13, 50), (20, 1, 50);
+
+-- ============================
+-- 5C. PRODUCT SIZES (size cho từng sản phẩm)
+-- ============================
+-- Product 1: S, M, L, XL, XXL
+INSERT INTO product_sizes (product_id, size_id, stock) VALUES
+(1, 2, 30), (1, 3, 30), (1, 4, 30), (1, 5, 30), (1, 6, 30),
+-- Product 2: M, L, XL, XXL
+(2, 3, 25), (2, 4, 25), (2, 5, 25), (2, 6, 25),
+-- Product 3: S, M, L, XL
+(3, 2, 20), (3, 3, 20), (3, 4, 20), (3, 5, 20),
+-- Product 4: M, L, XL
+(4, 3, 20), (4, 4, 20), (4, 5, 20),
+-- Product 5: M, L, XL, XXL
+(5, 3, 23), (5, 4, 23), (5, 5, 22), (5, 6, 22),
+-- Product 6: 29-34
+(6, 8, 20), (6, 9, 20), (6, 10, 20), (6, 11, 20), (6, 12, 20), (6, 13, 20),
+-- Product 7: 29-33
+(7, 8, 19), (7, 9, 19), (7, 10, 19), (7, 11, 19), (7, 12, 19),
+-- Product 8: M, L, XL
+(8, 3, 37), (8, 4, 37), (8, 5, 36),
+-- Product 9: M, L, XL, XXL
+(9, 3, 19), (9, 4, 19), (9, 5, 19), (9, 6, 18),
+-- Product 10: S, M, L, XL
+(10, 2, 35), (10, 3, 35), (10, 4, 35), (10, 5, 35),
+-- Product 11: S, M, L
+(11, 2, 28), (11, 3, 29), (11, 4, 28),
+-- Product 12: S, M, L
+(12, 2, 33), (12, 3, 34), (12, 4, 33),
+-- Product 13: Freesize (sử dụng M làm default)
+(13, 3, 70),
+-- Product 14: S, M, L, XL
+(14, 2, 13), (14, 3, 12), (14, 4, 13), (14, 5, 12),
+-- Product 15: 26-30
+(15, 8, 21), (15, 9, 21), (15, 10, 21), (15, 11, 21), (15, 12, 21),
+-- Product 16: S, M, L
+(16, 2, 27), (16, 3, 27), (16, 4, 26),
+-- Product 17: S, M, L, XL
+(17, 2, 24), (17, 3, 24), (17, 4, 24), (17, 5, 23),
+-- Product 18: S, M, L
+(18, 2, 22), (18, 3, 22), (18, 4, 21),
+-- Product 19: Freesize
+(19, 3, 120),
+-- Product 20: Freesize
+(20, 3, 150);
+
+-- ============================
+-- 5D. PRODUCT VARIANTS (biến thể màu-size cụ thể)
+-- ============================
+-- Product 1: 4 colors x 5 sizes = 20 variants
+INSERT INTO product_variants (product_id, color_id, size_id, stock) VALUES
+(1,1,2,8), (1,1,3,8), (1,1,4,8), (1,1,5,8), (1,1,6,8),
+(1,2,2,7), (1,2,3,7), (1,2,4,7), (1,2,5,7), (1,2,6,7),
+(1,12,2,8), (1,12,3,8), (1,12,4,8), (1,12,5,8), (1,12,6,8),
+(1,5,2,7), (1,5,3,7), (1,5,4,7), (1,5,5,7), (1,5,6,7),
+-- Product 2: 3 colors x 4 sizes = 12 variants
+(2,2,3,9), (2,2,4,9), (2,2,5,9), (2,2,6,8),
+(2,4,3,9), (2,4,4,9), (2,4,5,9), (2,4,6,8),
+(2,15,3,8), (2,15,4,7), (2,15,5,8), (2,15,6,7),
+-- Product 3: 4 colors x 4 sizes = 16 variants
+(3,1,2,5), (3,1,3,5), (3,1,4,5), (3,1,5,5),
+(3,2,2,5), (3,2,3,5), (3,2,4,5), (3,2,5,5),
+(3,6,2,5), (3,6,3,5), (3,6,4,5), (3,6,5,5),
+(3,3,2,5), (3,3,3,5), (3,3,4,5), (3,3,5,5);
 
 -- ============================
 -- 6. PRODUCT IMAGES (3-5 ảnh/sản phẩm)

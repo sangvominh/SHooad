@@ -100,6 +100,22 @@ class UserController {
         $this->renderWithLayout('checkout', $data, 'Checkout - SHooad');
     }
     
+    public function shopDetail() {
+        $shop_id = $_GET['shop_id'] ?? null;
+        
+        if (!$shop_id) {
+            $this->redirectTo('/SHooad/public/customer');
+        }
+
+        $data = $this->pageService->getShopDetailData((int)$shop_id);
+        
+        if (!$data || !isset($data['shop'])) {
+            $this->redirectTo('/SHooad/public/customer');
+        }
+
+        $this->renderWithLayout('shop-detail', $data, ($data['shop']['name'] ?? 'Shop') . ' - SHooad');
+    }
+    
     public function orderSuccess() {
         AuthMiddleware::checkUserAuth();
         include __DIR__ . '/../Views/customer/order-success.php';

@@ -33,6 +33,10 @@ switch ($path) {
         $customerController->productDetail();
         break;
 
+    case 'shop-detail':
+        $customerController->shopDetail();
+        break;
+
     case 'checkout':
         $customerController->checkout();
         break;

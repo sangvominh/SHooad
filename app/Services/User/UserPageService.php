@@ -96,7 +96,14 @@ class UserPageService {
         $pdo = new PDO('mysql:host=localhost;dbname=SHooad;charset=utf8', 'root', '');
         $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-        $sql = "SELECT p.*, sh.name as shop_name, sh.id as shop_id,
+        $sql = "SELECT p.*, 
+                    sh.name as shop_name, 
+                    sh.id as shop_id,
+                    sh.description as shop_description,
+                    (SELECT COUNT(*) FROM products WHERE shop_id = sh.id AND status = 'active') as shop_products_count,
+                    (SELECT AVG(r2.rating) FROM reviews r2 
+                     JOIN products p2 ON r2.product_id = p2.id 
+                     WHERE p2.shop_id = sh.id) as shop_rating,
                     GROUP_CONCAT(DISTINCT pi.filename) as images,
                     p.colors as colors,
                     p.sizes as sizes
@@ -163,7 +170,69 @@ class UserPageService {
             $product['rating'] = 0;
         }
 
+        // Add shop stats
+        $product['shop_rating'] = $product['shop_rating'] ? round($product['shop_rating'], 1) : 0;
+        $product['shop_followers'] = rand(100, 5000); // Temporary: would come from a followers table
+
+        // Get colors and sizes from new tables
+        $product['colors'] = $this->getProductColorsFromDB($productId);
+        $product['sizes'] = $this->getProductSizesFromDB($productId);
+
         return $product;
+    }
+
+    /**
+     * Get product colors from database
+     */
+    private function getProductColorsFromDB(int $productId): array {
+        $pdo = new PDO('mysql:host=localhost;dbname=SHooad;charset=utf8', 'root', '');
+        
+        $stmt = $pdo->prepare("
+            SELECT c.id, c.name, c.hex_code, pc.stock
+            FROM product_colors pc
+            JOIN colors c ON pc.color_id = c.id
+            WHERE pc.product_id = ?
+            ORDER BY c.name
+        ");
+        
+        $stmt->execute([$productId]);
+        $colors = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
+        return array_map(function($color) {
+            return [
+                'id' => $color['id'],
+                'name' => $color['name'],
+                'code' => $color['hex_code'],
+                'stock' => $color['stock'],
+                'active' => false
+            ];
+        }, $colors);
+    }
+
+    /**
+     * Get product sizes from database
+     */
+    private function getProductSizesFromDB(int $productId): array {
+        $pdo = new PDO('mysql:host=localhost;dbname=SHooad;charset=utf8', 'root', '');
+        
+        $stmt = $pdo->prepare("
+            SELECT s.id, s.name, ps.stock
+            FROM product_sizes ps
+            JOIN sizes s ON ps.size_id = s.id
+            WHERE ps.product_id = ?
+            ORDER BY s.sort_order
+        ");
+        
+        $stmt->execute([$productId]);
+        $sizes = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
+        return array_map(function($size) {
+            return [
+                'id' => $size['id'],
+                'name' => $size['name'],
+                'stock' => $size['stock']
+            ];
+        }, $sizes);
     }
 
     private function processColors(string $rawColors): array {
@@ -580,6 +649,69 @@ class UserPageService {
             'orders' => $orders,
             'orderStatusCounts' => $orderStatusCounts,
             'filterStatus' => $filterStatus,
+            'navigation' => $this->getNavigationData(),
+            'header' => $this->getHeaderData(),
+            'bodyClass' => 'bg-gray-50'
+        ];
+    }
+
+    public function getShopDetailData(int $shopId): ?array {
+        $pdo = new PDO('mysql:host=localhost;dbname=SHooad;charset=utf8', 'root', '');
+        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+        // Get shop information
+        $shopSql = "SELECT 
+                        s.*,
+                        COUNT(DISTINCT p.id) as products_count,
+                        COUNT(DISTINCT o.id) as orders_count,
+                        AVG(r.rating) as rating
+                    FROM shops s
+                    LEFT JOIN products p ON s.id = p.shop_id AND p.status = 'active'
+                    LEFT JOIN orders o ON s.id = o.shop_id AND o.status IN ('Completed', 'Shipping', 'Processing')
+                    LEFT JOIN reviews r ON p.id = r.product_id
+                    WHERE s.id = :shop_id
+                    GROUP BY s.id";
+
+        $stmt = $pdo->prepare($shopSql);
+        $stmt->execute([':shop_id' => $shopId]);
+        $shop = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if (!$shop) {
+            return null;
+        }
+
+        // Add default values
+        $shop['followers'] = rand(100, 5000); // Temporary: would come from a followers table
+        $shop['rating'] = $shop['rating'] ? round($shop['rating'], 1) : 0;
+
+        // Get shop products
+        $productsSql = "SELECT 
+                            p.*,
+                            AVG(r.rating) as rating,
+                            (SELECT filename FROM product_images WHERE product_id = p.id ORDER BY id ASC LIMIT 1) as image
+                        FROM products p
+                        LEFT JOIN reviews r ON p.id = r.product_id
+                        WHERE p.shop_id = :shop_id AND p.status = 'active'
+                        GROUP BY p.id
+                        ORDER BY p.sold DESC, p.created_at DESC";
+
+        $productsStmt = $pdo->prepare($productsSql);
+        $productsStmt->execute([':shop_id' => $shopId]);
+        $products = $productsStmt->fetchAll(PDO::FETCH_ASSOC);
+
+        // Process product images
+        foreach ($products as &$product) {
+            if ($product['image']) {
+                $product['image'] = '/SHooad/public/assets/products/' . $product['image'];
+            } else {
+                $product['image'] = '/SHooad/public/assets/products/default.jpg';
+            }
+            $product['rating'] = $product['rating'] ? round($product['rating'], 1) : 0;
+        }
+
+        return [
+            'shop' => $shop,
+            'products' => $products,
             'navigation' => $this->getNavigationData(),
             'header' => $this->getHeaderData(),
             'bodyClass' => 'bg-gray-50'
