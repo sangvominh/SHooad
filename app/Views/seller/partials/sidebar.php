@@ -7,7 +7,7 @@ $menu_items = [
   ['id' => 'dashboard', 'label' => 'Dashboard', 'icon' => 'grid'],
   ['id' => 'orders', 'label' => 'My Orders', 'icon' => 'shopping-bag'],
   ['id' => 'products', 'label' => 'Products', 'icon' => 'box'],
-  ['id' => 'analytics', 'label' => 'Analytics', 'icon' => 'chart-bar'],
+  ['id' => 'analysis', 'label' => 'Analysis', 'icon' => 'chart-bar'],
   ['id' => 'messages', 'label' => 'Messages', 'icon' => 'mail'],
 ];
 
@@ -18,7 +18,7 @@ $management_items = [
   ['id' => 'settings', 'label' => 'Settings', 'icon' => 'cog'],
 ];
 ?>
-<aside class="w-60 h-full flex flex-col">
+<aside class="w-60 h-full flex flex-col bg-white border-r border-gray-200">
   <div class="p-3 flex-1 overflow-y-auto">
     <!-- Shop Name -->
     <a href="/SHooad/public/seller/dashboard" class="flex items-center gap-2 mb-8">
