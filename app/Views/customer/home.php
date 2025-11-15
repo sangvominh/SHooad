@@ -16,14 +16,17 @@ $banners = $data['banners'] ?? [];
     <link rel="stylesheet" href="/SHooad/public/assets/css/custom.css">
 </head>
 <body class="bg-white">
-    <!-- Header & Navigation -->
+    <!-- Header -->
     <?php include 'partials/header.php'; ?>
+    
+    <!-- Sticky Navigation -->
+    <?php include 'partials/navigation.php'; ?>
     
     <!-- Banner Section -->
     <?php include 'partials/banner.php'; ?>
 
     <!-- Sale Advertisement -->
-    <img src="/SHooad/public/assets/sale/sale_advertisement.jpg" alt="sale-image" class="w-80% my-16 mx-auto block rounded-xl shadow-lg shadow-gray-400">
+    <!-- <img src="/SHooad/public/assets/sale/sale_advertisement.jpg" alt="sale-image" class="w-80% my-16 mx-auto block rounded-xl shadow-lg shadow-gray-400"> -->
     
     <!-- Categories Section -->
     <?php include 'partials/categories-section.php'; ?>
@@ -36,9 +39,37 @@ $banners = $data['banners'] ?? [];
     
     <!-- Scripts -->
     <script src="/SHooad/public/assets/js/customer/dropdown.js"></script>
-    <script src="/SHooad/public/assets/js/customer/product-hover.js"></script>
-
-
+    <script>
+        // Show/hide search icon in navigation on scroll
+        let lastScrollTop = 0;
+        const navSearchIcon = document.getElementById('navSearchIcon');
+        const header = document.querySelector('header');
+        
+        window.addEventListener('scroll', function() {
+            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            const headerHeight = header ? header.offsetHeight : 100;
+            
+            // Show icon when scrolled past header
+            if (scrollTop > headerHeight) {
+                navSearchIcon.style.opacity = '1';
+            } else {
+                navSearchIcon.style.opacity = '0';
+            }
+        });
+        
+        // Scroll to top and focus search input
+        function scrollToSearch() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            
+            // Wait for scroll to complete, then focus
+            setTimeout(() => {
+                const searchInput = document.getElementById('searchInput');
+                if (searchInput) {
+                    searchInput.focus();
+                }
+            }, 500);
+        }
+    </script>
 </body>
 </html>
 
