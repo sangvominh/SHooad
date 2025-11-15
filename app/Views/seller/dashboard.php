@@ -42,6 +42,8 @@ $stats = [
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Seller Dashboard</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="/SHooad/app/Views/seller/js/orders-filter.js" defer></script>
+  <script src="/SHooad/app/Views/seller/js/products-filter.js" defer></script>
 </head>
 <body class="bg-gray-50">
   <div class="flex h-screen">
