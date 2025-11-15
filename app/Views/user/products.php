@@ -80,10 +80,9 @@
                 $orderSql = 'ORDER BY p.price DESC';
                 break;
             case 'rating-asc':
-                $orderSql = 'ORDER BY p.rating ASC';
-                break;
             case 'rating-desc':
-                $orderSql = 'ORDER BY p.rating DESC';
+                // Rating not available in current schema, fallback to latest
+                $orderSql = 'ORDER BY p.created_at DESC';
                 break;
             case 'new-arrivals':
                 $where[] = "p.created_at >= DATE_SUB(NOW(), INTERVAL 1 MONTH)";
@@ -94,7 +93,7 @@
                 $orderSql = 'ORDER BY (p.original_price - p.price) DESC';
                 break;
             case 'best-sellers':
-                $orderSql = 'ORDER BY p.sold_quantity DESC';
+                $orderSql = 'ORDER BY p.sold DESC';
                 break;
             default:
                 $orderSql = 'ORDER BY p.created_at DESC';
@@ -110,11 +109,12 @@
         if ($countRes && $r = $countRes->fetch_assoc()) $totalCount = intval($r['cnt']);
 
         // products list with image join
-        $sql = "SELECT p.id, p.name, p.thumbnail_url, p.price, p.original_price, p.stock, p.rating, p.reviews_count, p.sold_quantity, p.brand, c.name AS category_name, pi.filename AS image_file
+        $sql = "SELECT p.id, p.name, p.price, p.original_price, p.stock, p.sold, p.brand, c.name AS category_name, pi.filename AS image_file
         FROM products p
         LEFT JOIN categories c ON c.id = p.category_id
-        LEFT JOIN product_images pi ON pi.product_id = p.id AND pi.is_primary = 1
+        LEFT JOIN product_images pi ON pi.product_id = p.id
         " . $whereSql . "
+        GROUP BY p.id
         " . $orderSql . "
         LIMIT " . intval($perPage) . " OFFSET " . intval($offset);
 
@@ -125,10 +125,6 @@
                 $thumbnail = '';
                 if (!empty($row['image_file'])) {
                     $thumbnail = '/SHooad/public/assets/products/' . ltrim($row['image_file'], '/');
-                } elseif (!empty($row['thumbnail_url'])) {
-                    $thumb = $row['thumbnail_url'];
-                    if (!preg_match('#^(https?://|/)#i', $thumb)) $thumb = '/SHooad/public/assets/products/' . ltrim($thumb, '/');
-                    $thumbnail = $thumb;
                 } else {
                     $thumbnail = '/SHooad/public/assets/logo/default-avatar.png';
                 }
@@ -140,11 +136,11 @@
                     'price' => $row['price'],
                     'original_price' => $row['original_price'],
                     'stock' => $row['stock'],
-                    'rating' => $row['rating'],
-                    'reviews_count' => $row['reviews_count'],
+                    'rating' => 0, // Not available in current schema
+                    'reviews_count' => 0, // Not available in current schema
                     'category' => $row['category_name'],
                     'brand' => $row['brand'],
-                    'sold_quantity' => $row['sold_quantity']
+                    'sold_quantity' => $row['sold'] ?? 0
                 ];
             }
             $res->free();

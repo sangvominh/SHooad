@@ -3,8 +3,8 @@
 $mysqli = new mysqli('localhost', 'root', '', 'SHooad');
 $filters = ['categories' => [], 'brands' => [], 'sizes' => ['XS', 'S', 'M', 'L', 'XL', 'XXL'], 'colors' => [], 'ratings' => []];
 if (!$mysqli->connect_error) {
-    // Top categories by sold_quantity
-    $catSql = "SELECT c.id, c.name, COALESCE(SUM(p.sold_quantity),0) AS total_sold, COUNT(p.id) AS product_count
+    // Top categories by sold
+    $catSql = "SELECT c.id, c.name, COALESCE(SUM(p.sold),0) AS total_sold, COUNT(p.id) AS product_count
                FROM categories c
                LEFT JOIN products p ON p.category_id = c.id
                GROUP BY c.id, c.name
@@ -18,8 +18,8 @@ if (!$mysqli->connect_error) {
         $cres->free();
     }
 
-    // Top brands by sold_quantity
-    $brandSql = "SELECT COALESCE(p.brand, '') AS brand, COALESCE(SUM(p.sold_quantity),0) AS total_sold, COUNT(p.id) AS product_count
+    // Top brands by sold
+    $brandSql = "SELECT COALESCE(p.brand, '') AS brand, COALESCE(SUM(p.sold),0) AS total_sold, COUNT(p.id) AS product_count"
                  FROM products p
                  WHERE p.brand IS NOT NULL AND p.brand != ''
                  GROUP BY p.brand

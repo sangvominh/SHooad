@@ -9,16 +9,18 @@ $conn = $db->getConnection();
 try {
     $query = "
         SELECT 
-            id,
+            p.id,
             'Fashion' as category,
-            name,
-            CONCAT('/SHooad/public/assets/products/', COALESCE(thumbnail_url, 'placeholder.jpg')) as image,
-            price,
-            sold_quantity,
-            rating
-        FROM products
-        WHERE status = 'active'
-        ORDER BY sold_quantity DESC
+            p.name,
+            COALESCE(CONCAT('/SHooad/public/assets/products/', pi.filename), '/SHooad/public/assets/logo/default-avatar.png') as image,
+            p.price,
+            p.sold as sold_quantity,
+            0 as rating
+        FROM products p
+        LEFT JOIN product_images pi ON pi.product_id = p.id
+        WHERE p.status = 'active'
+        GROUP BY p.id
+        ORDER BY p.sold DESC
         LIMIT 6
     ";
 

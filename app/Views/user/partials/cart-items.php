@@ -5,21 +5,21 @@ if (isset($_SESSION['user_id'])) {
     $userId = intval($_SESSION['user_id']);
     $mysqli = new mysqli('localhost', 'root', '', 'SHooad');
     if (!$mysqli->connect_error) {
-        $sql = "SELECT c.id AS cart_id, c.product_id, c.color, c.size, c.quantity, c.selected, p.name, COALESCE(p.thumbnail_url, '') AS thumbnail_url, p.price, p.original_price, p.stock, p.colors AS available_colors, p.sizes AS available_sizes
+        $sql = "SELECT c.id AS cart_id, c.product_id, c.color, c.size, c.quantity, c.selected, p.name, p.price, p.original_price, p.stock, p.colors AS available_colors, p.sizes AS available_sizes, pi.filename AS image_file
                 FROM carts c
                 JOIN products p ON p.id = c.product_id
+                LEFT JOIN product_images pi ON pi.product_id = p.id
                 WHERE c.user_id = " . $userId . "
+                GROUP BY c.id
                 ORDER BY c.created_at DESC";
 
         $res = $mysqli->query($sql);
         if ($res) {
             while ($row = $res->fetch_assoc()) {
-                // Resolve thumbnail path: allow absolute URLs or root-relative paths, otherwise prepend public folder
-                $thumb = $row['thumbnail_url'];
+                // Resolve thumbnail path from product images
+                $thumb = $row['image_file'];
                 if (!empty($thumb)) {
-                    // echo "-".$thumb;
                     $thumb = '/SHooad/public/assets/products/' . $thumb;
-                    // echo "-".$thumb;
                 } else {
                     $thumb = '/SHooad/public/assets/logo/default-avatar.png';
                 }

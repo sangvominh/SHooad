@@ -22,7 +22,7 @@ class Banner
         $sql = "SELECT title, filename
                 FROM banners
                 WHERE is_active = 1
-                ORDER BY sort_order ASC, id ASC";
+                ORDER BY id ASC";
 
         $stmt = $this->db->prepare($sql);
         if ($stmt === false) {

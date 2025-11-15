@@ -4,7 +4,7 @@
     $brands = [];
     $mysqli = new mysqli('localhost', 'root', '', 'SHooad');
     if (!$mysqli->connect_error) {
-        $catSql = "SELECT c.name, COALESCE(SUM(p.sold_quantity),0) AS total_sold, COUNT(p.id) AS product_count
+        $catSql = "SELECT c.name, COALESCE(SUM(p.sold),0) AS total_sold, COUNT(p.id) AS product_count
                    FROM categories c
                    LEFT JOIN products p ON p.category_id = c.id
                    GROUP BY c.id, c.name
@@ -16,7 +16,7 @@
             $cres->free();
         }
 
-        $brandSql = "SELECT p.brand AS name, COALESCE(SUM(p.sold_quantity),0) AS total_sold, COUNT(p.id) AS product_count
+        $brandSql = "SELECT p.brand AS name, COALESCE(SUM(p.sold),0) AS total_sold, COUNT(p.id) AS product_count
                      FROM products p
                      WHERE p.brand IS NOT NULL AND p.brand != ''
                      GROUP BY p.brand

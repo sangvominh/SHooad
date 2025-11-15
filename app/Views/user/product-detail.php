@@ -39,21 +39,18 @@ try {
         exit();
     }
 
-    // Process images: lấy đúng ảnh chính và các ảnh phụ
-    $imgStmt = $pdo->prepare('SELECT filename, is_primary FROM product_images WHERE product_id = :pid ORDER BY is_primary DESC, sort_order ASC, id ASC');
+    // Process images: lấy ảnh sản phẩm, ảnh đầu tiên làm ảnh chính
+    $imgStmt = $pdo->prepare('SELECT filename FROM product_images WHERE product_id = :pid ORDER BY id ASC');
     $imgStmt->execute([':pid' => $productId]);
     $imgRows = $imgStmt->fetchAll(PDO::FETCH_ASSOC);
     $product['images'] = [];
     $product['main_image'] = '/SHooad/public/assets/products/default.jpg';
     foreach ($imgRows as $img) {
         $url = '/SHooad/public/assets/products/' . $img['filename'];
-        if ($img['is_primary']) {
-            $product['main_image'] = $url;
-        }
         $product['images'][] = $url;
     }
-    // Nếu không có ảnh nào đánh dấu là chính thì lấy ảnh đầu tiên
-    if ($product['main_image'] === '/SHooad/public/assets/products/default.jpg' && count($product['images']) > 0) {
+    // Lấy ảnh đầu tiên làm ảnh chính
+    if (count($product['images']) > 0) {
         $product['main_image'] = $product['images'][0];
     }
     $product['thumbnail_images'] = array_values(array_filter($product['images'], function($img) use ($product) {
@@ -119,11 +116,11 @@ try {
     }
     $product['sizes'] = $sizeList;
 
-    // Defaults
-    $product['rating'] = $product['rating'] ?? 0;
-    $product['reviews_count'] = $product['reviews_count'] ?? 0;
-    $product['features'] = explode("\n", $product['features'] ?? '');
-    $product['note'] = $product['note'] ?? '';
+    // Defaults - rating, reviews_count, features, note not in current schema
+    $product['rating'] = 0;
+    $product['reviews_count'] = 0;
+    $product['features'] = [];
+    $product['note'] = '';
 } catch (Exception $e) {
     error_log($e->getMessage());
     header('Location: /SHooad/app/Views/user/home.php');
