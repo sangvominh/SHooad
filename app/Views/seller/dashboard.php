@@ -3,37 +3,53 @@
 // $current_page is set by SellerPageService
 $page_title = 'Dashboard';
 
-// Sample data (replace with database queries)
-$stats = [
-  [
-    'title' => 'Total Revenue',
-    'value' => '$12,458.50',
-    'change' => '+23.5%',
-    'change_type' => 'positive',
-    'icon' => 'chart'
-  ],
-  [
-    'title' => 'Total Orders',
-    'value' => '456',
-    'change' => '+12.3%',
-    'change_type' => 'positive',
-    'icon' => 'shopping'
-  ],
-  [
-    'title' => 'New Customers',
-    'value' => '89',
-    'change' => '+5.2%',
-    'change_type' => 'positive',
-    'icon' => 'users'
-  ],
-  [
-    'title' => 'Conversion Rate',
-    'value' => '3.24%',
-    'change' => '-2.1%',
-    'change_type' => 'negative',
-    'icon' => 'trending'
-  ]
-];
+// Get real statistics from database
+require_once __DIR__ . '/../../Services/Seller/SellerService.php';
+$sellerService = new SellerService();
+$shopId = $_SESSION['shop_id'] ?? null;
+
+if ($shopId) {
+    $dashboardStats = $sellerService->getDashboardStats($shopId);
+    
+    $stats = [
+      [
+        'title' => 'Total Revenue',
+        'value' => '$' . number_format($dashboardStats['total_revenue'], 2),
+        'change' => '',
+        'change_type' => 'neutral',
+        'icon' => 'chart'
+      ],
+      [
+        'title' => 'Total Orders',
+        'value' => number_format($dashboardStats['total_orders']),
+        'change' => '',
+        'change_type' => 'neutral',
+        'icon' => 'shopping'
+      ],
+      [
+        'title' => 'Total Products',
+        'value' => number_format($dashboardStats['total_products']),
+        'change' => '',
+        'change_type' => 'neutral',
+        'icon' => 'users'
+      ],
+      [
+        'title' => 'Pending Orders',
+        'value' => number_format($dashboardStats['pending_orders']),
+        'change' => '',
+        'change_type' => 'warning',
+        'icon' => 'trending'
+      ]
+    ];
+} else {
+    // Fallback if no shop_id
+    $stats = [
+      ['title' => 'Total Revenue', 'value' => '$0.00', 'change' => '', 'change_type' => 'neutral', 'icon' => 'chart'],
+      ['title' => 'Total Orders', 'value' => '0', 'change' => '', 'change_type' => 'neutral', 'icon' => 'shopping'],
+      ['title' => 'Total Products', 'value' => '0', 'change' => '', 'change_type' => 'neutral', 'icon' => 'users'],
+      ['title' => 'Pending Orders', 'value' => '0', 'change' => '', 'change_type' => 'neutral', 'icon' => 'trending']
+    ];
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -46,16 +62,16 @@ $stats = [
   <script src="/SHooad/app/Views/seller/js/products-filter.js" defer></script>
 </head>
 <body class="bg-gray-50">
-  <div class="flex h-screen">
-    <!-- Sidebar now displays inline without toggle -->
-    <div class="w-60 h-screen bg-white border-r border-gray-200">
-      <?php include 'partials/sidebar.php'; ?>
-    </div>
+  <div class="flex h-screen overflow-hidden">
+    <!-- Sidebar -->
+    <?php include 'partials/sidebar.php'; ?>
     
     <!-- Main Content -->
     <div class="flex-1 flex flex-col overflow-hidden">
-      <!-- Header -->
-      <?php include 'partials/header.php'; ?>
+      <!-- Header (only for dashboard) -->
+      <?php if ($current_page === 'dashboard'): ?>
+        <?php include 'partials/header.php'; ?>
+      <?php endif; ?>
       
       <!-- Page Content -->
       <main class="flex-1 overflow-auto p-6">
@@ -90,9 +106,17 @@ $stats = [
         <?php elseif ($current_page === 'products'): ?>
           <?php include 'partials/products-table.php'; ?>
         <?php else: ?>
-          <div class="bg-white rounded-lg border border-gray-200 p-12 text-center">
-            <h1 class="text-gray-600">404 Not Found</h1>
-          </div>
+          <?php 
+          // Coming soon pages
+          $coming_soon_pages = ['messages', 'inventory', 'pricing', 'promotions', 'settings'];
+          if (in_array($current_page, $coming_soon_pages)): 
+          ?>
+            <?php include 'coming-soon.php'; ?>
+          <?php else: ?>
+            <div class="bg-white rounded-lg border border-gray-200 p-12 text-center">
+              <h1 class="text-gray-600">404 Not Found</h1>
+            </div>
+          <?php endif; ?>
         <?php endif; ?>
       </main>
     </div>
