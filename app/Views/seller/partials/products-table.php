@@ -78,7 +78,8 @@ $shop_products = $data['products'] ?? [];
   </div>
   <?php endif; ?>
 
-  <div class="overflow-x-auto">
+  <!-- Desktop Table View (hidden on mobile) -->
+  <div class="hidden md:block overflow-x-auto">
     <table class="w-full">
       <thead class="bg-gray-50 border-b border-gray-200">
         <tr>
@@ -188,5 +189,85 @@ $shop_products = $data['products'] ?? [];
         <?php endif; ?>
       </tbody>
     </table>
+  </div>
+
+  <!-- Mobile Card View (visible on mobile only) -->
+  <div class="md:hidden divide-y divide-gray-200">
+    <?php if (empty($shop_products)): ?>
+      <div class="px-4 py-8 text-center text-gray-500">
+        No products yet
+      </div>
+    <?php else: ?>
+      <?php foreach ($shop_products as $product): ?>
+        <div data-product
+             data-product-id="<?php echo $product['id']; ?>"
+             data-product-name="<?php echo htmlspecialchars($product['name'] ?? ''); ?>"
+             data-product-brand="<?php echo htmlspecialchars($product['brand'] ?? ''); ?>"
+             data-product-status="<?php echo htmlspecialchars($product['status'] ?? 'active'); ?>"
+             data-product-stock="<?php echo $product['stock'] ?? 0; ?>"
+             data-product-price="<?php echo $product['price'] ?? 0; ?>"
+             data-product-sold="<?php echo $product['sold'] ?? 0; ?>"
+             data-product-created="<?php echo $product['created_at'] ?? date('Y-m-d H:i:s'); ?>"
+             class="px-4 py-4 hover:bg-gray-50">
+          <div class="flex justify-between items-start mb-2">
+            <div class="flex-1">
+              <h3 class="font-medium text-gray-900 mb-1">
+                <?php echo htmlspecialchars($product['name'] ?? 'Product'); ?>
+              </h3>
+              <?php if (!$is_dashboard && ($product['brand'] ?? '')): ?>
+                <p class="text-sm text-gray-600"><?php echo htmlspecialchars($product['brand']); ?></p>
+              <?php endif; ?>
+            </div>
+            <?php if (!$is_dashboard): ?>
+              <span class="inline-block px-2 py-1 rounded text-xs font-semibold ml-2
+                <?php 
+                  $status = $product['status'] ?? 'active';
+                  if ($status === 'active') echo 'bg-green-100 text-green-800';
+                  elseif ($status === 'paused') echo 'bg-yellow-100 text-yellow-800';
+                  else echo 'bg-red-100 text-red-800';
+                ?>">
+                <?php echo ucfirst($status); ?>
+              </span>
+            <?php endif; ?>
+          </div>
+          
+          <div class="grid grid-cols-2 gap-2 text-sm mb-3">
+            <div>
+              <span class="text-gray-600">Price:</span>
+              <span class="font-semibold text-gray-900 ml-1">$<?php echo number_format($product['price'] ?? 0, 2); ?></span>
+            </div>
+            <div>
+              <span class="text-gray-600">Stock:</span>
+              <span class="inline-block px-2 py-0.5 rounded-full text-xs font-semibold ml-1
+                <?php 
+                  $stock = $product['stock'] ?? 0;
+                  if ($stock > 50) echo 'bg-green-100 text-green-800';
+                  elseif ($stock > 10) echo 'bg-yellow-100 text-yellow-800';
+                  else echo 'bg-red-100 text-red-800';
+                ?>">
+                <?php echo $stock; ?>
+              </span>
+            </div>
+            <?php if (!$is_dashboard): ?>
+              <div>
+                <span class="text-gray-600">Sold:</span>
+                <span class="text-gray-900 ml-1"><?php echo $product['sold'] ?? '0'; ?></span>
+              </div>
+              <div>
+                <span class="text-gray-600">ID:</span>
+                <span class="text-gray-900 ml-1">#<?php echo $product['id']; ?></span>
+              </div>
+            <?php endif; ?>
+          </div>
+          
+          <div class="flex justify-end">
+            <a href="/SHooad/public/seller/product-detail?product_id=<?php echo $product['id']; ?>" 
+               class="text-teal-600 hover:text-teal-700 font-medium text-sm">
+              <?php echo $is_dashboard ? 'Edit' : 'View/Edit'; ?> →
+            </a>
+          </div>
+        </div>
+      <?php endforeach; ?>
+    <?php endif; ?>
   </div>
 </div>

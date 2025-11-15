@@ -68,7 +68,8 @@ $shop_orders = $data['orders'] ?? [];
     <?php endif; ?>
   </div>
 
-  <div class="overflow-x-auto">
+  <!-- Desktop Table View (hidden on mobile) -->
+  <div class="hidden md:block overflow-x-auto">
     <table class="w-full">
       <thead class="bg-gray-50 border-b border-gray-200">
         <tr>
@@ -153,5 +154,91 @@ $shop_orders = $data['orders'] ?? [];
         <?php endif; ?>
       </tbody>
     </table>
+  </div>
+
+  <!-- Mobile Card View (visible on mobile only) -->
+  <div class="md:hidden divide-y divide-gray-200">
+    <?php if (empty($shop_orders)): ?>
+      <div class="px-4 py-8 text-center text-gray-500">
+        No orders yet
+      </div>
+    <?php else: ?>
+      <?php foreach ($shop_orders as $order): ?>
+        <div data-order 
+             data-order-id="<?php echo $order['id']; ?>"
+             data-customer-name="<?php echo htmlspecialchars($order['customer_name'] ?? 'Customer'); ?>"
+             data-customer-email="<?php echo htmlspecialchars($order['customer_email'] ?? ''); ?>"
+             data-customer-phone="<?php echo htmlspecialchars($order['customer_phone'] ?? ''); ?>"
+             data-status="<?php echo htmlspecialchars($order['status'] ?? 'Pending'); ?>"
+             data-payment-status="<?php echo htmlspecialchars($order['payment_status'] ?? 'Pending'); ?>"
+             data-total="<?php echo $order['total_amount'] ?? 0; ?>"
+             data-date="<?php echo $order['date'] ?? date('Y-m-d H:i:s'); ?>"
+             class="px-4 py-4 hover:bg-gray-50">
+          <div class="flex justify-between items-start mb-2">
+            <div class="flex-1">
+              <h3 class="font-medium text-gray-900 mb-1">
+                <?php echo htmlspecialchars($order['customer_name'] ?? 'Customer'); ?>
+              </h3>
+              <?php if (!$is_dashboard): ?>
+                <p class="text-sm text-gray-600"><?php echo htmlspecialchars($order['customer_email'] ?? 'N/A'); ?></p>
+                <p class="text-sm text-gray-600"><?php echo htmlspecialchars($order['customer_phone'] ?? 'N/A'); ?></p>
+              <?php endif; ?>
+            </div>
+            <span class="inline-block px-3 py-1 rounded-full text-xs font-semibold ml-2
+              <?php 
+                $status = $order['status'] ?? 'Pending';
+                if ($status === 'Completed') echo 'bg-green-100 text-green-800';
+                elseif ($status === 'Pending') echo 'bg-yellow-100 text-yellow-800';
+                elseif ($status === 'Cancelled') echo 'bg-red-100 text-red-800';
+                else echo 'bg-blue-100 text-blue-800';
+              ?>">
+              <?php echo htmlspecialchars(ucfirst($status)); ?>
+            </span>
+          </div>
+          
+          <div class="grid grid-cols-2 gap-2 text-sm mb-3">
+            <?php if (!$is_dashboard): ?>
+              <div>
+                <span class="text-gray-600">Total:</span>
+                <span class="font-semibold text-gray-900 ml-1">$<?php echo number_format($order['total_amount'] ?? 0, 2); ?></span>
+              </div>
+              <div>
+                <span class="text-gray-600">Payment:</span>
+                <span class="inline-block px-2 py-0.5 rounded text-xs font-semibold ml-1
+                  <?php 
+                    $payment_status = $order['payment_status'] ?? 'Pending';
+                    if ($payment_status === 'Paid') echo 'bg-green-100 text-green-800';
+                    elseif ($payment_status === 'Pending') echo 'bg-yellow-100 text-yellow-800';
+                    elseif ($payment_status === 'Refunded') echo 'bg-red-100 text-red-800';
+                    else echo 'bg-gray-100 text-gray-800';
+                  ?>">
+                  <?php echo htmlspecialchars($payment_status); ?>
+                </span>
+              </div>
+              <div>
+                <span class="text-gray-600">Method:</span>
+                <span class="text-gray-900 ml-1"><?php echo htmlspecialchars($order['payment_method'] ?? 'N/A'); ?></span>
+              </div>
+            <?php endif; ?>
+            <div>
+              <span class="text-gray-600">Date:</span>
+              <span class="text-gray-900 ml-1">
+                <?php 
+                  $date = new DateTime($order['date'] ?? 'now');
+                  echo $date->format('M d, Y');
+                ?>
+              </span>
+            </div>
+          </div>
+          
+          <div class="flex justify-end">
+            <a href="/SHooad/public/seller/order-detail?order_id=<?php echo $order['id']; ?>" 
+               class="text-teal-600 hover:text-teal-700 font-medium text-sm">
+              View Details →
+            </a>
+          </div>
+        </div>
+      <?php endforeach; ?>
+    <?php endif; ?>
   </div>
 </div>
