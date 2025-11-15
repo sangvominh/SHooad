@@ -44,7 +44,7 @@ $lang = LanguageHelper::getCurrentLanguage();
                     <span class="text-xs md:text-sm font-medium text-gray-700 uppercase"><?= $lang ?></span>
                     <i class="fas fa-chevron-down text-xs text-gray-500"></i>
                 </button>
-                <div class="absolute right-0 mt-2 w-32 bg-white rounded-lg shadow-xl border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-[9999]">
+                <div class="absolute right-0 mt-2 w-40 bg-white rounded-lg shadow-xl border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-[9999]">
                     <a href="/SHooad/public/customer/set-language?lang=vi&redirect=<?= urlencode($_SERVER['REQUEST_URI']) ?>" 
                        class="flex items-center gap-2 px-4 py-2.5 hover:bg-gray-100 transition <?= $lang === 'vi' ? 'bg-blue-50 text-blue-600 font-semibold' : 'text-gray-700' ?>">
                         <img src="https://flagcdn.com/w20/vn.png" alt="Tiếng Việt" class="w-5 h-3.5 object-cover">
@@ -91,7 +91,7 @@ $lang = LanguageHelper::getCurrentLanguage();
             <!-- Account -->
             <?php if ($isLoggedIn): ?>
                 <div class="relative" id="avatarContainer">
-                    <a href="/SHooad/public/customer/profile" class="hover:opacity-80 transition flex items-center gap-2 px-3 py-1.5 rounded-full border-2 border-gray-300 bg-white hover:border-blue-500" id="avatarMenuBtn">
+                    <a href="/SHooad/public/customer/profile" class="hover:opacity-80 transition flex items-center gap-2 px-3 py-1.5 rounded-full bg-white hover:border-blue-500" id="avatarMenuBtn">
                         <img src="<?= htmlspecialchars($avatarPath) ?>" alt="avatar" class="object-cover w-8 h-8 rounded-full" />
                         <span class="text-gray-900 font-medium text-sm hidden md:inline"><?= htmlspecialchars($customerName) ?></span>
                     </a>

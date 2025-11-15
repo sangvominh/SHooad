@@ -1,6 +1,9 @@
 <?php
 if (session_status() == PHP_SESSION_NONE) session_start();
 
+// Load language helper
+require_once __DIR__ . '/../../Helpers/LanguageHelper.php';
+
 $cart_items = $data['cart_items'] ?? [];
 $selectedItems = array_filter($cart_items, function($item) {
     return isset($item['selected']) && $item['selected'];
@@ -49,13 +52,13 @@ $total = $subtotal + $shipping + $tax;
 
 <!-- Checkout Page -->
 <main class="max-w-7xl mx-auto px-4 py-8">
-    <h1 class="text-3xl font-bold text-gray-900 mb-8">Checkout</h1>
+    <h1 class="text-3xl font-bold text-gray-900 mb-8"><?= LanguageHelper::t('checkout.title') ?></h1>
     
     <?php if (empty($selectedItems)): ?>
         <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-6 text-center">
-            <p class="text-lg text-gray-700">Bạn chưa chọn sản phẩm nào để đặt hàng.</p>
+            <p class="text-lg text-gray-700"><?= LanguageHelper::t('cart.empty_msg') ?></p>
             <a href="/SHooad/public/customer/cart" class="inline-block mt-4 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
-                Quay lại giỏ hàng
+                <?= LanguageHelper::t('cart.continue_shopping') ?>
             </a>
         </div>
     <?php else: ?>
@@ -65,80 +68,89 @@ $total = $subtotal + $shipping + $tax;
         <div class="lg:col-span-2 space-y-6">
             <!-- Shipping Address -->
             <div class="bg-white border border-gray-200 rounded-lg p-6">
-                <h2 class="text-xl font-bold text-gray-900 mb-4">Thông tin giao hàng</h2>
+                <h2 class="text-xl font-bold text-gray-900 mb-6"><?= LanguageHelper::t('checkout.shipping_info') ?></h2>
                 
                 <?php if (!empty($customerAddresses)): ?>
-                <!-- Saved Addresses -->
-                <div class="mb-6">
-                    <label class="block text-sm font-medium text-gray-700 mb-3">Địa chỉ đã lưu</label>
-                    <div class="space-y-2">
+                <!-- Address Selection Tabs -->
+                <div class="flex gap-4 mb-6 border-b border-gray-200">
+                    <button type="button" id="tab-saved-address" class="px-4 py-3 font-semibold text-blue-600 border-b-2 border-blue-600 tab-btn">
+                        <i class="fas fa-bookmark mr-2"></i><?= LanguageHelper::t('profile.saved_addresses') ?>
+                    </button>
+                    <button type="button" id="tab-new-address" class="px-4 py-3 font-semibold text-gray-500 hover:text-gray-700 tab-btn">
+                        <i class="fas fa-plus-circle mr-2"></i><?= LanguageHelper::t('checkout.new_address') ?>
+                    </button>
+                </div>
+                
+                <!-- Saved Addresses Section -->
+                <div id="saved-addresses-section" class="mb-6">
+                    <div class="space-y-3">
                         <?php foreach ($customerAddresses as $idx => $addr): ?>
-                        <label class="flex items-start p-4 border-2 border-gray-300 rounded-lg cursor-pointer hover:border-blue-500 transition">
+                        <label class="flex items-start p-4 border-2 <?= $idx === 0 ? 'border-blue-500 bg-blue-50' : 'border-gray-300' ?> rounded-lg cursor-pointer hover:border-blue-500 hover:bg-blue-50 transition">
                             <input type="radio" name="saved_address" value="<?= $addr['id'] ?>" 
-                                   class="mt-1 w-4 h-4 text-blue-600 saved-address-radio" 
+                                   class="mt-1 w-5 h-5 text-blue-600 saved-address-radio" 
                                    <?= $idx === 0 ? 'checked' : '' ?>
                                    data-fullname="<?= htmlspecialchars($addr['full_name']) ?>"
                                    data-phone="<?= htmlspecialchars($addr['phone']) ?>"
                                    data-address="<?= htmlspecialchars($addr['address']) ?>">
                             <div class="ml-3 flex-1">
-                                <div class="font-medium text-gray-900"><?= htmlspecialchars($addr['full_name']) ?> - <?= htmlspecialchars($addr['phone']) ?></div>
-                                <div class="text-sm text-gray-600 mt-1"><?= htmlspecialchars($addr['address']) ?></div>
-                                <?php if ($addr['is_default']): ?>
-                                <span class="inline-block mt-1 px-2 py-0.5 bg-blue-100 text-blue-600 text-xs rounded">Mặc định</span>
-                                <?php endif; ?>
+                                <div class="flex items-center gap-2">
+                                    <span class="font-semibold text-gray-900"><?= htmlspecialchars($addr['full_name']) ?></span>
+                                    <?php if ($addr['is_default']): ?>
+                                    <span class="px-2 py-0.5 bg-blue-600 text-white text-xs rounded font-medium"><?= LanguageHelper::t('profile.default') ?></span>
+                                    <?php endif; ?>
+                                </div>
+                                <div class="text-sm text-gray-600 mt-1">
+                                    <i class="fas fa-phone text-gray-400 mr-1"></i><?= htmlspecialchars($addr['phone']) ?>
+                                </div>
+                                <div class="text-sm text-gray-700 mt-1">
+                                    <i class="fas fa-map-marker-alt text-gray-400 mr-1"></i><?= htmlspecialchars($addr['address']) ?>
+                                </div>
                             </div>
                         </label>
                         <?php endforeach; ?>
-                        
-                        <!-- Use New Address Option -->
-                        <label class="flex items-start p-4 border-2 border-gray-300 rounded-lg cursor-pointer hover:border-blue-500 transition">
-                            <input type="radio" name="saved_address" value="new" class="mt-1 w-4 h-4 text-blue-600 saved-address-radio">
-                            <div class="ml-3">
-                                <div class="font-medium text-gray-900">Sử dụng địa chỉ mới</div>
-                            </div>
-                        </label>
                     </div>
                 </div>
                 <?php endif; ?>
                 
+                <!-- New Address Form -->
                 <form id="checkoutForm" class="space-y-4" <?= !empty($customerAddresses) ? 'style="display:none;"' : '' ?>>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Họ và tên *</label>
+                            <label class="block text-sm font-medium text-gray-700 mb-1"><?= LanguageHelper::t('checkout.full_name') ?> *</label>
                             <input type="text" name="full_name" id="full_name" required 
                                 class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Số điện thoại *</label>
+                            <label class="block text-sm font-medium text-gray-700 mb-1"><?= LanguageHelper::t('checkout.phone') ?> *</label>
                             <input type="tel" name="phone" id="phone" required 
                                 class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
                         </div>
                     </div>
                     
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                        <label class="block text-sm font-medium text-gray-700 mb-1"><?= LanguageHelper::t('checkout.email') ?></label>
                         <input type="email" name="email" value="<?= htmlspecialchars($_SESSION['customer_email'] ?? '') ?>"
                             class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
                     </div>
                     
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Địa chỉ giao hàng *</label>
+                        <label class="block text-sm font-medium text-gray-700 mb-1"><?= LanguageHelper::t('checkout.shipping_address') ?> *</label>
                         <textarea name="shipping_address" id="shipping_address" required rows="3"
                             class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
                     </div>
                     
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Ghi chú đơn hàng</label>
+                        <label class="block text-sm font-medium text-gray-700 mb-1"><?= LanguageHelper::t('checkout.note') ?></label>
                         <textarea name="note" rows="2"
                             class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            placeholder="Ghi chú về đơn hàng, ví dụ: thời gian hay chỉ dẫn địa điểm giao hàng chi tiết hơn"></textarea>
+                            placeholder="<?= LanguageHelper::t('checkout.note_placeholder') ?>"></textarea>
                     </div>
                 </form>
             </div>
             
             <!-- Delivery Company Selection -->
             <div class="bg-white border border-gray-200 rounded-lg p-6">
-                <h2 class="text-xl font-bold text-gray-900 mb-4">Đơn vị vận chuyển</h2>
+                <h2 class="text-xl font-bold text-gray-900 mb-4"><?= LanguageHelper::t('checkout.delivery_company') ?></h2>
                 <div class="space-y-3">
                     <?php foreach ($deliveryCompanies as $idx => $company): ?>
                     <label class="flex items-center justify-between p-4 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50 transition">
@@ -159,15 +171,15 @@ $total = $subtotal + $shipping + $tax;
             
             <!-- Payment Method -->
             <div class="bg-white border border-gray-200 rounded-lg p-6">
-                <h2 class="text-xl font-bold text-gray-900 mb-4">Phương thức thanh toán</h2>
+                <h2 class="text-xl font-bold text-gray-900 mb-4"><?= LanguageHelper::t('checkout.payment_method') ?></h2>
                 <div class="space-y-3">
                     <label class="flex items-center p-4 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50 transition">
                         <input type="radio" name="payment_method" value="cod" checked class="w-4 h-4 text-blue-600">
-                        <span class="ml-3 text-gray-700 font-medium">Thanh toán khi nhận hàng (COD)</span>
+                        <span class="ml-3 text-gray-700 font-medium"><?= LanguageHelper::t('checkout.cod') ?></span>
                     </label>
                     <label class="flex items-center p-4 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50 transition opacity-50">
                         <input type="radio" name="payment_method" value="bank" disabled class="w-4 h-4 text-blue-600">
-                        <span class="ml-3 text-gray-700">Chuyển khoản ngân hàng (Sắp ra mắt)</span>
+                        <span class="ml-3 text-gray-700"><?= LanguageHelper::t('checkout.bank_transfer') ?> (<?= LanguageHelper::t('checkout.coming_soon') ?>)</span>
                     </label>
                 </div>
             </div>
@@ -176,7 +188,7 @@ $total = $subtotal + $shipping + $tax;
         <!-- Right Column: Order Summary -->
         <div class="lg:col-span-1">
             <div class="bg-white border border-gray-200 rounded-lg p-6 sticky top-8">
-                <h2 class="text-xl font-bold text-gray-900 mb-4">Đơn hàng của bạn</h2>
+                <h2 class="text-xl font-bold text-gray-900 mb-4"><?= LanguageHelper::t('checkout.your_order') ?></h2>
                 
                 <!-- Order Items -->
                 <div class="space-y-3 border-b border-gray-200 pb-4 mb-4 max-h-60 overflow-y-auto">
@@ -197,25 +209,25 @@ $total = $subtotal + $shipping + $tax;
                 <!-- Price Summary -->
                 <div class="space-y-2 border-b border-gray-200 pb-4 mb-4">
                     <div class="flex justify-between text-gray-700">
-                        <span>Tạm tính</span>
+                        <span><?= LanguageHelper::t('checkout.subtotal') ?></span>
                         <span id="subtotal-display"><?= number_format($subtotal, 0, ',', '.') ?>₫</span>
                     </div>
                     <div class="flex justify-between text-gray-700">
-                        <span>Phí vận chuyển</span>
+                        <span><?= LanguageHelper::t('checkout.shipping') ?></span>
                         <span id="shipping-display"><?= number_format($shipping, 0, ',', '.') ?>₫</span>
                     </div>
                 </div>
                 
                 <!-- Total -->
                 <div class="flex justify-between items-center mb-6">
-                    <span class="text-lg font-bold text-gray-900">Tổng cộng</span>
+                    <span class="text-lg font-bold text-gray-900"><?= LanguageHelper::t('checkout.total') ?></span>
                     <span class="text-2xl font-bold text-red-600" id="total-display"><?= number_format($total, 0, ',', '.') ?>₫</span>
                 </div>
                 
                 <!-- Place Order Button -->
                 <button id="placeOrderBtn" type="button"
                     class="w-full bg-red-600 text-white font-bold py-3 rounded-lg hover:bg-red-700 transition">
-                    Đặt hàng
+                    <?= LanguageHelper::t('checkout.place_order') ?>
                 </button>
             </div>
         </div>
@@ -236,22 +248,73 @@ document.addEventListener('DOMContentLoaded', function() {
         return new Intl.NumberFormat('vi-VN').format(amount) + '₫';
     }
     
+    // Handle address tabs
+    var tabSavedAddress = document.getElementById('tab-saved-address');
+    var tabNewAddress = document.getElementById('tab-new-address');
+    var savedAddressesSection = document.getElementById('saved-addresses-section');
+    
+    if (tabSavedAddress && tabNewAddress) {
+        tabSavedAddress.addEventListener('click', function() {
+            // Update tab styles
+            tabSavedAddress.classList.add('text-blue-600', 'border-b-2', 'border-blue-600');
+            tabSavedAddress.classList.remove('text-gray-500');
+            tabNewAddress.classList.remove('text-blue-600', 'border-b-2', 'border-blue-600');
+            tabNewAddress.classList.add('text-gray-500');
+            
+            // Show/hide sections
+            savedAddressesSection.style.display = 'block';
+            checkoutForm.style.display = 'none';
+            
+            // Select first saved address
+            var firstRadio = document.querySelector('.saved-address-radio');
+            if (firstRadio) {
+                firstRadio.checked = true;
+                document.getElementById('full_name').value = firstRadio.dataset.fullname || '';
+                document.getElementById('phone').value = firstRadio.dataset.phone || '';
+                document.getElementById('shipping_address').value = firstRadio.dataset.address || '';
+            }
+        });
+        
+        tabNewAddress.addEventListener('click', function() {
+            // Update tab styles
+            tabNewAddress.classList.add('text-blue-600', 'border-b-2', 'border-blue-600');
+            tabNewAddress.classList.remove('text-gray-500');
+            tabSavedAddress.classList.remove('text-blue-600', 'border-b-2', 'border-blue-600');
+            tabSavedAddress.classList.add('text-gray-500');
+            
+            // Show/hide sections
+            savedAddressesSection.style.display = 'none';
+            checkoutForm.style.display = 'block';
+            
+            // Clear form
+            document.getElementById('full_name').value = '';
+            document.getElementById('phone').value = '';
+            document.getElementById('shipping_address').value = '';
+        });
+    }
+    
     // Handle saved address selection
     var savedAddressRadios = document.querySelectorAll('.saved-address-radio');
     savedAddressRadios.forEach(function(radio) {
         radio.addEventListener('change', function() {
-            if (this.value === 'new') {
-                checkoutForm.style.display = 'block';
-                document.getElementById('full_name').value = '';
-                document.getElementById('phone').value = '';
-                document.getElementById('shipping_address').value = '';
-            } else {
-                checkoutForm.style.display = 'none';
-                // Fill form with saved address data
-                document.getElementById('full_name').value = this.dataset.fullname || '';
-                document.getElementById('phone').value = this.dataset.phone || '';
-                document.getElementById('shipping_address').value = this.dataset.address || '';
-            }
+            // Update border styles
+            document.querySelectorAll('.saved-address-radio').forEach(function(r) {
+                var label = r.closest('label');
+                if (label) {
+                    if (r.checked) {
+                        label.classList.add('border-blue-500', 'bg-blue-50');
+                        label.classList.remove('border-gray-300');
+                    } else {
+                        label.classList.remove('border-blue-500', 'bg-blue-50');
+                        label.classList.add('border-gray-300');
+                    }
+                }
+            });
+            
+            // Fill form with saved address data
+            document.getElementById('full_name').value = this.dataset.fullname || '';
+            document.getElementById('phone').value = this.dataset.phone || '';
+            document.getElementById('shipping_address').value = this.dataset.address || '';
         });
     });
     

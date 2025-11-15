@@ -486,8 +486,25 @@ class UserPageService {
     }
     
     public function getCheckoutData(): array {
+        if (session_status() == PHP_SESSION_NONE) {
+            session_start();
+        }
+        
+        $customerAddresses = [];
+        
+        if (isset($_SESSION['customer_id'])) {
+            $customerId = intval($_SESSION['customer_id']);
+            
+            require_once __DIR__ . '/../../Models/Customer.php';
+            $customerModel = new Customer();
+            
+            // Get customer addresses
+            $customerAddresses = $customerModel->getCustomerAddresses($customerId);
+        }
+        
         return [
             'cart_items' => $this->getCartItemsData(),
+            'customerAddresses' => $customerAddresses,
             'navigation' => $this->getNavigationData(),
             'header' => $this->getHeaderData(),
             'bodyClass' => 'bg-gray-50'
