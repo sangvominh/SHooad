@@ -1,65 +1,6 @@
 <?php
-// Load categories and brands from DB
-$mysqli = new mysqli('localhost', 'root', '', 'SHooad');
-$filters = ['categories' => [], 'brands' => [], 'sizes' => ['XS', 'S', 'M', 'L', 'XL', 'XXL'], 'colors' => [], 'ratings' => []];
-if (!$mysqli->connect_error) {
-    // Top categories by sold
-    $catSql = "SELECT c.id, c.name, COALESCE(SUM(p.sold),0) AS total_sold, COUNT(p.id) AS product_count
-               FROM categories c
-               LEFT JOIN products p ON p.category_id = c.id
-               GROUP BY c.id, c.name
-               ORDER BY total_sold DESC
-               LIMIT 100";
-    $cres = $mysqli->query($catSql);
-    if ($cres) {
-        while ($crow = $cres->fetch_assoc()) {
-            $filters['categories'][] = ['id' => $crow['id'], 'name' => $crow['name'], 'count' => intval($crow['product_count']), 'sold' => intval($crow['total_sold'])];
-        }
-        $cres->free();
-    }
-
-    // Top brands by sold
-    $brandSql = "SELECT COALESCE(p.brand, '') AS brand, COALESCE(SUM(p.sold),0) AS total_sold, COUNT(p.id) AS product_count"
-                 FROM products p
-                 WHERE p.brand IS NOT NULL AND p.brand != ''
-                 GROUP BY p.brand
-                 ORDER BY total_sold DESC
-                 LIMIT 100";
-    $bres = $mysqli->query($brandSql);
-    if ($bres) {
-        while ($brow = $bres->fetch_assoc()) {
-            $filters['brands'][] = ['name' => $brow['brand'], 'count' => intval($brow['product_count']), 'sold' => intval($brow['total_sold'])];
-        }
-        $bres->free();
-    }
-
-    // Colors - gather distinct colors (assuming comma-separated in products.colors)
-    $colorSql = "SELECT DISTINCT TRIM(cval) AS color FROM (
-                    SELECT SUBSTRING_INDEX(SUBSTRING_INDEX(p.colors, ',', nums.n), ',', -1) AS cval
-                  FROM products p
-                  JOIN (
-                    SELECT 1 AS n UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4 UNION ALL SELECT 5 UNION ALL SELECT 6
-                  ) nums ON CHAR_LENGTH(p.colors) - CHAR_LENGTH(REPLACE(p.colors, ',', '')) >= nums.n-1
-                  WHERE p.colors IS NOT NULL AND p.colors != ''
-                  ) t WHERE TRIM(cval) != '' LIMIT 100";
-    $cres2 = $mysqli->query($colorSql);
-    if ($cres2) {
-        while ($crow2 = $cres2->fetch_assoc()) {
-            $filters['colors'][] = ['name' => $crow2['color'], 'code' => '#cccccc'];
-        }
-        $cres2->free();
-    }
-
-    // Ratings distribution
-    $ratSql = "SELECT FLOOR(rating) AS stars, COUNT(*) AS cnt FROM products WHERE rating IS NOT NULL GROUP BY FLOOR(rating) ORDER BY stars DESC";
-    $rres = $mysqli->query($ratSql);
-    if ($rres) {
-        while ($rrow = $rres->fetch_assoc()) {
-            $filters['ratings'][] = ['stars' => intval($rrow['stars']), 'count' => intval($rrow['cnt'])];
-        }
-        $rres->free();
-    }
-}
+// Lấy dữ liệu từ controller/service
+$filters = $data['filters'] ?? ['categories' => [], 'brands' => [], 'sizes' => ['XS', 'S', 'M', 'L', 'XL', 'XXL'], 'colors' => [], 'ratings' => []];
 ?>
 
 <div class="space-y-6">
