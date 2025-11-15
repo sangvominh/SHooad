@@ -11,7 +11,6 @@ switch ($module) {
     case 'seller':
         require_once __DIR__ . '/../routes/seller.php';
         break;
-    case '':
     case 'user':
         require_once __DIR__ . '/../routes/user.php';
         break;

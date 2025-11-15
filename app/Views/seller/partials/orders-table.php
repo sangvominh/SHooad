@@ -11,7 +11,7 @@ $shop_orders = $data['orders'] ?? [];
         <?php echo $is_dashboard ? 'Recent Orders' : 'All Orders'; ?>
       </h2>
       <?php if ($is_dashboard): ?>
-        <a href="?page=orders" class="text-sm text-teal-600 hover:text-teal-700 font-medium">View All</a>
+        <a href="/SHooad/public/seller/orders" class="text-sm text-teal-600 hover:text-teal-700 font-medium">View All</a>
       <?php endif; ?>
     </div>
     
@@ -97,7 +97,7 @@ $shop_orders = $data['orders'] ?? [];
                 ?>
               </td>
               <td class="px-6 py-4 text-sm">
-                <a href="?page=order-detail&order_id=<?php echo $order['id']; ?>" class="text-teal-600 hover:text-teal-700 font-medium">View</a>
+                <a href="/SHooad/public/seller/order-detail?order_id=<?php echo $order['id']; ?>" class="text-teal-600 hover:text-teal-700 font-medium">View</a>
               </td>
             </tr>
           <?php endforeach; ?>

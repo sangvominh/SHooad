@@ -30,7 +30,7 @@ $management_items = [
     <!-- Main Menu -->
     <nav class="space-y-1 mb-8">
       <?php foreach ($menu_items as $item): ?>
-        <a href="?page=<?php echo $item['id']; ?>" 
+        <a href="/SHooad/public/seller/<?php echo $item['id']; ?>" 
            class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors
                   <?php echo $current_page === $item['id'] ? 'bg-teal-50 text-teal-700' : 'text-gray-700 hover:bg-gray-100'; ?>">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -56,7 +56,7 @@ $management_items = [
       <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide px-4 mb-3">MANAGEMENT</p>
       <nav class="space-y-1">
         <?php foreach ($management_items as $item): ?>
-          <a href="?page=<?php echo $item['id']; ?>" 
+          <a href="/SHooad/public/seller/<?php echo $item['id']; ?>" 
              class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors
                     <?php echo $current_page === $item['id'] ? 'bg-teal-50 text-teal-700' : 'text-gray-700 hover:bg-gray-100'; ?>">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

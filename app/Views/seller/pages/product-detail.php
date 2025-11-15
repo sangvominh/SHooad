@@ -5,19 +5,60 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Product Detail</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        function deleteImage(imageId) {
+            if (confirm('Are you sure you want to delete this image?')) {
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = '';
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'delete_image_id';
+                input.value = imageId;
+                form.appendChild(input);
+                document.body.appendChild(form);
+                form.submit();
+            }
+        }
+
+        function previewNewImages(event) {
+            const preview = document.getElementById('newImagePreview');
+            preview.innerHTML = '';
+            const files = event.target.files;
+            
+            if (files.length > 0) {
+                for (let i = 0; i < files.length; i++) {
+                    const file = files[i];
+                    if (file && file.type.startsWith('image/')) {
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            const div = document.createElement('div');
+                            div.className = 'relative';
+                            div.innerHTML = `
+                                <img src="${e.target.result}" class="w-24 h-24 object-cover rounded-lg border-2 border-green-500" alt="New Image Preview">
+                                <div class="absolute -top-2 -right-2 bg-green-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs">New</div>
+                            `;
+                            preview.appendChild(div);
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                }
+            }
+        }
+    </script>
 </head>
 <body>
     <div class="max-w-7xl mx-auto px-4 py-8">
         <!-- Page Header -->
         <div class="mb-6">
-            <a href="?page=products" class="text-teal-600 hover:text-teal-700 text-sm font-medium">&larr; Back to Products</a>
+            <!-- <a href="/SHooad/public/seller/products" class="text-teal-600 hover:text-teal-700 text-sm font-medium">&larr; Back to Products</a> -->
             <h1 class="text-3xl font-bold text-gray-900 mt-2">Product Details</h1>
         </div>
 
         <!-- Product Detail Form -->
         <div class="bg-white rounded-lg border border-gray-200 p-8">
-            <form method="POST" action="" class="space-y-6">
-                <!-- Product Name and SKU -->
+            <form method="POST" action="" enctype="multipart/form-data" class="space-y-6">
+                <!-- Product Name and Brand -->
                 <div class="grid grid-cols-2 gap-6">
                     <div>
                         <label for="product_name" class="block text-sm font-medium text-gray-900 mb-2">Product Name</label>
@@ -25,8 +66,8 @@
                     </div>
 
                     <div>
-                        <label for="sku" class="block text-sm font-medium text-gray-900 mb-2">SKU</label>
-                        <input type="text" id="sku" name="sku" value="<?php echo htmlspecialchars($product['sku'] ?? ''); ?>" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-teal-600">
+                        <label for="brand" class="block text-sm font-medium text-gray-900 mb-2">Brand</label>
+                        <input type="text" id="brand" name="brand" value="<?php echo htmlspecialchars($product['brand'] ?? ''); ?>" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-teal-600">
                     </div>
                 </div>
 
@@ -36,10 +77,24 @@
                     <textarea id="description" name="description" rows="4" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-teal-600"><?php echo htmlspecialchars($product['description'] ?? ''); ?></textarea>
                 </div>
 
-                <!-- Thumbnail URL -->
+                <!-- Product Images -->
                 <div>
-                    <label for="thumbnail_url" class="block text-sm font-medium text-gray-900 mb-2">Thumbnail URL</label>
-                    <input type="text" id="thumbnail_url" name="thumbnail_url" value="<?php echo htmlspecialchars($product['thumbnail_url'] ?? ''); ?>" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-teal-600">
+                    <label class="block text-sm font-medium text-gray-900 mb-2">Product Images</label>
+                    <div class="flex flex-wrap gap-4 mb-4">
+                        <?php if (!empty($product['images'])): ?>
+                            <?php foreach ($product['images'] as $image): ?>
+                                <div class="relative">
+                                    <img src="/SHooad/public/seller/image?file=<?php echo htmlspecialchars($image['filename']); ?>" class="w-24 h-24 object-cover rounded-lg" alt="Product Image">
+                                    <button type="button" onclick="deleteImage(<?php echo $image['id']; ?>)" class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-600">&times;</button>
+                                </div>
+                            <?php endforeach; ?>
+                        <?php else: ?>
+                            <p class="text-gray-500 text-sm">No images uploaded</p>
+                        <?php endif; ?>
+                    </div>
+                    <div id="newImagePreview" class="flex flex-wrap gap-4 mb-4"></div>
+                    <input type="file" id="new_images" name="new_images[]" accept="image/*" multiple class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-teal-600" onchange="previewNewImages(event)">
+                    <p class="text-sm text-gray-500 mt-1">Upload new images (you can select multiple)</p>
                 </div>
 
                 <!-- Colors and Sizes -->
@@ -81,15 +136,21 @@
                         <input type="number" id="stock" name="stock" value="<?php echo htmlspecialchars($product['stock'] ?? '0'); ?>" min="0" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-teal-600">
                     </div>
 
-                                <div>
-                                    <label for="status" class="block text-sm font-medium text-gray-900 mb-2">Status</label>
-                                    <select id="status" name="status" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-teal-600">
-                                        <option value="active" <?php echo ($product['status'] ?? '') === 'active' ? 'selected' : ''; ?>>Active</option>
-                                        <option value="paused" <?php echo ($product['status'] ?? '') === 'paused' ? 'selected' : ''; ?>>Paused</option>
-                                        <option value="deleted" <?php echo ($product['status'] ?? '') === 'deleted' ? 'selected' : ''; ?>>Deleted</option>
-                                    </select>
-                                </div>
-                            </div>
+                    <div>
+                        <label for="category_id" class="block text-sm font-medium text-gray-900 mb-2">Category ID</label>
+                        <input type="number" id="category_id" name="category_id" value="<?php echo htmlspecialchars($product['category_id'] ?? ''); ?>" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-teal-600">
+                    </div>
+                </div>
+
+                <!-- Status -->
+                <div>
+                    <label for="status" class="block text-sm font-medium text-gray-900 mb-2">Status</label>
+                    <select id="status" name="status" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-teal-600">
+                        <option value="active" <?php echo ($product['status'] ?? '') === 'active' ? 'selected' : ''; ?>>Active</option>
+                        <option value="paused" <?php echo ($product['status'] ?? '') === 'paused' ? 'selected' : ''; ?>>Paused</option>
+                        <option value="deleted" <?php echo ($product['status'] ?? '') === 'deleted' ? 'selected' : ''; ?>>Deleted</option>
+                    </select>
+                </div>
 
                             <!-- Product Info -->
                             <div class="bg-gray-50 rounded-lg p-4">
@@ -115,7 +176,7 @@
                     <button type="submit" name="update_product" value="1" class="px-6 py-2 bg-teal-600 text-white rounded-lg font-medium hover:bg-teal-700 transition-colors">
                         Update Product
                     </button>
-                    <a href="?page=products" class="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition-colors">
+                    <a href="/SHooad/public/seller/products" class="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition-colors">
                         Cancel
                     </a>
                 </div>
