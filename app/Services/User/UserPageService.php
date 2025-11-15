@@ -50,12 +50,21 @@ class UserPageService {
     public function getHeaderData(): array {
         $isLoggedIn = isset($_SESSION['customer_id']);
         $cartCount = 0;
+        $customerName = '';
         
         if ($isLoggedIn) {
             $customerId = intval($_SESSION['customer_id']);
             if ($customerId) {
                 $mysqli = new mysqli('localhost', 'root', '', 'SHooad');
                 if (!$mysqli->connect_error) {
+                    // Get customer name
+                    $customerResult = $mysqli->query("SELECT name FROM customers WHERE id = " . $customerId);
+                    if ($customerResult && $customerResult->num_rows > 0) {
+                        $customerRow = $customerResult->fetch_assoc();
+                        $customerName = $customerRow['name'];
+                        $customerResult->free();
+                    }
+                    
                     $cartResult = $mysqli->query("SELECT id FROM carts WHERE customer_id = " . $customerId);
                     if ($cartResult && $cartResult->num_rows > 0) {
                         $cartRow = $cartResult->fetch_assoc();
@@ -78,7 +87,8 @@ class UserPageService {
             'isLoggedIn' => $isLoggedIn,
             'avatarPath' => "/SHooad/public/assets/logo/default-avatar.png",
             'cartCount' => $cartCount,
-            'customerEmail' => $_SESSION['customer_email'] ?? ''
+            'customerEmail' => $_SESSION['customer_email'] ?? '',
+            'customerName' => $customerName
         ];
     }
 
@@ -478,6 +488,81 @@ class UserPageService {
     public function getCheckoutData(): array {
         return [
             'cart_items' => $this->getCartItemsData(),
+            'navigation' => $this->getNavigationData(),
+            'header' => $this->getHeaderData(),
+            'bodyClass' => 'bg-gray-50'
+        ];
+    }
+
+    public function getProfileData(): array {
+        if (session_status() == PHP_SESSION_NONE) {
+            session_start();
+        }
+        
+        $customer = null;
+        $addresses = [];
+        $orderStatusCounts = [];
+        $recentOrders = [];
+        
+        if (isset($_SESSION['customer_id'])) {
+            $customerId = intval($_SESSION['customer_id']);
+            
+            require_once __DIR__ . '/../../Models/Customer.php';
+            require_once __DIR__ . '/../../Models/Order.php';
+            
+            $customerModel = new Customer();
+            $orderModel = new Order();
+            
+            // Get customer info
+            $customer = $customerModel->findById($customerId);
+            
+            // Get addresses
+            $addresses = $customerModel->getCustomerAddresses($customerId);
+            
+            // Get order status counts
+            $orderStatusCounts = $orderModel->getOrderStatusCounts($customerId);
+            
+            // Get recent orders (latest 5)
+            $recentOrders = array_slice($orderModel->getOrdersByCustomer($customerId), 0, 5);
+        }
+        
+        return [
+            'customer' => $customer,
+            'addresses' => $addresses,
+            'orderStatusCounts' => $orderStatusCounts,
+            'recentOrders' => $recentOrders,
+            'navigation' => $this->getNavigationData(),
+            'header' => $this->getHeaderData(),
+            'bodyClass' => 'bg-gray-50'
+        ];
+    }
+
+    public function getOrdersPageData(): array {
+        if (session_status() == PHP_SESSION_NONE) {
+            session_start();
+        }
+        
+        $orders = [];
+        $orderStatusCounts = [];
+        $filterStatus = $_GET['status'] ?? null;
+        
+        if (isset($_SESSION['customer_id'])) {
+            $customerId = intval($_SESSION['customer_id']);
+            
+            require_once __DIR__ . '/../../Models/Order.php';
+            $orderModel = new Order();
+            
+            // Get order status counts
+            $orderStatusCounts = $orderModel->getOrderStatusCounts($customerId);
+            
+            // Get orders (filtered or all)
+            $orders = $orderModel->getOrdersByCustomer($customerId, $filterStatus);
+        }
+        
+        return [
+            'orders' => $orders,
+            'orderStatusCounts' => $orderStatusCounts,
+            'filterStatus' => $filterStatus,
             'navigation' => $this->getNavigationData(),
             'header' => $this->getHeaderData(),
             'bodyClass' => 'bg-gray-50'

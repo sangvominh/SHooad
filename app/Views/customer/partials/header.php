@@ -28,6 +28,7 @@
         $avatarPath = $data['header']['avatarPath'] ?? "/SHooad/public/assets/logo/default-avatar.png";
         $cartCount = $data['header']['cartCount'] ?? 0;
         $customerEmail = $data['header']['customerEmail'] ?? '';
+        $customerName = $data['header']['customerName'] ?? '';
         ?>
         <div class="flex gap-3 md:gap-4 items-center shrink-0">
 
@@ -58,9 +59,10 @@
             <!-- Account -->
             <?php if ($isLoggedIn): ?>
                 <div class="relative" id="avatarContainer">
-                    <button class="hover:opacity-80 transition rounded-full border-2 border-gray-300 w-10 h-10 flex items-center justify-center overflow-hidden bg-white hover:border-blue-500" id="avatarMenuBtn">
-                        <img src="<?= htmlspecialchars($avatarPath) ?>" alt="avatar" class="object-cover w-full h-full rounded-full" />
-                    </button>
+                    <a href="/SHooad/public/customer/profile" class="hover:opacity-80 transition flex items-center gap-2 px-3 py-1.5 rounded-full border-2 border-gray-300 bg-white hover:border-blue-500" id="avatarMenuBtn">
+                        <img src="<?= htmlspecialchars($avatarPath) ?>" alt="avatar" class="object-cover w-8 h-8 rounded-full" />
+                        <span class="text-gray-900 font-medium text-sm hidden md:inline"><?= htmlspecialchars($customerName) ?></span>
+                    </a>
                     <div class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl z-[9999] hidden border border-gray-200" id="avatarDropdown">
                         <div class="py-1">
                             <a href="/SHooad/public/customer/profile" class="block px-4 py-2 text-gray-800 hover:bg-gray-100 transition">Profile</a>
@@ -69,7 +71,7 @@
                     </div>
                 </div>
             <?php else: ?>
-                <a href="/SHooad/public/customer/login">
+                <a href="/SHooad/public/customer/profile">
                     <button class="hover:opacity-80 transition hover:scale-110">
                         <i class="fa-solid fa-user text-gray-900 text-xl"></i>
                     </button>

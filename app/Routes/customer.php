@@ -42,13 +42,31 @@ switch ($path) {
         break;
 
     case 'profile':
-        // TODO: Implement profile
-        $customerController->home();
+        $customerController->profile();
+        break;
+    
+    case 'update-profile':
+        $customerController->updateProfile();
+        break;
+    
+    case 'add-address':
+        $customerController->addAddress();
+        break;
+    
+    case 'change-password':
+        $customerController->changePassword();
+        break;
+    
+    case 'edit-address':
+        $customerController->editAddress();
+        break;
+    
+    case 'delete-address':
+        $customerController->deleteAddress();
         break;
     
     case 'orders':
-        // TODO: Implement orders list
-        $customerController->home();
+        $customerController->orders();
         break;
 
     default:

@@ -52,5 +52,50 @@ class Order {
         $stmt->bind_param("si", $status, $order_id);
         return $stmt->execute();
     }
+
+    public function getOrdersByCustomer(int $customer_id, ?string $status = null): array {
+        if ($status) {
+            $sql = "SELECT o.*, s.name as shop_name 
+                    FROM orders o 
+                    LEFT JOIN shops s ON o.shop_id = s.id 
+                    WHERE o.customer_id = ? AND o.status = ? 
+                    ORDER BY o.date DESC";
+            $stmt = $this->db->prepare($sql);
+            $stmt->bind_param("is", $customer_id, $status);
+        } else {
+            $sql = "SELECT o.*, s.name as shop_name 
+                    FROM orders o 
+                    LEFT JOIN shops s ON o.shop_id = s.id 
+                    WHERE o.customer_id = ? 
+                    ORDER BY o.date DESC";
+            $stmt = $this->db->prepare($sql);
+            $stmt->bind_param("i", $customer_id);
+        }
+        
+        $stmt->execute();
+        $result = $stmt->get_result();
+        return $result->fetch_all(MYSQLI_ASSOC);
+    }
+
+    public function getOrderStatusCounts(int $customer_id): array {
+        $sql = "SELECT 
+                    status,
+                    COUNT(*) as count
+                FROM orders 
+                WHERE customer_id = ?
+                GROUP BY status";
+        
+        $stmt = $this->db->prepare($sql);
+        $stmt->bind_param("i", $customer_id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        
+        $counts = [];
+        while ($row = $result->fetch_assoc()) {
+            $counts[$row['status']] = $row['count'];
+        }
+        
+        return $counts;
+    }
 }
 ?>

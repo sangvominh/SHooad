@@ -3,20 +3,30 @@
     // Lấy dữ liệu từ controller/service
     $cats = $data['navigation']['categories'] ?? [];
     $brands = $data['navigation']['brands'] ?? [];
+    
+    // Load breadcrumb helper
+    require_once $_SERVER['DOCUMENT_ROOT'] . '/SHooad/app/Helpers/BreadcrumbHelper.php';
     ?>
     <div class="container mx-auto px-2 md:px-4">
-        <ul class="flex flex-wrap gap-2 md:gap-6 lg:gap-8 text-gray-900 text-xs md:text-sm font-medium justify-center items-center">
-            <!-- Search Icon (visible on scroll) -->
-            <li id="navSearchIcon" class="opacity-0 transition-opacity duration-300 shrink-0">
-                <button onclick="scrollToSearch()" class="py-2 md:py-3 hover:text-[#001F5D] transition flex items-center gap-1" title="Search">
-                    <i class="fa-solid fa-magnifying-glass text-sm"></i>
-                </button>
-            </li>
+        <div class="flex items-center justify-between">
+            <!-- Breadcrumb Navigation - Left aligned -->
+            <div class="hidden md:block py-2 md:py-3 min-w-0 flex-shrink">
+                <?php echo BreadcrumbHelper::render(); ?>
+            </div>
             
-            <!-- Home Dropdown - Hidden on smallest screens -->
-            <li class="shrink-0 hidden lg:block">
-                <a href="/SHooad/public/customer" class="py-2 md:py-3 hover:text-[#001F5D] transition block">Home</a>
-            </li>
+            <!-- Center Navigation Items -->
+            <ul class="flex flex-wrap gap-2 md:gap-6 lg:gap-8 text-gray-900 text-xs md:text-sm font-medium justify-center items-center flex-1">
+                <!-- Search Icon (visible on scroll) -->
+                <li id="navSearchIcon" class="opacity-0 transition-opacity duration-300 shrink-0">
+                    <button onclick="scrollToSearch()" class="py-2 md:py-3 hover:text-[#001F5D] transition flex items-center gap-1" title="Search">
+                        <i class="fa-solid fa-magnifying-glass text-sm"></i>
+                    </button>
+                </li>
+                
+                <!-- Home Dropdown - Hidden on smallest screens -->
+                <li class="shrink-0 hidden lg:block">
+                    <a href="/SHooad/public/customer" class="py-2 md:py-3 hover:text-[#001F5D] transition block">Home</a>
+                </li>
 
             <!-- Category Dropdown -->
             <li class="relative group shrink-0">
@@ -105,5 +115,9 @@
                 </div>
             </li>
         </ul>
+        
+        <!-- Right spacing to balance layout -->
+        <div class="hidden md:block min-w-0 flex-shrink"></div>
+        </div>
     </div>
 </nav>

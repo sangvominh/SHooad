@@ -25,11 +25,36 @@
         <?php echo $content ?? ''; ?>
     </main>
     
-    <!-- Footer -->
-    <?php include __DIR__ . '/partials/footer.php'; ?>
-    
     <!-- Default Scripts -->
     <script src="/SHooad/public/assets/js/customer/dropdown.js"></script>
+    <script>
+        // Show/hide search icon in navigation on scroll
+        const navSearchIcon = document.getElementById('navSearchIcon');
+        const header = document.querySelector('header');
+        
+        if (navSearchIcon) {
+            window.addEventListener('scroll', function() {
+                const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+                const headerHeight = header ? header.offsetHeight : 100;
+                
+                // Show icon when scrolled past header
+                if (scrollTop > headerHeight) {
+                    navSearchIcon.style.opacity = '1';
+                } else {
+                    navSearchIcon.style.opacity = '0';
+                }
+            });
+        }
+        
+        // Scroll to top and focus search input
+        function scrollToSearch() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            setTimeout(() => {
+                const searchInput = document.getElementById('searchInput');
+                if (searchInput) searchInput.focus();
+            }, 500);
+        }
+    </script>
     <?php if (isset($additionalScripts)): ?>
         <?php echo $additionalScripts; ?>
     <?php endif; ?>

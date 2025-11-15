@@ -53,4 +53,16 @@ class Customer {
         $result = $stmt->get_result();
         return $result->fetch_assoc();
     }
+
+    public function getCustomerAddresses($customerId) {
+        $stmt = $this->db->prepare("SELECT * FROM customer_addresses WHERE customer_id = ? ORDER BY is_default DESC, created_at DESC");
+        $stmt->bind_param("i", $customerId);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $addresses = [];
+        while ($row = $result->fetch_assoc()) {
+            $addresses[] = $row;
+        }
+        return $addresses;
+    }
 }
