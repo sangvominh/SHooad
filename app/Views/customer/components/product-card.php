@@ -32,7 +32,7 @@
 
         <!-- Price -->
         <div class="text-lg font-bold text-[#001F5D]">
-            $<?php echo number_format(isset($product['price']) ? $product['price'] : 0, 2); ?>
+            <?php echo number_format(isset($product['price']) ? $product['price'] : 0, 0, ',', '.'); ?>₫
         </div>
     </a>
 </div>

@@ -11,26 +11,54 @@ class AuthUserService {
     }
 
     public function login(string $email, string $password): bool {
+        // Validation
+        if (empty($email) || empty($password)) {
+            FlashMessageService::setFlashMessage('error', 'Vui lòng nhập email và mật khẩu.');
+            return false;
+        }
+        
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            FlashMessageService::setFlashMessage('error', 'Email không hợp lệ.');
+            return false;
+        }
+        
         $customer = $this->customerModel->login($email, $password);
         
         if ($customer) {
             $this->setCustomerSession($customer);
+            FlashMessageService::setFlashMessage('success', 'Đăng nhập thành công!');
             return true;
         }
 
-        FlashMessageService::setFlashMessage('error', 'Invalid email or password.');
+        FlashMessageService::setFlashMessage('error', 'Email hoặc mật khẩu không đúng.');
         return false;
     }
 
     public function register(string $name, string $email, string $password): bool {
+        // Validation
+        if (empty($name) || empty($email) || empty($password)) {
+            FlashMessageService::setFlashMessage('error', 'Tất cả các trường đều bắt buộc.');
+            return false;
+        }
+        
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            FlashMessageService::setFlashMessage('error', 'Email không hợp lệ.');
+            return false;
+        }
+        
+        if (strlen($password) < 6) {
+            FlashMessageService::setFlashMessage('error', 'Mật khẩu phải có ít nhất 6 ký tự.');
+            return false;
+        }
+        
         $result = $this->customerModel->register($name, $email, $password);
         
         if ($result) {
-            FlashMessageService::setFlashMessage('success', 'Registration successful! Please login to continue.');
+            FlashMessageService::setFlashMessage('success', 'Đăng ký thành công! Vui lòng đăng nhập để tiếp tục.');
             return true;
         }
 
-        FlashMessageService::setFlashMessage('error', 'Registration failed. Please try again.');
+        FlashMessageService::setFlashMessage('error', 'Email đã tồn tại. Vui lòng sử dụng email khác.');
         return false;
     }
 

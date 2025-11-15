@@ -32,7 +32,8 @@ CREATE TABLE IF NOT EXISTS shops (
 -- ============================
 CREATE TABLE IF NOT EXISTS delivery_companies (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(150) NOT NULL
+    name VARCHAR(150) NOT NULL,
+    shipping_fee DECIMAL(10,2) DEFAULT 30000
 );
 
 -- ============================
@@ -172,8 +173,25 @@ CREATE TABLE IF NOT EXISTS cart_items (
     quantity INT NOT NULL DEFAULT 1 CHECK (quantity > 0),
     color VARCHAR(100) NOT NULL,
     size VARCHAR(100) NOT NULL,
+    selected TINYINT(1) DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NULL ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (cart_id) REFERENCES carts(id) ON DELETE CASCADE,
     FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
+);
+
+-- ============================
+-- CUSTOMER ADDRESSES
+-- ============================
+CREATE TABLE IF NOT EXISTS customer_addresses (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    customer_id INT NOT NULL,
+    full_name VARCHAR(100) NOT NULL,
+    phone VARCHAR(20) NOT NULL,
+    address VARCHAR(255) NOT NULL,
+    is_default TINYINT(1) DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (customer_id) REFERENCES customers(id) ON DELETE CASCADE
 );
 
 -- ============================

@@ -91,14 +91,14 @@ document.addEventListener("DOMContentLoaded", () => {
   document.querySelectorAll(".remove-btn").forEach((btn) => {
     btn.addEventListener("click", async function () {
       const id = this.dataset.itemId
-      if (!confirm('Are you sure you want to remove this item from your cart?')) return;
+      if (!confirm('Bạn có chắc muốn xóa sản phẩm này khỏi giỏ hàng?')) return;
       const resp = await removeFromServer(id)
       if (resp && resp.success) {
         this.closest('.bg-white').remove()
         if (resp.cart_total !== undefined && window.updateCartBadge) updateCartBadge(resp.cart_total)
         updateSummary()
       } else {
-        alert('Could not remove item')
+        alert('Không thể xóa sản phẩm')
       }
     })
   })
@@ -152,10 +152,27 @@ document.addEventListener("DOMContentLoaded", () => {
     const savings = originalPrice - salePrice
     const total = salePrice
 
+    // Format VND currency
+    function formatVND(amount) {
+      return new Intl.NumberFormat('vi-VN', {
+        style: 'decimal',
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0
+      }).format(amount) + '₫'
+    }
+
     document.getElementById("selected-count").textContent = selectedCount
-    document.getElementById("original-price-display").textContent = "$" + originalPrice.toFixed(2)
-    document.getElementById("savings-display").textContent = "$" + savings.toFixed(2)
-    document.getElementById("sale-price-display").textContent = "$" + salePrice.toFixed(2)
-    document.getElementById("total-display").textContent = "$" + total.toFixed(2)
+    document.getElementById("original-price-display").textContent = formatVND(originalPrice)
+    document.getElementById("savings-display").textContent = formatVND(savings)
+    document.getElementById("sale-price-display").textContent = formatVND(salePrice)
+    document.getElementById("total-display").textContent = formatVND(total)
+    
+    // Update checkout button state
+    if (typeof window.updateCheckoutButton === 'function') {
+      window.updateCheckoutButton()
+    }
   }
+  
+  // Initial update
+  updateSummary()
 })

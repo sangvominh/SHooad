@@ -80,13 +80,13 @@ try {
     $existingItem = $checkItemStmt->fetch(PDO::FETCH_ASSOC);
 
     if ($existingItem) {
-        // Update existing item
+        // Update existing item and set selected=1
         $newQuantity = $existingItem['quantity'] + $quantity;
-        $updateStmt = $pdo->prepare('UPDATE cart_items SET quantity = :quantity WHERE id = :id');
+        $updateStmt = $pdo->prepare('UPDATE cart_items SET quantity = :quantity, selected = 1 WHERE id = :id');
         $updateStmt->execute([':quantity' => $newQuantity, ':id' => $existingItem['id']]);
     } else {
-        // Insert new item
-        $insertStmt = $pdo->prepare('INSERT INTO cart_items (cart_id, product_id, color, size, quantity) VALUES (:cart_id, :product_id, :color, :size, :quantity)');
+        // Insert new item with selected=1 by default
+        $insertStmt = $pdo->prepare('INSERT INTO cart_items (cart_id, product_id, color, size, quantity, selected) VALUES (:cart_id, :product_id, :color, :size, :quantity, 1)');
         $insertStmt->execute([
             ':cart_id' => $cart_id,
             ':product_id' => $product_id,
@@ -96,8 +96,18 @@ try {
         ]);
     }
 
+    // Get total cart items count (number of items, not quantity)
+    $countStmt = $pdo->prepare('SELECT COUNT(*) as total FROM cart_items WHERE cart_id = :cart_id');
+    $countStmt->execute([':cart_id' => $cart_id]);
+    $countResult = $countStmt->fetch(PDO::FETCH_ASSOC);
+    $cart_total = intval($countResult['total'] ?? 0);
+    
     http_response_code(200);
-    echo json_encode(['success' => true, 'message' => 'Product added to cart successfully'], JSON_UNESCAPED_UNICODE);
+    echo json_encode([
+        'success' => true, 
+        'message' => 'Product added to cart successfully',
+        'cart_total' => $cart_total
+    ], JSON_UNESCAPED_UNICODE);
 
 } catch (Exception $e) {
     error_log('Add to cart error: ' . $e->getMessage());

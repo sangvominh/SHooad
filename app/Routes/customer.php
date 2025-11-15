@@ -34,12 +34,20 @@ switch ($path) {
         break;
 
     case 'checkout':
-        // TODO: Implement checkout
-        $customerController->home();
+        $customerController->checkout();
+        break;
+    
+    case 'order-success':
+        $customerController->orderSuccess();
         break;
 
     case 'profile':
         // TODO: Implement profile
+        $customerController->home();
+        break;
+    
+    case 'orders':
+        // TODO: Implement orders list
         $customerController->home();
         break;
 

@@ -68,31 +68,18 @@ try {
     if (window.cartHandlerInit) return;
     window.cartHandlerInit = true;
     
-    document.addEventListener('click', async function(e) {
+    document.addEventListener('click', function(e) {
         const btn = e.target.closest('.add-to-cart-btn');
         if (!btn) return;
         
         e.preventDefault();
+        e.stopPropagation();
+        
         const productId = btn.getAttribute('data-product-id');
         if (!productId) return;
         
-        if (window.shakeCartIcon) window.shakeCartIcon();
-        
-        try {
-            const fd = new FormData();
-            fd.append('product_id', productId);
-            fd.append('quantity', 1);
-            const res = await fetch('/SHooad/app/Routes/update-cart.php', {
-                method: 'POST',
-                body: fd
-            });
-            const json = await res.json();
-            if (json?.cart_total !== undefined && window.updateCartBadge) {
-                window.updateCartBadge(json.cart_total);
-            }
-        } catch (err) {
-            console.error('Cart error:', err);
-        }
+        // Redirect to product detail page where user can select color/size
+        window.location.href = '/SHooad/public/customer/product-detail?id=' + productId;
     });
 })();
 </script>

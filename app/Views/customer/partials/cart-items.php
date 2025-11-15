@@ -12,7 +12,16 @@ input.no-spinner { -moz-appearance: textfield; }
 </style>
 
 <div class="space-y-4">
-    <h2 class="text-2xl font-bold text-gray-900">Shopping cart (<span id="cart-count"><?php echo count($cart_items); ?></span> items)</h2>
+    <!-- Header with Back Button -->
+    <div class="flex items-center justify-between mb-4">
+        <h2 class="text-2xl font-bold text-gray-900">Giỏ hàng (<span id="cart-count"><?php echo count($cart_items); ?></span> sản phẩm)</h2>
+        <a href="/SHooad/public/customer/products" class="flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+            </svg>
+            Tiếp tục mua sắm
+        </a>
+    </div>
     
     <div class="space-y-4">
         <?php foreach ($cart_items as $index => $item): 
@@ -66,10 +75,10 @@ input.no-spinner { -moz-appearance: textfield; }
                     <!-- Price Section -->
                     <div class="flex gap-3 mt-3 items-center">
                         <?php if ($has_sale): ?>
-                            <span class="text-gray-400 line-through">$<?php echo number_format($item['original_price'], 2); ?></span>
-                            <span class="text-xl font-bold text-red-500">$<?php echo number_format($item['price'], 2); ?></span>
+                            <span class="text-gray-400 line-through"><?php echo number_format($item['original_price'], 0, ',', '.'); ?>₫</span>
+                            <span class="text-xl font-bold text-red-500"><?php echo number_format($item['price'], 0, ',', '.'); ?>₫</span>
                         <?php else: ?>
-                            <span class="text-xl font-bold text-gray-900">$<?php echo number_format($item['price'], 2); ?></span>
+                            <span class="text-xl font-bold text-gray-900"><?php echo number_format($item['price'], 0, ',', '.'); ?>₫</span>
                         <?php endif; ?>
                     </div>
 
@@ -91,7 +100,7 @@ input.no-spinner { -moz-appearance: textfield; }
 
                         <!-- Edit and Remove Buttons -->
                         <div class="flex gap-2 ml-auto">
-                            <button class="px-4 py-1 text-red-600 border border-red-600 rounded hover:bg-red-50 transition text-sm font-medium remove-btn" data-item-id="<?php echo $item['cart_item_id']; ?>">Remove</button>
+                            <button class="px-4 py-1 text-red-600 border border-red-600 rounded hover:bg-red-50 transition text-sm font-medium remove-btn" data-item-id="<?php echo $item['cart_item_id']; ?>">Xóa</button>
                         </div>
                     </div>
                 </div>

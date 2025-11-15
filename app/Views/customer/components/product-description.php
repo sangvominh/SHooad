@@ -1,26 +1,47 @@
 <!-- About This Product Section -->
-<div class="mt-16 border-t pt-12">
-    <h2 class="text-2xl font-bold mb-6">About this product</h2>
+<div class="mt-12 border-t pt-8">
+    <h2 class="text-2xl font-bold text-gray-900 mb-6">Product Description</h2>
     
     <!-- Main Description -->
-    <p class="text-gray-600 leading-relaxed mb-6">
-        <?php echo htmlspecialchars($product['description']); ?>
-    </p>
-    
-    <!-- Features List -->
-    <ul class="space-y-3 mb-6">
-        <?php foreach ($product['features'] as $feature): ?>
-        <li class="flex items-start gap-3 text-gray-600">
-            <span class="text-teal-600 font-bold mt-1">•</span>
-            <span><?php echo htmlspecialchars($feature); ?></span>
-        </li>
-        <?php endforeach; ?>
-    </ul>
-    
-    <!-- Note Section -->
-    <div class="bg-gray-50 p-4 rounded">
-        <p class="text-gray-600">
-            <span class="font-semibold">Note:</span> <?php echo htmlspecialchars($product['note']); ?>
+    <div class="bg-white rounded-lg border border-gray-200 p-6">
+        <p class="text-gray-700 leading-relaxed whitespace-pre-line">
+            <?php echo htmlspecialchars($product['description']); ?>
         </p>
     </div>
+    
+    <!-- Product Specifications -->
+    <?php if (!empty($product['brand']) || !empty($product['stock'])): ?>
+    <div class="mt-6 bg-gray-50 rounded-lg border border-gray-200 p-6">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">Product Specifications</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <?php if (!empty($product['brand'])): ?>
+            <div class="flex items-center gap-2">
+                <span class="text-gray-600 font-medium">Brand:</span>
+                <span class="text-gray-900"><?php echo htmlspecialchars($product['brand']); ?></span>
+            </div>
+            <?php endif; ?>
+            
+            <?php if (!empty($product['stock'])): ?>
+            <div class="flex items-center gap-2">
+                <span class="text-gray-600 font-medium">Availability:</span>
+                <span class="text-green-600 font-medium"><?php echo $product['stock']; ?> in stock</span>
+            </div>
+            <?php endif; ?>
+            
+            <?php if (!empty($product['colors'])): ?>
+            <div class="flex items-center gap-2">
+                <span class="text-gray-600 font-medium">Available Colors:</span>
+                <span class="text-gray-900"><?php echo count($product['colors']); ?> options</span>
+            </div>
+            <?php endif; ?>
+            
+            <?php if (!empty($product['sizes'])): ?>
+            <div class="flex items-center gap-2">
+                <span class="text-gray-600 font-medium">Available Sizes:</span>
+                <span class="text-gray-900"><?php echo implode(', ', $product['sizes']); ?></span>
+            </div>
+            <?php endif; ?>
+        </div>
+    </div>
+    <?php endif; ?>
 </div>

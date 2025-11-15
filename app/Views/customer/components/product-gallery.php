@@ -1,13 +1,13 @@
 <!-- partials/product-gallery.php -->
 <div class="flex flex-col gap-4">
   <!-- Main Image Container -->
-  <div class="bg-yellow-50 rounded-lg p-8 flex items-center justify-center" style="width: 100%; height: 520px; overflow: hidden;">
-    <div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; overflow:hidden;">
+  <div class="bg-white border border-gray-200 rounded-lg p-4 flex items-center justify-center" style="width: 100%; height: 520px; overflow: hidden;">
+    <div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center;">
       <img id="mainImage"
            src="<?php echo htmlspecialchars($product['main_image']); ?>"
            alt="<?php echo htmlspecialchars($product['name']); ?>"
-           class="w-full h-full object-cover transition-opacity duration-200 ease-out"
-           style="width:100%; height:100%; object-fit:cover; opacity:1;">
+           class="max-w-full max-h-full object-contain transition-opacity duration-200 ease-out"
+           style="object-fit:contain; opacity:1;">
     </div>
   </div>
 
@@ -17,18 +17,19 @@
       &#10094;
     </button>
 
-    <div class="flex gap-3 overflow-x-auto flex-1 py-2">
+    <div class="flex gap-3 overflow-x-auto flex-1 py-2 scrollbar-hide">
       <?php
         // tất cả ảnh (main + các ảnh khác). Nếu bạn đang dùng $product['images'] là mảng đầy đủ thì dùng trực tiếp
         $allThumbs = $product['images'] ?? (array_merge([$product['main_image']], $product['thumbnail_images'] ?? []));
         foreach ($allThumbs as $index => $thumbImage):
       ?>
-        <img
-          src="<?php echo htmlspecialchars($thumbImage); ?>"
-          data-index="<?php echo $index; ?>"
-          alt="Thumbnail <?php echo $index + 1; ?>"
-          class="thumbnail-img w-24 h-24 object-cover rounded cursor-pointer border-2 transition <?php echo ($thumbImage === $product['main_image']) ? 'border-yellow-400' : 'border-gray-200'; ?>"
-        />
+        <div class="flex-shrink-0 w-20 h-20 border-2 rounded cursor-pointer transition hover:border-blue-500 <?php echo ($index === 0) ? 'border-blue-500' : 'border-gray-200'; ?>" data-index="<?php echo $index; ?>">
+          <img
+            src="<?php echo htmlspecialchars($thumbImage); ?>"
+            alt="Thumbnail <?php echo $index + 1; ?>"
+            class="thumbnail-img w-full h-full object-cover rounded"
+          />
+        </div>
       <?php endforeach; ?>
     </div>
 

@@ -60,8 +60,8 @@ try {
         $upd->execute($params);
     }
 
-    // Return new cart total for badge
-    $totalStmt = $pdo->prepare('SELECT SUM(ci.quantity) AS total FROM cart_items ci JOIN carts c ON ci.cart_id = c.id WHERE c.customer_id = :customer_id');
+    // Return new cart total for badge (count distinct items, not sum of quantities)
+    $totalStmt = $pdo->prepare('SELECT COUNT(*) AS total FROM cart_items ci JOIN carts c ON ci.cart_id = c.id WHERE c.customer_id = :customer_id');
     $totalStmt->execute([':customer_id' => $customer_id]);
     $totalRow = $totalStmt->fetch(PDO::FETCH_ASSOC);
     $newTotal = $totalRow ? intval($totalRow['total']) : 0;

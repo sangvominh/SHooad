@@ -45,40 +45,70 @@ $grand_total = $sale_total + $shipping;
     <div class="space-y-4 border-b border-gray-200 pb-6">
         <!-- Original Price -->
         <div class="flex justify-between text-gray-700">
-            <span>Original Price</span>
-            <span id="original-price-display">$0.00</span>
+            <span>Giá gốc</span>
+            <span id="original-price-display">0₫</span>
         </div>
 
         <!-- Savings -->
         <div class="flex justify-between text-gray-700">
-            <span>Savings</span>
-            <span id="savings-display" class="text-green-600">$0.00</span>
+            <span>Tiết kiệm</span>
+            <span id="savings-display" class="text-green-600">0₫</span>
         </div>
 
         <!-- Sale Price -->
         <div class="flex justify-between text-gray-700">
-            <span>Sale Price</span>
-            <span id="sale-price-display">$0.00</span>
+            <span>Giá sau giảm</span>
+            <span id="sale-price-display">0₫</span>
         </div>
 
         <!-- Shipping -->
         <div class="flex justify-between text-gray-700">
-            <span>Shipping</span>
-            <span class="text-green-600">FREE</span>
+            <span>Phí vận chuyển</span>
+            <span id="shipping-display" class="text-green-600">Miễn phí</span>
         </div>
     </div>
 
     <!-- Total -->
     <div class="flex justify-between items-center py-6 border-b border-gray-200">
-        <span class="text-xl font-bold text-gray-900">Total</span>
-        <span class="text-3xl font-bold text-gray-900" id="total-display">$0.00</span>
+        <span class="text-xl font-bold text-gray-900">Tổng cộng</span>
+        <span class="text-3xl font-bold text-red-600" id="total-display">0₫</span>
     </div>
 
     <!-- Payment Button -->
-    <a href="/SHooad/public/customer/checkout">
-        <button class="w-full bg-yellow-400 text-gray-900 font-bold py-3 rounded-lg mt-6 hover:bg-yellow-500 transition">
-        Proceed to Payment
-        </button>
-    </a>
+    <button id="checkoutBtn" disabled
+        class="w-full bg-gray-400 text-gray-700 font-bold py-3 rounded-lg mt-6 cursor-not-allowed transition">
+        Tiến hành thanh toán
+    </button>
     
 </div>
+
+<script>
+// Update checkout button state
+window.updateCheckoutButton = function() {
+    var selectedCount = parseInt(document.getElementById('selected-count').textContent) || 0;
+    var checkoutBtn = document.getElementById('checkoutBtn');
+    
+    if (!checkoutBtn) return;
+    
+    if (selectedCount > 0) {
+        checkoutBtn.disabled = false;
+        checkoutBtn.classList.remove('bg-gray-400', 'text-gray-700', 'cursor-not-allowed');
+        checkoutBtn.classList.add('bg-yellow-400', 'text-gray-900', 'hover:bg-yellow-500');
+        checkoutBtn.onclick = function() {
+            window.location.href = '/SHooad/public/customer/checkout';
+        };
+    } else {
+        checkoutBtn.disabled = true;
+        checkoutBtn.classList.add('bg-gray-400', 'text-gray-700', 'cursor-not-allowed');
+        checkoutBtn.classList.remove('bg-yellow-400', 'text-gray-900', 'hover:bg-yellow-500');
+        checkoutBtn.onclick = null;
+    }
+};
+
+// Initial call
+document.addEventListener('DOMContentLoaded', function() {
+    if (typeof window.updateCheckoutButton === 'function') {
+        window.updateCheckoutButton();
+    }
+});
+</script>

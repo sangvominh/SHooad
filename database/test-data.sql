@@ -13,11 +13,11 @@ INSERT INTO shops (seller_id, name, description, address, phone, status) VALUES
 -- ============================
 -- 3. DELIVERY COMPANIES
 -- ============================
-INSERT INTO delivery_companies (name) VALUES
-('Giao Hàng Nhanh'),
-('Giao Hàng Tiết Kiệm'),
-('VNPost'),
-('J&T Express');
+INSERT INTO delivery_companies (name, shipping_fee) VALUES
+('Giao Hàng Nhanh', 30000),
+('Giao Hàng Tiết Kiệm', 25000),
+('VNPost', 35000),
+('J&T Express', 28000);
 
 -- ============================
 -- 4. CATEGORIES

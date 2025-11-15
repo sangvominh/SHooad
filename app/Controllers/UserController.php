@@ -93,4 +93,15 @@ class UserController {
         $this->authService->logout();
         include __DIR__ . '/../Views/customer/logout.php';
     }
+    
+    public function checkout() {
+        AuthMiddleware::checkUserAuth();
+        $data = $this->pageService->getCheckoutData();
+        $this->renderWithLayout('checkout', $data, 'Checkout - SHooad');
+    }
+    
+    public function orderSuccess() {
+        AuthMiddleware::checkUserAuth();
+        include __DIR__ . '/../Views/customer/order-success.php';
+    }
 }

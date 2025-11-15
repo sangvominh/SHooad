@@ -7,11 +7,12 @@ if (!$product) {
     exit();
 }
 
-// Add defaults for missing fields
-$product['rating'] = 0;
-$product['reviews_count'] = 0;
-$product['features'] = [];
-$product['note'] = '';
+// Add defaults for missing fields (only if not already set)
+if (!isset($product['rating'])) $product['rating'] = 0;
+if (!isset($product['reviews_count'])) $product['reviews_count'] = 0;
+if (!isset($product['reviews'])) $product['reviews'] = [];
+if (!isset($product['features'])) $product['features'] = [];
+if (!isset($product['note'])) $product['note'] = '';
 
 // Set first color as active
 if (!empty($product['colors'])) {

@@ -60,7 +60,8 @@ class UserPageService {
                     if ($cartResult && $cartResult->num_rows > 0) {
                         $cartRow = $cartResult->fetch_assoc();
                         $cartId = $cartRow['id'];
-                        $result = $mysqli->query("SELECT SUM(quantity) AS total FROM cart_items WHERE cart_id = " . intval($cartId));
+                        // Count number of distinct items, not total quantity
+                        $result = $mysqli->query("SELECT COUNT(*) AS total FROM cart_items WHERE cart_id = " . intval($cartId));
                         if ($result) {
                             $row = $result->fetch_assoc();
                             $cartCount = intval($row['total']);
@@ -129,6 +130,28 @@ class UserPageService {
 
         // Process sizes
         $product['sizes'] = $this->processSizes($product['sizes'] ?? '');
+
+        // Get reviews and calculate rating
+        $reviewStmt = $pdo->prepare('
+            SELECT r.*, c.name as customer_name, c.email as customer_email
+            FROM reviews r
+            JOIN customers c ON r.customer_id = c.id
+            WHERE r.product_id = :pid
+            ORDER BY r.created_at DESC
+        ');
+        $reviewStmt->execute([':pid' => $productId]);
+        $reviews = $reviewStmt->fetchAll(PDO::FETCH_ASSOC);
+        
+        $product['reviews'] = $reviews;
+        $product['reviews_count'] = count($reviews);
+        
+        // Calculate average rating
+        if (count($reviews) > 0) {
+            $totalRating = array_sum(array_column($reviews, 'rating'));
+            $product['rating'] = round($totalRating / count($reviews), 1);
+        } else {
+            $product['rating'] = 0;
+        }
 
         return $product;
     }
@@ -450,5 +473,14 @@ class UserPageService {
             }
         }
         return $cart_items;
+    }
+    
+    public function getCheckoutData(): array {
+        return [
+            'cart_items' => $this->getCartItemsData(),
+            'navigation' => $this->getNavigationData(),
+            'header' => $this->getHeaderData(),
+            'bodyClass' => 'bg-gray-50'
+        ];
     }
 }
