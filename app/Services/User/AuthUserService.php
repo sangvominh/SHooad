@@ -1,20 +1,20 @@
 <?php
-require_once __DIR__ . '/../../Models/User.php';
+require_once __DIR__ . '/../../Models/Customer.php';
 require_once __DIR__ . '/../AuthService.php';
 require_once __DIR__ . '/../FlashMessageService.php';
 
 class AuthUserService {
-    private $userModel;
+    private $customerModel;
 
     public function __construct() {
-        $this->userModel = new User();
+        $this->customerModel = new Customer();
     }
 
     public function login(string $email, string $password): bool {
-        $user = $this->userModel->login($email, $password);
+        $customer = $this->customerModel->login($email, $password);
         
-        if ($user) {
-            $this->setUserSession($user);
+        if ($customer) {
+            $this->setCustomerSession($customer);
             return true;
         }
 
@@ -23,7 +23,7 @@ class AuthUserService {
     }
 
     public function register(string $name, string $email, string $password): bool {
-        $result = $this->userModel->register($name, $email, $password);
+        $result = $this->customerModel->register($name, $email, $password);
         
         if ($result) {
             FlashMessageService::setFlashMessage('success', 'Registration successful! Please login to continue.');
@@ -38,21 +38,21 @@ class AuthUserService {
         AuthService::logout();
     }
 
-    private function setUserSession(array $user): void {
-        $_SESSION['user_id'] = $user['id'];
-        $_SESSION['user'] = $user['email'];
-        $_SESSION['user_name'] = $user['name'];
+    private function setCustomerSession(array $customer): void {
+        $_SESSION['customer_id'] = $customer['id'];
+        $_SESSION['customer_email'] = $customer['email'];
+        $_SESSION['customer_name'] = $customer['name'];
     }
 
-    public function getUserSession(): array {
+    public function getCustomerSession(): array {
         return [
-            'user_id' => $_SESSION['user_id'] ?? null,
-            'user' => $_SESSION['user'] ?? null,
-            'user_name' => $_SESSION['user_name'] ?? null
+            'customer_id' => $_SESSION['customer_id'] ?? null,
+            'customer_email' => $_SESSION['customer_email'] ?? null,
+            'customer_name' => $_SESSION['customer_name'] ?? null
         ];
     }
 
     public function isLoggedIn(): bool {
-        return isset($_SESSION['user_id']);
+        return isset($_SESSION['customer_id']);
     }
 }

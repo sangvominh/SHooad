@@ -32,7 +32,7 @@ $errorMessage = FlashMessageService::getFlashMessage('error');
                 </div>
             <?php endif; ?>
 
-            <form action="/SHooad/public/user/login" method="POST" class="space-y-4">
+            <form action="/SHooad/public/customer/login" method="POST" class="space-y-4">
                 <input type="text" name="email" placeholder="Email" required
                     class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-600">
 
@@ -46,7 +46,7 @@ $errorMessage = FlashMessageService::getFlashMessage('error');
 
             <p class="text-center text-gray-600 mt-6">
                 Don't have an account?
-                <a href="/SHooad/public/user/register" class="text-teal-700 hover:underline font-medium">Register here</a>
+                <a href="/SHooad/public/customer/register" class="text-teal-700 hover:underline font-medium">Register here</a>
             </p>
 
             <a href="/SHooad/public/seller/login" class="text-center block">

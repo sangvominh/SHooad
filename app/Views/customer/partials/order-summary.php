@@ -75,7 +75,7 @@ $grand_total = $sale_total + $shipping;
     </div>
 
     <!-- Payment Button -->
-    <a href="/SHooad/app/Views/user/">
+    <a href="/SHooad/public/customer/checkout">
         <button class="w-full bg-yellow-400 text-gray-900 font-bold py-3 rounded-lg mt-6 hover:bg-yellow-500 transition">
         Proceed to Payment
         </button>

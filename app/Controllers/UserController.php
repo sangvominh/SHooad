@@ -20,34 +20,34 @@ class UserController {
 
     public function home() {
         $data = $this->pageService->getHomePageData();
-        include __DIR__ . '/../Views/user/home.php';
+        include __DIR__ . '/../Views/customer/home.php';
     }
 
     public function cart() {
         AuthMiddleware::checkUserAuth();
         $data = $this->pageService->getCartData();
-        include __DIR__ . '/../Views/user/cart.php';
+        include __DIR__ . '/../Views/customer/cart.php';
     }
 
     public function products() {
         $data = $this->pageService->getProductsPageData();
-        include __DIR__ . '/../Views/user/products.php';
+        include __DIR__ . '/../Views/customer/products.php';
     }
 
     public function productDetail() {
         $product_id = $_GET['id'] ?? null;
         
         if (!$product_id) {
-            $this->redirectTo('/SHooad/public/user');
+            $this->redirectTo('/SHooad/public/customer');
         }
 
         $product = $this->pageService->getProductDetailData((int)$product_id);
         
         if (!$product) {
-            $this->redirectTo('/SHooad/public/user');
+            $this->redirectTo('/SHooad/public/customer');
         }
 
-        include __DIR__ . '/../Views/user/product-detail.php';
+        include __DIR__ . '/../Views/customer/product-detail.php';
     }
 
     public function register() {
@@ -57,11 +57,11 @@ class UserController {
             $password = $_POST['password'] ?? '';
 
             if ($this->authService->register($name, $email, $password)) {
-                $this->redirectTo('/SHooad/public/user/login');
+                $this->redirectTo('/SHooad/public/customer/login');
             }
         }
         
-        include __DIR__ . '/../Views/user/register.php';
+        include __DIR__ . '/../Views/customer/register.php';
     }
 
     public function login() {
@@ -70,15 +70,15 @@ class UserController {
             $password = $_POST['password'] ?? '';
 
             if ($this->authService->login($email, $password)) {
-                $this->redirectTo('/SHooad/public/user');
+                $this->redirectTo('/SHooad/public/customer');
             }
         }
         
-        include __DIR__ . '/../Views/user/login.php';
+        include __DIR__ . '/../Views/customer/login.php';
     }
 
     public function logout() {
         $this->authService->logout();
-        include __DIR__ . '/../Views/user/logout.php';
+        include __DIR__ . '/../Views/customer/logout.php';
     }
 }

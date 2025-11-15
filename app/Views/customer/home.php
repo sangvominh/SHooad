@@ -35,8 +35,8 @@ $banners = $data['banners'] ?? [];
     <?php include 'partials/footer.php'; ?>
     
     <!-- Scripts -->
-    <script src="/SHooad/public/assets/js/user/dropdown.js"></script>
-    <script src="/SHooad/public/assets/js/user/product-hover.js"></script>
+    <script src="/SHooad/public/assets/js/customer/dropdown.js"></script>
+    <script src="/SHooad/public/assets/js/customer/product-hover.js"></script>
 
 
 </body>

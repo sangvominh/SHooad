@@ -37,7 +37,7 @@
     <?php include 'partials/footer.php'; ?>
 
     <!-- Cart Scripts -->
-    <script src="/SHooad/public/assets/js/user/cart.js"></script>
+    <script src="/SHooad/public/assets/js/customer/cart.js"></script>
 </body>
 
 </html>

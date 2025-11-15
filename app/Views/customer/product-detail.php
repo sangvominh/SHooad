@@ -1,7 +1,7 @@
 <?php
 // Product data is passed from controller
 if (!isset($product)) {
-    header('Location: /SHooad/public/user');
+    header('Location: /SHooad/public/customer');
     exit();
 }
 
@@ -53,7 +53,7 @@ $productId = $product['id'] ?? 0;
     <?php include 'partials/footer.php'; ?>
     
     <!-- Scripts -->
-    <script src="/SHooad/public/assets/js/user/dropdown.js"></script>
-    <script src="/SHooad/public/assets/js/user/product-gallery.js"></script>
+    <script src="/SHooad/public/assets/js/customer/dropdown.js"></script>
+    <script src="/SHooad/public/assets/js/customer/product-gallery.js"></script>
 </body>
 </html>

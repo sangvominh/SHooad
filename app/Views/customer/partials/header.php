@@ -23,25 +23,31 @@
         <!-- User Icons -->
         <?php
         // session_start();
-        $isLoggedIn = isset($_SESSION['user']);
+        $isLoggedIn = isset($_SESSION['customer_id']);
         $avatarPath = "/SHooad/public/assets/logo/default-avatar.png";
         $cartCount = 0;
         if ($isLoggedIn) {
-            $user = $_SESSION['user'];
-            if (!empty($user['avatar'])) {
-                $avatarPath = $user['avatar'];
-            }
-            // Get cart count for logged-in user
-            $userId = isset($_SESSION['user_id']) ? $_SESSION['user_id'] : 0;
-            if ($userId) {
+            $customerEmail = $_SESSION['customer_email'] ?? '';
+            // Avatar support can be added later if needed
+            
+            // Get cart count for logged-in customer
+            $customerId = intval($_SESSION['customer_id']);
+            if ($customerId) {
                 $mysqli = new mysqli('localhost', 'root', '', 'SHooad');
                 if (!$mysqli->connect_error) {
-                    $result = $mysqli->query("SELECT SUM(quantity) AS total FROM carts WHERE user_id = " . intval($userId));
-                    if ($result) {
-                        $row = $result->fetch_assoc();
-                        $cartCount = intval($row['total']);
+                    // Get cart_id first
+                    $cartResult = $mysqli->query("SELECT id FROM carts WHERE customer_id = " . $customerId);
+                    if ($cartResult && $cartResult->num_rows > 0) {
+                        $cartRow = $cartResult->fetch_assoc();
+                        $cartId = $cartRow['id'];
+                        $result = $mysqli->query("SELECT SUM(quantity) AS total FROM cart_items WHERE cart_id = " . intval($cartId));
+                        if ($result) {
+                            $row = $result->fetch_assoc();
+                            $cartCount = intval($row['total']);
+                        }
+                        $result->free();
+                        $cartResult->free();
                     }
-                    $result->free();
                     $mysqli->close();
                 }
             }
@@ -51,14 +57,14 @@
 
             <!-- Cart -->
             <?php if ($isLoggedIn): ?>
-                <a href="/SHooad/app/Views/user/cart.php">
+                <a href="/SHooad/public/customer/cart">
                     <button id="cartBtn" class="relative hover:opacity-80 transition hover:scale-150">
                         <i class="fa-solid fa-cart-shopping" id="cartIcon"></i>
                         <span id="cartBadge" class="absolute -top-3 -right-5 bg-yellow-400 text-black text-xs font-bold rounded-full px-2 py-0.5"><?= $cartCount ?></span>
                     </button>
                 </a>
             <?php else: ?>
-                <a href="/SHooad/app/Views/user/login.php">
+                <a href="/SHooad/public/customer/login">
                     <button id="cartBtn" class="relative hover:opacity-80 transition hover:scale-150">
                         <i class="fa-solid fa-cart-shopping" id="cartIcon"></i>
                     </button>
@@ -78,12 +84,12 @@
                         <img src="<?= htmlspecialchars($avatarPath) ?>" alt="avatar" class="object-cover w-full h-full rounded-full" />
                     </button>
                     <div class="absolute right-0 mt-2 w-40 bg-white rounded shadow-lg z-50 hidden group-hover:block" id="avatarDropdown">
-                        <a href="/SHooad/app/Views/user/profile.php" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Profile</a>
-                        <a href="/SHooad/app/Views/user/logout.php" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Đăng xuất</a>
+                        <a href="/SHooad/public/customer/profile" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Profile</a>
+                        <a href="/SHooad/public/customer/logout" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Đăng xuất</a>
                     </div>
                 </div>
             <?php else: ?>
-                <a href="/SHooad/app/Views/user/login.php">
+                <a href="/SHooad/public/customer/login">
                     <button class="hover:opacity-80 transition hover:scale-150">
                         <i class="fa-solid fa-user"></i>
                     </button>

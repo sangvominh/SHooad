@@ -8,8 +8,8 @@ class AuthMiddleware {
     }
 
     public static function checkUserAuth() {
-        if (!isset($_SESSION["user_id"])) {
-            header('Location: /SHooad/public/user/login');
+        if (!isset($_SESSION["customer_id"])) {
+            header('Location: /SHooad/public/customer/login');
             exit();
         }
     }

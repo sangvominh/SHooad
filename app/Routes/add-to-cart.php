@@ -3,8 +3,8 @@ session_start();
 header('Content-Type: application/json; charset=utf-8');
 
 try {
-    // Check if user is logged in
-    if (!isset($_SESSION['user_id'])) {
+    // Check if customer is logged in
+    if (!isset($_SESSION['customer_id'])) {
         http_response_code(401);
         echo json_encode(['success' => false, 'message' => 'Please login first'], JSON_UNESCAPED_UNICODE);
         exit();
@@ -15,10 +15,10 @@ try {
     $color = isset($_POST['color']) ? trim($_POST['color']) : '';
     $size = isset($_POST['size']) ? trim($_POST['size']) : '';
     $quantity = isset($_POST['quantity']) ? intval($_POST['quantity']) : 0;
-    $user_id = $_SESSION['user_id'];
+    $customer_id = $_SESSION['customer_id'];
 
     // Debug log
-    error_log('Add to cart attempt - User: ' . $user_id . ', Product: ' . $product_id . ', Color: ' . $color . ', Size: ' . $size . ', Qty: ' . $quantity);
+    error_log('Add to cart attempt - Customer: ' . $customer_id . ', Product: ' . $product_id . ', Color: ' . $color . ', Size: ' . $size . ', Qty: ' . $quantity);
 
     // Validation
     if (!$product_id || $quantity < 1) {
@@ -55,22 +55,46 @@ try {
         exit();
     }
 
-    // Try to insert or update cart (default selected = 0)
-    $sql = "INSERT INTO carts (user_id, product_id, color, size, quantity, selected)
-        VALUES (:user_id, :product_id, :color, :size, :quantity, 0)
-        ON DUPLICATE KEY UPDATE 
-        quantity = quantity + :quantity_dup,
-        updated_at = CURRENT_TIMESTAMP";
+    // Get or create cart for customer
+    $cartStmt = $pdo->prepare('SELECT id FROM carts WHERE customer_id = :customer_id');
+    $cartStmt->execute([':customer_id' => $customer_id]);
+    $cart = $cartStmt->fetch(PDO::FETCH_ASSOC);
+    
+    if (!$cart) {
+        // Create new cart
+        $createCartStmt = $pdo->prepare('INSERT INTO carts (customer_id) VALUES (:customer_id)');
+        $createCartStmt->execute([':customer_id' => $customer_id]);
+        $cart_id = $pdo->lastInsertId();
+    } else {
+        $cart_id = $cart['id'];
+    }
 
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute([
-        ':user_id' => $user_id,
+    // Check if item already exists in cart
+    $checkItemStmt = $pdo->prepare('SELECT id, quantity FROM cart_items WHERE cart_id = :cart_id AND product_id = :product_id AND color = :color AND size = :size');
+    $checkItemStmt->execute([
+        ':cart_id' => $cart_id,
         ':product_id' => $product_id,
         ':color' => $color,
-        ':size' => $size,
-        ':quantity' => $quantity,
-        ':quantity_dup' => $quantity
+        ':size' => $size
     ]);
+    $existingItem = $checkItemStmt->fetch(PDO::FETCH_ASSOC);
+
+    if ($existingItem) {
+        // Update existing item
+        $newQuantity = $existingItem['quantity'] + $quantity;
+        $updateStmt = $pdo->prepare('UPDATE cart_items SET quantity = :quantity WHERE id = :id');
+        $updateStmt->execute([':quantity' => $newQuantity, ':id' => $existingItem['id']]);
+    } else {
+        // Insert new item
+        $insertStmt = $pdo->prepare('INSERT INTO cart_items (cart_id, product_id, color, size, quantity) VALUES (:cart_id, :product_id, :color, :size, :quantity)');
+        $insertStmt->execute([
+            ':cart_id' => $cart_id,
+            ':product_id' => $product_id,
+            ':color' => $color,
+            ':size' => $size,
+            ':quantity' => $quantity
+        ]);
+    }
 
     http_response_code(200);
     echo json_encode(['success' => true, 'message' => 'Product added to cart successfully'], JSON_UNESCAPED_UNICODE);

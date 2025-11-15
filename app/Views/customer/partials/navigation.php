@@ -34,7 +34,7 @@
         <ul class="flex gap-8 text-white text-sm font-medium justify-center">
             <!-- Home Dropdown -->
             <li>
-                <a href="/SHooad/public/user" class="py-3 hover:text-yellow-300 transition block">Home</a>
+                <a href="/SHooad/public/customer" class="py-3 hover:text-yellow-300 transition block">Home</a>
             </li>
             <!-- Dropdown Menu -->
             <div class="absolute left-0 mt-0 w-48 bg-white text -gray-800 rounded shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
@@ -54,10 +54,10 @@
                 </button>
                 <div class="absolute left-0 mt-0 w-48 bg-white text-gray-800 rounded shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
                     <?php if (count($cats) === 0): ?>
-                        <a href="/SHooad/app/Views/user/products.php" class="block px-4 py-2 hover:bg-gray-100 first:rounded-t transition">All Products</a>
+                        <a href="/SHooad/public/customer/products" class="block px-4 py-2 hover:bg-gray-100 first:rounded-t transition">All Products</a>
                     <?php else: ?>
                         <?php foreach ($cats as $i => $c): ?>
-                            <a href="/SHooad/app/Views/user/products.php?category=<?php echo urlencode($c['name']); ?>" class="block px-4 py-2 hover:bg-gray-100 <?php echo $i === 0 ? 'first:rounded-t' : ''; ?> transition"><?php echo htmlspecialchars($c['name']); ?></a>
+                            <a href="/SHooad/public/customer/products?category=<?php echo urlencode($c['name']); ?>" class="block px-4 py-2 hover:bg-gray-100 <?php echo $i === 0 ? 'first:rounded-t' : ''; ?> transition"><?php echo htmlspecialchars($c['name']); ?></a>
                         <?php endforeach; ?>
                     <?php endif; ?>
                 </div>
@@ -76,7 +76,7 @@
                         <a href="#" class="block px-4 py-2 hover:bg-gray-100 first:rounded-t transition">#</a>
                     <?php else: ?>
                         <?php foreach ($brands as $i => $b): ?>
-                            <a href="/SHooad/app/Views/user/products.php?brand=<?php echo urlencode($b['name']); ?>" class="block px-4 py-2 hover:bg-gray-100 <?php echo $i === 0 ? 'first:rounded-t' : ''; ?> transition"><?php echo htmlspecialchars($b['name']); ?></a>
+                            <a href="/SHooad/public/customer/products?brand=<?php echo urlencode($b['name']); ?>" class="block px-4 py-2 hover:bg-gray-100 <?php echo $i === 0 ? 'first:rounded-t' : ''; ?> transition"><?php echo htmlspecialchars($b['name']); ?></a>
                         <?php endforeach; ?>
                     <?php endif; ?>
                 </div>
@@ -91,10 +91,10 @@
                     </svg>
                 </button>
                 <div class="absolute left-0 mt-0 w-48 bg-white text-gray-800 rounded shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
-                    <a href="/SHooad/app/Views/user/products.php?sort=latest" class="block px-4 py-2 hover:bg-gray-100 first:rounded-t transition">All Products</a>
-                    <a href="/SHooad/app/Views/user/products.php?sort=new-arrivals" class="block px-4 py-2 hover:bg-gray-100 transition">New Arrivals</a>
-                    <a href="/SHooad/app/Views/user/products.php?sort=sale" class="block px-4 py-2 hover:bg-gray-100 transition">Sale Items</a>
-                    <a href="/SHooad/app/Views/user/products.php?sort=best-sellers" class="block px-4 py-2 hover:bg-gray-100 last:rounded-b transition">Best Sellers</a>
+                    <a href="/SHooad/public/customer/products?sort=latest" class="block px-4 py-2 hover:bg-gray-100 first:rounded-t transition">All Products</a>
+                    <a href="/SHooad/public/customer/products?sort=new-arrivals" class="block px-4 py-2 hover:bg-gray-100 transition">New Arrivals</a>
+                    <a href="/SHooad/public/customer/products?sort=sale" class="block px-4 py-2 hover:bg-gray-100 transition">Sale Items</a>
+                    <a href="/SHooad/public/customer/products?sort=best-sellers" class="block px-4 py-2 hover:bg-gray-100 last:rounded-b transition">Best Sellers</a>
                 </div>
             </li>
 

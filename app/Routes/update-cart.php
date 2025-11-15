@@ -3,21 +3,21 @@ session_start();
 header('Content-Type: application/json; charset=utf-8');
 
 try {
-    if (!isset($_SESSION['user_id'])) {
+    if (!isset($_SESSION['customer_id'])) {
         http_response_code(401);
         echo json_encode(['success' => false, 'message' => 'Please login first']);
         exit();
     }
 
-    $cart_id = isset($_POST['cart_id']) ? intval($_POST['cart_id']) : 0;
+    $cart_item_id = isset($_POST['cart_id']) ? intval($_POST['cart_id']) : 0;
     $quantity = isset($_POST['quantity']) ? intval($_POST['quantity']) : null;
     $color = isset($_POST['color']) ? trim($_POST['color']) : null;
     $size = isset($_POST['size']) ? trim($_POST['size']) : null;
-    $user_id = intval($_SESSION['user_id']);
+    $customer_id = intval($_SESSION['customer_id']);
 
-    if (!$cart_id) {
+    if (!$cart_item_id) {
         http_response_code(400);
-        echo json_encode(['success' => false, 'message' => 'Missing cart id']);
+        echo json_encode(['success' => false, 'message' => 'Missing cart item id']);
         exit();
     }
 
@@ -25,10 +25,10 @@ try {
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
     // Verify ownership
-    $stmt = $pdo->prepare('SELECT * FROM carts WHERE id = :cid AND user_id = :uid');
-    $stmt->execute([':cid' => $cart_id, ':uid' => $user_id]);
-    $cart = $stmt->fetch(PDO::FETCH_ASSOC);
-    if (!$cart) {
+    $stmt = $pdo->prepare('SELECT ci.* FROM cart_items ci JOIN carts c ON ci.cart_id = c.id WHERE ci.id = :item_id AND c.customer_id = :customer_id');
+    $stmt->execute([':item_id' => $cart_item_id, ':customer_id' => $customer_id]);
+    $cartItem = $stmt->fetch(PDO::FETCH_ASSOC);
+    if (!$cartItem) {
         http_response_code(404);
         echo json_encode(['success' => false, 'message' => 'Cart item not found']);
         exit();
@@ -37,7 +37,7 @@ try {
     // If quantity provided, validate against product stock
     if ($quantity !== null) {
         $prodStmt = $pdo->prepare('SELECT stock FROM products WHERE id = :pid');
-        $prodStmt->execute([':pid' => $cart['product_id']]);
+        $prodStmt->execute([':pid' => $cartItem['product_id']]);
         $prod = $prodStmt->fetch(PDO::FETCH_ASSOC);
         $stock = $prod ? intval($prod['stock']) : 0;
         if ($quantity < 1) $quantity = 1;
@@ -49,20 +49,20 @@ try {
     }
 
     $updates = [];
-    $params = [':cid' => $cart_id, ':uid' => $user_id];
+    $params = [':item_id' => $cart_item_id];
     if ($quantity !== null) { $updates[] = 'quantity = :quantity'; $params[':quantity'] = $quantity; }
     if ($color !== null) { $updates[] = 'color = :color'; $params[':color'] = $color; }
     if ($size !== null) { $updates[] = 'size = :size'; $params[':size'] = $size; }
 
     if (!empty($updates)) {
-        $sql = 'UPDATE carts SET ' . implode(', ', $updates) . ', updated_at = CURRENT_TIMESTAMP WHERE id = :cid AND user_id = :uid';
+        $sql = 'UPDATE cart_items SET ' . implode(', ', $updates) . ' WHERE id = :item_id';
         $upd = $pdo->prepare($sql);
         $upd->execute($params);
     }
 
     // Return new cart total for badge
-    $totalStmt = $pdo->prepare('SELECT SUM(quantity) AS total FROM carts WHERE user_id = :uid');
-    $totalStmt->execute([':uid' => $user_id]);
+    $totalStmt = $pdo->prepare('SELECT SUM(ci.quantity) AS total FROM cart_items ci JOIN carts c ON ci.cart_id = c.id WHERE c.customer_id = :customer_id');
+    $totalStmt->execute([':customer_id' => $customer_id]);
     $totalRow = $totalStmt->fetch(PDO::FETCH_ASSOC);
     $newTotal = $totalRow ? intval($totalRow['total']) : 0;
 
