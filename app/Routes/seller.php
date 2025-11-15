@@ -7,7 +7,7 @@ $path = $parts[3] ?? '';
 switch ($path) {
     case (''):
     case ('dashboard'):
-        $seller_controller->redirect();
+        $seller_controller->dashboard();
         break;
     case ('login'):
         $seller_controller->login();

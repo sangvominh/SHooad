@@ -21,8 +21,29 @@ class Product {
         return $stmt->get_result()->fetch_assoc();
     }
 
-    public function updateProduct($product_id, $data) {
-    //    TODO: implement product update logic
+    public function updateProduct($product_id, $data): bool {
+        if (empty($data)) {
+            return false;
+        }
+
+        $fields = [];
+        $values = [];
+        $types = '';
+
+        foreach ($data as $key => $value) {
+            $fields[] = "$key = ?";
+            $values[] = $value;
+            $types .= is_int($value) ? 'i' : (is_float($value) ? 'd' : 's');
+        }
+
+        $values[] = $product_id;
+        $types .= 'i';
+
+        $sql = "UPDATE products SET " . implode(', ', $fields) . " WHERE id = ?";
+        $stmt = $this->db->prepare($sql);
+        $stmt->bind_param($types, ...$values);
+        
+        return $stmt->execute();
     }
 
 }

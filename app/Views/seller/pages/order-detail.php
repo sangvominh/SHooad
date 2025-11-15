@@ -1,9 +1,14 @@
 <?php
-$subtotal = $order["subtotal"];
-$shipping = $order["shipping_fee"];
-$tax = $order["tax"];
-$total = $subtotal + $shipping + $tax;
-$shipping_address = $order["shipping_ward"] . ', ' . $order["shipping_city"] . ', ' . $order["shipping_province"];
+// Calculate totals from order items
+$subtotal = 0;
+foreach ($order_items as $item) {
+    $subtotal += ($item['price'] ?? 0) * ($item['quantity'] ?? 0);
+}
+$shipping = 0; // Not in database
+$tax = 0; // Not in database
+$total = $subtotal;
+$shipping_address = $order["shipping_address"] ?? 'N/A';
+$customer_phone = $order["customer_phone"] ?? 'N/A';
 ?>
 
 <!DOCTYPE html>
@@ -32,16 +37,20 @@ $shipping_address = $order["shipping_ward"] . ', ' . $order["shipping_city"] . '
                 <div class="flex items-center gap-2">
                     <span class="px-3 py-1 rounded-full text-sm font-medium 
                         <?php 
-                        echo match($order['status']) {
-                            'Pending' => 'bg-yellow-100 text-yellow-800',
+                        echo match($order['status'] ?? '') {
+                            'Pending_Transfer' => 'bg-yellow-100 text-yellow-800',
+                            'Paid' => 'bg-green-100 text-green-800',
                             'Processing' => 'bg-blue-100 text-blue-800',
+                            'Delivering' => 'bg-indigo-100 text-indigo-800',
+                            'Pending_COD' => 'bg-orange-100 text-orange-800',
                             'Completed' => 'bg-green-100 text-green-800',
                             'Cancelled' => 'bg-red-100 text-red-800',
+                            'Failed' => 'bg-red-100 text-red-800',
                             default => 'bg-gray-100 text-gray-800'
                         };
                         ?>
                     ">
-                        <?php echo $order['status']; ?>
+                        <?php echo str_replace('_', ' ', $order['status'] ?? 'N/A'); ?>
                     </span>
                 </div>
             </div>
@@ -55,22 +64,14 @@ $shipping_address = $order["shipping_ward"] . ', ' . $order["shipping_city"] . '
                     <!-- Order Header Info -->
                     <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
                         <h2 class="text-lg font-bold text-gray-900 mb-4">Order #<?php echo $order_id; ?></h2>
-                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <div class="grid grid-cols-2 md:grid-cols-2 gap-4">
                             <div>
                                 <p class="text-sm text-gray-600 mb-1">Order Date</p>
-                                <p class="font-medium text-gray-900"><?php echo $order['created_at']; ?></p>
+                                <p class="font-medium text-gray-900"><?php echo $order['date'] ?? 'N/A'; ?></p>
                             </div>
                             <div>
                                 <p class="text-sm text-gray-600 mb-1">Total Amount</p>
-                                <p class="font-medium text-gray-900">$<?php echo number_format($order['total_amount'], 2); ?></p>
-                            </div>
-                            <div>
-                                <p class="text-sm text-gray-600 mb-1">Payment Method</p>
-                                <p class="font-medium text-gray-900"><?php echo $order['payment_method']; ?></p>
-                            </div>
-                            <div>
-                                <p class="text-sm text-gray-600 mb-1">Payment Status</p>
-                                <p class="font-medium text-green-600"><?php echo $order['payment_status']; ?></p>
+                                <p class="font-medium text-gray-900">$<?php echo number_format($total, 2); ?></p>
                             </div>
                         </div>
                     </div>
@@ -108,10 +109,14 @@ $shipping_address = $order["shipping_ward"] . ', ' . $order["shipping_city"] . '
                             <input type="hidden" name="order_id" value="<?php echo $order_id; ?>">
 
                             <select name="status" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-teal-500">
-                                <option value="Pending" <?php if ($order['status'] == 'Pending') echo 'selected'; ?>>Pending</option>
+                                <option value="Pending_Transfer" <?php if ($order['status'] == 'Pending_Transfer') echo 'selected'; ?>>Pending Transfer</option>
+                                <option value="Paid" <?php if ($order['status'] == 'Paid') echo 'selected'; ?>>Paid</option>
                                 <option value="Processing" <?php if ($order['status'] == 'Processing') echo 'selected'; ?>>Processing</option>
+                                <option value="Delivering" <?php if ($order['status'] == 'Delivering') echo 'selected'; ?>>Delivering</option>
+                                <option value="Pending_COD" <?php if ($order['status'] == 'Pending_COD') echo 'selected'; ?>>Pending COD</option>
                                 <option value="Completed" <?php if ($order['status'] == 'Completed') echo 'selected'; ?>>Completed</option>
                                 <option value="Cancelled" <?php if ($order['status'] == 'Cancelled') echo 'selected'; ?>>Cancelled</option>
+                                <option value="Failed" <?php if ($order['status'] == 'Failed') echo 'selected'; ?>>Failed</option>
                             </select>
 
                             <button type="submit" name="update_status_order" class="w-full px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition-colors font-medium">
@@ -147,16 +152,12 @@ $shipping_address = $order["shipping_ward"] . ', ' . $order["shipping_city"] . '
                         <h3 class="font-bold text-gray-900 mb-4">Customer Information</h3>
                         <div class="space-y-3">
                             <div>
-                                <p class="text-xs text-gray-600 uppercase tracking-wide mb-1">Name</p>
-                                <p class="text-gray-900"><?php echo htmlspecialchars($order['customer_name']); ?></p>
-                            </div>
-                            <div>
-                                <p class="text-xs text-gray-600 uppercase tracking-wide mb-1">Email</p>
-                                <p class="text-gray-900 break-all"><?php echo htmlspecialchars($order['customer_email']); ?></p>
+                                <p class="text-xs text-gray-600 uppercase tracking-wide mb-1">Customer ID</p>
+                                <p class="text-gray-900">#<?php echo htmlspecialchars($order['customer_id'] ?? 'N/A'); ?></p>
                             </div>
                             <div>
                                 <p class="text-xs text-gray-600 uppercase tracking-wide mb-1">Phone</p>
-                                <p class="text-gray-900"><?php echo htmlspecialchars($order['customer_phone']); ?></p>
+                                <p class="text-gray-900"><?php echo htmlspecialchars($customer_phone); ?></p>
                             </div>
                         </div>
                     </div>
