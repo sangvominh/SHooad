@@ -1,4 +1,7 @@
 <?php
+// Load language helper
+require_once __DIR__ . '/../../../Helpers/LanguageHelper.php';
+
 $all_items = [
     [
         'id' => 1,
@@ -40,44 +43,44 @@ $grand_total = $sale_total + $shipping;
 ?>
 
 <div class="bg-white border border-gray-200 rounded-lg p-6 sticky top-8 h-fit">
-    <h2 class="text-2xl font-bold text-gray-900 mb-6">Order Summary (<span id="selected-count">0</span>)</h2>
+    <h2 class="text-2xl font-bold text-gray-900 mb-6"><?= LanguageHelper::t('checkout.order_summary') ?> (<span id="selected-count">0</span>)</h2>
     
     <div class="space-y-4 border-b border-gray-200 pb-6">
         <!-- Original Price -->
         <div class="flex justify-between text-gray-700">
-            <span>Giá gốc</span>
+            <span><?= LanguageHelper::t('cart.price') ?></span>
             <span id="original-price-display">0₫</span>
         </div>
 
         <!-- Savings -->
         <div class="flex justify-between text-gray-700">
-            <span>Tiết kiệm</span>
+            <span><?= LanguageHelper::t('cart.subtotal') ?></span>
             <span id="savings-display" class="text-green-600">0₫</span>
         </div>
 
         <!-- Sale Price -->
         <div class="flex justify-between text-gray-700">
-            <span>Giá sau giảm</span>
+            <span><?= LanguageHelper::t('checkout.subtotal') ?></span>
             <span id="sale-price-display">0₫</span>
         </div>
 
         <!-- Shipping -->
         <div class="flex justify-between text-gray-700">
-            <span>Phí vận chuyển</span>
-            <span id="shipping-display" class="text-green-600">Miễn phí</span>
+            <span><?= LanguageHelper::t('cart.shipping') ?></span>
+            <span id="shipping-display" class="text-green-600"><?= LanguageHelper::t('cart.shipping') ?></span>
         </div>
     </div>
 
     <!-- Total -->
     <div class="flex justify-between items-center py-6 border-b border-gray-200">
-        <span class="text-xl font-bold text-gray-900">Tổng cộng</span>
+        <span class="text-xl font-bold text-gray-900"><?= LanguageHelper::t('cart.grand_total') ?></span>
         <span class="text-3xl font-bold text-red-600" id="total-display">0₫</span>
     </div>
 
     <!-- Payment Button -->
     <button id="checkoutBtn" disabled
         class="w-full bg-gray-400 text-gray-700 font-bold py-3 rounded-lg mt-6 cursor-not-allowed transition">
-        Tiến hành thanh toán
+        <?= LanguageHelper::t('cart.proceed_checkout') ?>
     </button>
     
 </div>

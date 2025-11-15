@@ -1,55 +1,6 @@
 <?php
-$footer_columns = [
-    [
-        'title' => 'Customer Service',
-        'links' => [
-            ['text' => 'Contact Us', 'href' => '#contact'],
-            ['text' => 'FAQs', 'href' => '#faqs'],
-            ['text' => 'Order Lookup', 'href' => '#order-lookup'],
-            ['text' => 'Returns', 'href' => '#returns'],
-            ['text' => 'Shipping & Delivery', 'href' => '#shipping'],
-            ['text' => 'Corporate Gifting', 'href' => '#corporate-gifting']
-        ]
-    ],
-    [
-        'title' => 'About Us',
-        'links' => [
-            ['text' => 'Careers', 'href' => '#careers'],
-            ['text' => 'News & Blog', 'href' => '#news-blog'],
-            ['text' => 'Press Center', 'href' => '#press-center'],
-            ['text' => 'Investors', 'href' => '#investors'],
-            ['text' => 'Suppliers', 'href' => '#suppliers'],
-            ['text' => 'Terms & Conditions', 'href' => '#terms'],
-            ['text' => 'Privacy Policy', 'href' => '#privacy']
-        ]
-    ],
-    [
-        'title' => 'Credit Card',
-        'links' => [
-            ['text' => 'Gift Cards', 'href' => '#gift-cards'],
-            ['text' => 'Gift Cards Balance', 'href' => '#gift-cards-balance'],
-            ['text' => 'Shop with Points', 'href' => '#shop-points'],
-            ['text' => 'Reload Your Balance', 'href' => '#reload-balance']
-        ]
-    ],
-    [
-        'title' => 'Sell',
-        'links' => [
-            ['text' => 'Start Selling', 'href' => '#start-selling'],
-            ['text' => 'Learn to Sell', 'href' => '#learn-sell'],
-            ['text' => 'Affiliates & Partners', 'href' => '#affiliates']
-        ]
-    ],
-    [
-        'title' => 'Follow us',
-        'is_social' => true,
-        'socials' => [
-            ['icon' => 'facebook', 'label' => 'Facebook', 'href' => '#facebook'],
-            ['icon' => 'instagram', 'label' => 'Instagram', 'href' => '#instagram'],
-            ['icon' => 'twitter', 'label' => 'Twitter', 'href' => '#twitter']
-        ]
-    ]
-];
+// Load language helper
+require_once __DIR__ . '/../../../Helpers/LanguageHelper.php';
 ?>
 
 <footer class="bg-gray-900 text-gray-300">
@@ -111,7 +62,7 @@ $footer_columns = [
                 
                 <!-- Payment Methods -->
                 <div class="flex items-center gap-4 justify-center">
-                    <span class="text-sm text-gray-700 font-medium flex items-center">Payment Methods:</span>
+                    <span class="text-sm text-gray-700 font-medium flex items-center"><?= LanguageHelper::t('checkout.payment_method') ?>:</span>
                     <div class="flex items-center gap-6 text-3xl">
                         <i class="fa-brands fa-paypal text-blue-600"></i>
                         <i class="fa-brands fa-cc-visa text-blue-800"></i>
@@ -121,7 +72,7 @@ $footer_columns = [
                 
                 <!-- Copyright -->
                 <div class="text-sm text-gray-700">
-                    Copyright © 2025 SHooad All Rights Reserved
+                    Copyright © 2025 SHooad <?= LanguageHelper::t('footer.all_rights_reserved') ?>
                 </div>
             </div>
         </div>

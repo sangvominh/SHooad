@@ -2,6 +2,9 @@
 if (session_status() == PHP_SESSION_NONE) session_start();
 // Lấy dữ liệu từ controller/service
 $cart_items = $data['cart_items'] ?? [];
+
+// Load language helper
+require_once __DIR__ . '/../../../Helpers/LanguageHelper.php';
 ?>
 
 <style>
@@ -14,12 +17,12 @@ input.no-spinner { -moz-appearance: textfield; }
 <div class="space-y-4">
     <!-- Header with Back Button -->
     <div class="flex items-center justify-between mb-4">
-        <h2 class="text-2xl font-bold text-gray-900">Giỏ hàng (<span id="cart-count"><?php echo count($cart_items); ?></span> sản phẩm)</h2>
+        <h2 class="text-2xl font-bold text-gray-900"><?= LanguageHelper::t('cart.title') ?> (<span id="cart-count"><?php echo count($cart_items); ?></span> <?= LanguageHelper::t('checkout.items') ?>)</h2>
         <a href="/SHooad/public/customer/products" class="flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
             </svg>
-            Tiếp tục mua sắm
+            <?= LanguageHelper::t('cart.continue_shopping') ?>
         </a>
     </div>
     
@@ -68,8 +71,8 @@ input.no-spinner { -moz-appearance: textfield; }
 
                     <!-- Size and Color -->
                     <div class="flex gap-6 mt-2 text-sm text-gray-600">
-                        <span><strong>Size:</strong> <?php echo htmlspecialchars($item['size']); ?></span>
-                        <span><strong>Color:</strong> <?php echo htmlspecialchars($item['color']); ?></span>
+                        <span><strong><?= LanguageHelper::t('cart.size') ?>:</strong> <?php echo htmlspecialchars($item['size']); ?></span>
+                        <span><strong><?= LanguageHelper::t('cart.color') ?>:</strong> <?php echo htmlspecialchars($item['color']); ?></span>
                     </div>
 
                     <!-- Price Section -->
@@ -85,7 +88,7 @@ input.no-spinner { -moz-appearance: textfield; }
                     <!-- Quantity Controls and Edit Button -->
                     <div class="flex gap-4 mt-4 items-center">
                         <div class="flex items-center gap-2">
-                            <span class="text-sm font-semibold text-gray-600">Quantity:</span>
+                            <span class="text-sm font-semibold text-gray-600"><?= LanguageHelper::t('cart.quantity') ?>:</span>
                             <button class="w-8 h-8 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition qty-minus" data-item-id="<?php echo $item['cart_item_id']; ?>">−</button>
                             <input
                                 type="number"
@@ -100,7 +103,7 @@ input.no-spinner { -moz-appearance: textfield; }
 
                         <!-- Edit and Remove Buttons -->
                         <div class="flex gap-2 ml-auto">
-                            <button class="px-4 py-1 text-red-600 border border-red-600 rounded hover:bg-red-50 transition text-sm font-medium remove-btn" data-item-id="<?php echo $item['cart_item_id']; ?>">Xóa</button>
+                            <button class="px-4 py-1 text-red-600 border border-red-600 rounded hover:bg-red-50 transition text-sm font-medium remove-btn" data-item-id="<?php echo $item['cart_item_id']; ?>"><?= LanguageHelper::t('cart.remove') ?></button>
                         </div>
                     </div>
                 </div>

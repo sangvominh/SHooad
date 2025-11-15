@@ -37,6 +37,9 @@ try {
 } catch (Exception $e) {
     error_log("Error fetching products: " . $e->getMessage());
 }
+
+// Load language helper
+require_once __DIR__ . '/../../../Helpers/LanguageHelper.php';
 ?>
 
 <section class="py-16 px-4 sm:px-6 lg:px-8 bg-white">
@@ -44,11 +47,11 @@ try {
         <!-- Header -->
         <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-8 mb-12">
             <div>
-                <h2 class="text-4xl md:text-5xl font-bold text-black mb-4">Our popular products</h2>
-                <p class="text-gray-600 text-lg max-w-md">Browse our most popular products and make your day more beautiful and glorious.</p>
+                <h2 class="text-4xl md:text-5xl font-bold text-black mb-4"><?= LanguageHelper::t('home.popular_products_title') ?></h2>
+                <p class="text-gray-600 text-lg max-w-md"><?= LanguageHelper::t('home.popular_products_desc') ?></p>
             </div>
-            <a href="#" class="inline-block px-8 py-3 border-2 border-[#001F5D] text-[#001F5D] font-semibold hover:bg-[#001F5D] hover:text-white transition-colors">
-                See More
+            <a href="/SHooad/public/customer/products" class="inline-block px-8 py-3 border-2 border-[#001F5D] text-[#001F5D] font-semibold hover:bg-[#001F5D] hover:text-white transition-colors">
+                <?= LanguageHelper::t('home.view_all') ?>
             </a>
         </div>
         
