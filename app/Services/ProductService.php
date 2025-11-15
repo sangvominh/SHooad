@@ -79,8 +79,8 @@ class ProductService {
     }
 
     public function uploadProductImages(int $productId, array $files): bool {
-        // Upload to seller's private folder instead of public
-        $uploadDir = __DIR__ . '/../../database/seller_uploads/products/';
+        // Upload to public assets folder for customer access
+        $uploadDir = __DIR__ . '/../../public/assets/products/';
         
         // Create directory if it doesn't exist
         if (!is_dir($uploadDir)) {

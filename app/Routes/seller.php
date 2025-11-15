@@ -1,9 +1,7 @@
 <?php
 require_once __DIR__ . '/../controllers/SellerController.php';
-require_once __DIR__ . '/../controllers/ImageController.php';
 
 $seller_controller = new SellerController();
-$image_controller = new ImageController();
 
 $path = $parts[3] ?? '';
 
@@ -18,12 +16,6 @@ switch ($path) {
     case 'logout':
         $seller_controller->logout();
         exit;
-}
-
-// Image serving route (requires auth)
-if ($path === 'image' && isset($_GET['file'])) {
-    $image_controller->serveProductImage($_GET['file']);
-    exit;
 }
 
 // Protected routes (cần auth)

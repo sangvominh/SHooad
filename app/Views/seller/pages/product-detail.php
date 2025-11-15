@@ -84,7 +84,7 @@
                         <?php if (!empty($product['images'])): ?>
                             <?php foreach ($product['images'] as $image): ?>
                                 <div class="relative">
-                                    <img src="/SHooad/public/seller/image?file=<?php echo htmlspecialchars($image['filename']); ?>" class="w-24 h-24 object-cover rounded-lg" alt="Product Image">
+                                    <img src="/SHooad/public/assets/products/<?php echo htmlspecialchars($image['filename']); ?>" class="w-24 h-24 object-cover rounded-lg" alt="Product Image">
                                     <button type="button" onclick="deleteImage(<?php echo $image['id']; ?>)" class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-600">&times;</button>
                                 </div>
                             <?php endforeach; ?>
