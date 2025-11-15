@@ -1,3 +1,9 @@
+<?php
+if (session_status() == PHP_SESSION_NONE) session_start();
+require_once __DIR__ . '/../../Services/FlashMessageService.php';
+$successMessage = FlashMessageService::getFlashMessage('success');
+$errorMessage = FlashMessageService::getFlashMessage('error');
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,6 +11,7 @@
     <title>Register | SHooad</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
+<body>
 <div class= "justify-center items-center min-h-screen flex relative flex-col">
     <div class="absolute inset-0 bg-[#005D63]"></div>
     <a href="/SHooad/public">
@@ -14,6 +21,17 @@
     <!-- Box -->
     <div class="relative z-10 bg-white p-8 rounded-2xl shadow-2xl w-[90vw] max-w-md">
         <h2 class="text-2xl font-bold text-center text-gray-800 mb-6">Create a New Account</h2>
+        
+        <?php if ($successMessage): ?>
+            <div class="mb-4 p-3 rounded bg-green-100 text-green-700">
+                <?php echo htmlspecialchars($successMessage); ?>
+            </div>
+        <?php endif; ?>
+        <?php if ($errorMessage): ?>
+            <div class="mb-4 p-3 rounded bg-red-100 text-red-700">
+                <?php echo htmlspecialchars($errorMessage); ?>
+            </div>
+        <?php endif; ?>
 
         <?php $base = '/SHooad';?>
         <form action="/SHooad/public/user/register" method="POST" class="space-y-4">
@@ -34,10 +52,10 @@
 
         <p class="text-center text-gray-600 mt-6">
             Already have an account?
-            <a href="/SHooad/app/Views/user/login.php" class="text-teal-700 hover:underline font-medium">Login here</a>
+            <a href="/SHooad/public/user/login" class="text-teal-700 hover:underline font-medium">Login here</a>
         </p>
 
-        <a href="/SHooad/app/Views/seller/login.php" class="text-center block">
+        <a href="/SHooad/public/seller/login" class="text-center block">
             <button class="mx-10 my-0 text-center text-gray-600 mt-6 hover: border border-gray-300 rounded-md px-4 py-2">
                 Seller Login
             </button>

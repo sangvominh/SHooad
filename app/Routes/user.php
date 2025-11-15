@@ -6,8 +6,9 @@ $path = $parts[3] ?? '';
 
 switch ($path) {
     case '':
-        require_once __DIR__ . '/../views/user/home.php';
+        $user_controller->home();
         break;
+
     case 'register':
         $user_controller->register();
         break;
@@ -18,6 +19,22 @@ switch ($path) {
 
     case 'logout':
         $user_controller->logout();
+        break;
+
+    case 'cart':
+        $user_controller->cart();
+        break;
+
+    case 'products':
+        $user_controller->products();
+        break;
+
+    case 'product-detail':
+        $user_controller->productDetail();
+        break;
+
+    default:
+        $user_controller->home();
         break;
 }
 ?>

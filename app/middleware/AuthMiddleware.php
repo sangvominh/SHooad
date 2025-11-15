@@ -6,4 +6,11 @@ class AuthMiddleware {
             exit();
         }
     }
+
+    public static function checkUserAuth() {
+        if (!isset($_SESSION["user_id"])) {
+            header('Location: /SHooad/public/user/login');
+            exit();
+        }
+    }
 }
