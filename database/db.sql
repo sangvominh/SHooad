@@ -54,8 +54,6 @@ CREATE TABLE IF NOT EXISTS products (
     name VARCHAR(255) NOT NULL,
     brand VARCHAR(100) NULL,
     description TEXT,
-    colors TEXT,
-    sizes TEXT,
     price DECIMAL(10,2),
     original_price DECIMAL(10,2),
     stock INT,
@@ -256,15 +254,3 @@ CREATE TABLE IF NOT EXISTS customer_addresses (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (customer_id) REFERENCES customers(id) ON DELETE CASCADE
 );
-
--- ============================
--- BANNERS
--- ============================
-CREATE TABLE IF NOT EXISTS banners (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  title VARCHAR(255) DEFAULT NULL,
-  filename VARCHAR(255) NOT NULL,
-  is_active TINYINT(1) NOT NULL DEFAULT 1
-);
-
-SET FOREIGN_KEY_CHECKS = 1;

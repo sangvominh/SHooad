@@ -15,14 +15,14 @@ if (!$shop) {
 <!-- Shop Detail Page -->
 <div class="min-h-screen bg-gray-50">
     <!-- Shop Header -->
-    <div class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white">
+    <div class="text-white" style="background: linear-gradient(to right, #001F5D, #003580);">
         <div class="container mx-auto px-4 py-12">
             <div class="max-w-7xl mx-auto">
                 <div class="flex items-start gap-8">
                     <!-- Shop Avatar -->
                     <div class="flex-shrink-0">
                         <div class="w-32 h-32 bg-white rounded-2xl flex items-center justify-center shadow-2xl">
-                            <i class="fas fa-store text-blue-600 text-5xl"></i>
+                            <i class="fas fa-store text-5xl" style="color: #001F5D;"></i>
                         </div>
                     </div>
                     
@@ -40,21 +40,10 @@ if (!$shop) {
                         <?php endif; ?>
                         
                         <!-- Shop Stats -->
-                        <div class="grid grid-cols-4 gap-6 bg-white/10 backdrop-blur-sm rounded-xl p-6">
+                        <div class="grid grid-cols-2 gap-6 bg-white/10 backdrop-blur-sm rounded-xl p-6">
                             <div class="text-center">
                                 <div class="text-3xl font-bold mb-1"><?php echo number_format($shop['products_count'] ?? 0); ?></div>
                                 <div class="text-blue-100 text-sm"><?php echo LanguageHelper::t('shop.products'); ?></div>
-                            </div>
-                            <div class="text-center">
-                                <div class="flex items-center justify-center gap-2 mb-1">
-                                    <span class="text-3xl font-bold"><?php echo number_format($shop['rating'] ?? 0, 1); ?></span>
-                                    <i class="fas fa-star text-yellow-300 text-2xl"></i>
-                                </div>
-                                <div class="text-blue-100 text-sm"><?php echo LanguageHelper::t('shop.rating'); ?></div>
-                            </div>
-                            <div class="text-center">
-                                <div class="text-3xl font-bold mb-1"><?php echo number_format($shop['followers'] ?? 0); ?></div>
-                                <div class="text-blue-100 text-sm"><?php echo LanguageHelper::t('shop.followers'); ?></div>
                             </div>
                             <div class="text-center">
                                 <div class="text-3xl font-bold mb-1"><?php echo number_format($shop['orders_count'] ?? 0); ?></div>
@@ -64,7 +53,7 @@ if (!$shop) {
                         
                         <!-- Action Buttons -->
                         <div class="flex items-center gap-4 mt-6">
-                            <button class="px-8 py-3 bg-white text-blue-600 rounded-lg font-semibold hover:bg-blue-50 transition flex items-center gap-2 shadow-lg">
+                            <button class="px-8 py-3 bg-white rounded-lg font-semibold transition flex items-center gap-2 shadow-lg" style="color: #001F5D;" onmouseover="this.style.backgroundColor='#f0f4f8'" onmouseout="this.style.backgroundColor='white'">
                                 <i class="fas fa-heart"></i>
                                 <?php echo LanguageHelper::t('shop.follow'); ?>
                             </button>
@@ -86,7 +75,7 @@ if (!$shop) {
             <div class="bg-white rounded-lg shadow-sm border border-gray-200 mb-6">
                 <div class="border-b border-gray-200">
                     <nav class="flex gap-8 px-6">
-                        <button class="py-4 px-2 border-b-2 border-blue-600 text-blue-600 font-semibold">
+                        <button class="py-4 px-2 border-b-2 font-semibold" style="border-color: #001F5D; color: #001F5D;">
                             <?php echo LanguageHelper::t('shop.all_products'); ?>
                         </button>
                         <button class="py-4 px-2 border-b-2 border-transparent text-gray-500 hover:text-gray-700 font-medium">
@@ -119,7 +108,7 @@ if (!$shop) {
                             
                             <!-- Product Info -->
                             <div class="p-3">
-                                <h3 class="text-sm font-medium text-gray-900 mb-2 line-clamp-2 group-hover:text-blue-600 transition">
+                                <h3 class="text-sm font-medium text-gray-900 mb-2 line-clamp-2 transition" style="transition: color 0.3s;" onmouseover="this.style.color='#001F5D'" onmouseout="this.style.color='#111827'">
                                     <?php echo htmlspecialchars($product['name']); ?>
                                 </h3>
                                 

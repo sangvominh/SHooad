@@ -1,25 +1,14 @@
 <!-- Product Information Section -->
 <div class="flex flex-col gap-6">
-    <!-- Brand & Title -->
+    <!-- Product Title -->
     <div>
-        <?php if (!empty($product['brand'])): ?>
-        <p class="text-blue-600 text-sm font-medium mb-1"><?php echo htmlspecialchars($product['brand']); ?></p>
-        <?php endif; ?>
-        <h1 class="text-3xl font-bold text-gray-900 mb-2"><?php echo htmlspecialchars($product['name']); ?></h1>
-        <?php if (!empty($product['shop_name'])): ?>
-        <div class="flex items-center gap-4 mt-2">
-            <p class="text-gray-700 text-sm flex items-center gap-2 bg-gray-50 px-3 py-1.5 rounded-lg border border-gray-200">
-                <i class="fas fa-store text-blue-600"></i>
-                <span class="text-gray-600">Shop:</span>
-                <a href="/SHooad/public/customer/shop-detail?shop_id=<?php echo $product['shop_id'] ?? ''; ?>" class="text-blue-600 hover:underline font-medium"><?php echo htmlspecialchars($product['shop_name']); ?></a>
-            </p>
-        </div>
-        <?php endif; ?>
+        <h1 class="text-3xl font-bold text-gray-900"><?php echo htmlspecialchars($product['name']); ?></h1>
     </div>
     
     <!-- Price & Rating -->
-    <div class="border-t border-b border-gray-200 py-4">
+    <div class="border-y border-gray-200 py-4">
         <div class="flex items-center justify-between flex-wrap gap-4">
+            <!-- Price -->
             <div class="flex items-center gap-3">
                 <?php 
                 $price = $product['price'] ?? '';
@@ -39,6 +28,7 @@
                     <span class="text-3xl font-bold text-gray-900"><?php echo number_format($price, 0, ',', '.'); ?>₫</span>
                 <?php } ?>
             </div>
+            <!-- Rating -->
             <div class="flex items-center gap-2">
                 <div class="flex">
                     <?php
@@ -53,24 +43,8 @@
                     ?>
                 </div>
                 <span class="font-semibold text-gray-900"><?php echo number_format($product['rating'], 1); ?></span>
-                <span class="text-gray-500">(<?php echo $product['reviews_count']; ?> reviews)</span>
+                <span class="text-gray-500">(<?php echo $product['reviews_count']; ?> đánh giá)</span>
             </div>
-        </div>
-        
-        <!-- Stock Info -->
-        <div class="mt-3 flex items-center gap-4 text-sm">
-            <?php 
-            $stock = intval($product['stock'] ?? 0);
-            if ($stock > 0):
-            ?>
-                <span class="text-green-600 font-medium flex items-center gap-1">
-                    <i class="fas fa-check-circle"></i> In Stock (<?php echo $stock; ?> available)
-                </span>
-            <?php else: ?>
-                <span class="text-red-600 font-medium flex items-center gap-1">
-                    <i class="fas fa-times-circle"></i> Out of Stock
-                </span>
-            <?php endif; ?>
         </div>
     </div>
     
@@ -85,14 +59,21 @@
                        value="<?php echo htmlspecialchars($color['name']); ?>" 
                        data-color-id="<?php echo $color['id']; ?>"
                        data-stock="<?php echo $color['stock']; ?>"
-                       class="sr-only color-radio" <?php echo $idx === 0 ? 'checked' : ''; ?>>
+                       class="sr-only color-radio" <?php echo $idx === 0 ? 'checked' : ''; ?>
+                       <?php echo $color['stock'] <= 0 ? 'disabled' : ''; ?>>
                 <label for="color_<?php echo $idx; ?>" 
-                       class="color-label flex items-center gap-2 px-4 py-2 rounded-lg cursor-pointer border-2 <?php echo $idx === 0 ? 'border-blue-600 bg-blue-50' : 'border-gray-300'; ?> hover:border-blue-600 hover:bg-blue-50 transition">
-                    <span class="w-6 h-6 rounded-full border border-gray-300 flex-shrink-0" 
-                          style="background-color: <?php echo htmlspecialchars($color['code']); ?>;"></span>
-                    <span class="text-sm font-medium"><?php echo htmlspecialchars($color['name']); ?></span>
+                       class="color-label flex flex-col gap-1 px-4 py-2 rounded-lg border-2 <?php echo $idx === 0 ? 'border-blue-600 bg-blue-50' : 'border-gray-300'; ?> <?php echo $color['stock'] <= 0 ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:border-blue-600 hover:bg-blue-50'; ?> transition">
+                    <div class="flex items-center gap-2">
+                        <span class="w-6 h-6 rounded-full border border-gray-300 flex-shrink-0" 
+                              style="background-color: <?php echo htmlspecialchars($color['code']); ?>;"></span>
+                        <span class="text-sm font-medium"><?php echo htmlspecialchars($color['name']); ?></span>
+                    </div>
                     <?php if ($color['stock'] <= 0): ?>
-                    <span class="text-xs text-red-500">(Hết hàng)</span>
+                    <span class="text-xs text-red-500 font-semibold">Hết hàng</span>
+                    <?php elseif ($color['stock'] <= 10): ?>
+                    <span class="text-xs text-orange-500">Còn <?php echo $color['stock']; ?> sản phẩm</span>
+                    <?php else: ?>
+                    <span class="text-xs text-green-600">Còn <?php echo $color['stock']; ?> sản phẩm</span>
                     <?php endif; ?>
                 </label>
             </div>
@@ -107,18 +88,25 @@
         <p class="font-semibold mb-3">Kích thước: <span class="text-red-500">*</span></p>
         <div class="flex gap-2 flex-wrap" id="sizeGroup">
             <?php foreach ($product['sizes'] as $idx => $size): ?>
-            <label for="size_<?php echo $idx; ?>" 
-                   class="size-label min-w-[50px] h-10 px-3 flex items-center justify-center border-2 <?php echo $idx === 0 ? 'border-blue-600 bg-blue-50' : 'border-gray-300'; ?> rounded-lg cursor-pointer hover:border-blue-600 hover:bg-blue-50 transition">
-                <input type="radio" id="size_<?php echo $idx; ?>" name="size" 
-                       value="<?php echo htmlspecialchars($size['name']); ?>" 
-                       data-size-id="<?php echo $size['id']; ?>"
-                       data-stock="<?php echo $size['stock']; ?>"
-                       class="sr-only size-radio" <?php echo $idx === 0 ? 'checked' : ''; ?>>
-                <span class="text-sm font-medium"><?php echo htmlspecialchars($size['name']); ?></span>
-                <?php if ($size['stock'] <= 0): ?>
-                <span class="ml-1 text-xs text-red-500">✗</span>
-                <?php endif; ?>
-            </label>
+            <div class="relative group">
+                <label for="size_<?php echo $idx; ?>" 
+                       class="size-label min-w-[50px] px-3 flex flex-col items-center justify-center border-2 <?php echo $idx === 0 ? 'border-blue-600 bg-blue-50' : 'border-gray-300'; ?> rounded-lg <?php echo $size['stock'] <= 0 ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:border-blue-600 hover:bg-blue-50'; ?> transition py-2">
+                    <input type="radio" id="size_<?php echo $idx; ?>" name="size" 
+                           value="<?php echo htmlspecialchars($size['name']); ?>" 
+                           data-size-id="<?php echo $size['id']; ?>"
+                           data-stock="<?php echo $size['stock']; ?>"
+                           class="sr-only size-radio" <?php echo $idx === 0 ? 'checked' : ''; ?>
+                           <?php echo $size['stock'] <= 0 ? 'disabled' : ''; ?>>
+                    <span class="text-sm font-medium"><?php echo htmlspecialchars($size['name']); ?></span>
+                    <?php if ($size['stock'] <= 0): ?>
+                    <span class="text-xs text-red-500 font-semibold">Hết</span>
+                    <?php elseif ($size['stock'] <= 10): ?>
+                    <span class="text-xs text-orange-500">Còn <?php echo $size['stock']; ?></span>
+                    <?php else: ?>
+                    <span class="text-xs text-green-600">Còn <?php echo $size['stock']; ?></span>
+                    <?php endif; ?>
+                </label>
+            </div>
             <?php endforeach; ?>
         </div>
     </div>
@@ -126,7 +114,7 @@
     
     <!-- Quantity Selection -->
     <div>
-        <p class="font-semibold mb-3">Quantity:</p>
+        <p class="font-semibold mb-3">Số lượng:</p>
         <div class="flex items-center gap-2 w-fit">
             <button type="button" id="qtyMinus" class="w-8 h-8 border border-gray-300 flex items-center justify-center hover:bg-gray-100 transition">−</button>
             <input type="number" id="qtyInput" value="1" min="1" class="w-12 h-8 text-center border border-gray-300 rounded" style="appearance: textfield;">
@@ -145,8 +133,26 @@
             <button type="button" id="qtyPlus" class="w-8 h-8 border border-gray-300 flex items-center justify-center hover:bg-gray-100 transition">+</button>
         </div>
     </div>
-    
-    <!-- Product Description -->
+
+    <!-- Action Buttons -->
+    <div class="flex flex-col sm:flex-row gap-3">
+        <button id="addToCartBtn" type="submit" disabled class="flex-1 bg-gray-400 text-white py-3 rounded-lg font-semibold cursor-not-allowed transition">
+            <i class="fas fa-shopping-cart mr-2"></i>Thêm vào giỏ
+        </button>
+        <button id="buyNowBtn" type="button" disabled class="flex-1 bg-gray-400 text-gray-700 py-3 rounded-lg font-semibold cursor-not-allowed transition">
+            <i class="fas fa-bolt mr-2"></i>Mua ngay
+        </button>
+    </div>
+</div>
+
+<!-- Hidden form for add to cart -->
+<form id="addToCartForm" method="POST" style="display:none;">
+    <input type="hidden" name="product_id" value="<?php echo $productId; ?>">
+    <input type="hidden" name="color" id="selectedColor" value="">
+    <input type="hidden" name="size" id="selectedSize" value="">
+    <input type="hidden" name="quantity" id="selectedQuantity" value="">
+</form>
+
 <script>
   document.addEventListener('DOMContentLoaded', function() {
     // Quantity input handlers
@@ -405,25 +411,3 @@
     validateFormAndUpdateButtons();
   });
 </script>
-    <p class="text-gray-600 leading-relaxed">
-        <?php echo htmlspecialchars($product['description']); ?>
-    </p>
-    
-    <!-- Action Buttons -->
-    <div class="flex flex-col gap-3">
-        <button id="addToCartBtn" type="submit" disabled class="w-full bg-gray-400 text-white py-3 font-semibold cursor-not-allowed transition">
-            Add to Cart
-        </button>
-        <button id="buyNowBtn" type="button" disabled class="w-full bg-gray-400 text-black py-3 font-semibold cursor-not-allowed transition">
-            Buy Now
-        </button>
-    </div>
-</div>
-
-<!-- Hidden form for add to cart -->
-<form id="addToCartForm" method="POST" style="display:none;">
-    <input type="hidden" name="product_id" value="<?php echo $productId; ?>">
-    <input type="hidden" name="color" id="selectedColor" value="">
-    <input type="hidden" name="size" id="selectedSize" value="">
-    <input type="hidden" name="quantity" id="selectedQuantity" value="">
-</form>

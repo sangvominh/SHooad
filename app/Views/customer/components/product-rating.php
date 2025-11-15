@@ -1,7 +1,7 @@
 <!-- Product Rating Section -->
 <div class="container mx-auto px-4 py-12 border-t border-gray-200">
     <div class="max-w-4xl mx-auto">
-        <h2 class="text-2xl font-bold text-gray-900 mb-8">Customer Reviews</h2>
+        <h2 class="text-2xl font-bold text-gray-900 mb-8">Đánh giá sản phẩm</h2>
         
         <!-- Rating Summary -->
         <div class="bg-gray-50 rounded-lg p-6 mb-8">
@@ -24,7 +24,7 @@
                         ?>
                     </div>
                     <div class="text-gray-600 text-sm">
-                        <?php echo $product['reviews_count'] ?? 0; ?> reviews
+                        <?php echo $product['reviews_count'] ?? 0; ?> đánh giá
                     </div>
                 </div>
                 
@@ -43,7 +43,7 @@
                         $percentage = $totalReviews > 0 ? ($count / $totalReviews) * 100 : 0;
                     ?>
                     <div class="flex items-center gap-3 mb-2">
-                        <span class="text-sm font-medium w-12"><?php echo $star; ?> star</span>
+                        <span class="text-sm font-medium w-12"><?php echo $star; ?> sao</span>
                         <div class="flex-1 bg-gray-200 rounded-full h-2">
                             <div class="bg-yellow-400 h-2 rounded-full" style="width: <?php echo $percentage; ?>%"></div>
                         </div>

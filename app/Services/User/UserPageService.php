@@ -1,19 +1,15 @@
 <?php
 require_once __DIR__ . '/../ProductService.php';
-require_once __DIR__ . '/../../Models/Banner.php';
 
 class UserPageService {
     private $productService;
-    private $bannerModel;
 
     public function __construct() {
         $this->productService = new ProductService();
-        $this->bannerModel = new Banner();
     }
 
     public function getHomePageData(): array {
         return [
-            'banners' => $this->bannerModel->getActive(),
             'navigation' => $this->getNavigationData(),
             'header' => $this->getHeaderData()
         ];
@@ -101,12 +97,7 @@ class UserPageService {
                     sh.id as shop_id,
                     sh.description as shop_description,
                     (SELECT COUNT(*) FROM products WHERE shop_id = sh.id AND status = 'active') as shop_products_count,
-                    (SELECT AVG(r2.rating) FROM reviews r2 
-                     JOIN products p2 ON r2.product_id = p2.id 
-                     WHERE p2.shop_id = sh.id) as shop_rating,
-                    GROUP_CONCAT(DISTINCT pi.filename) as images,
-                    p.colors as colors,
-                    p.sizes as sizes
+                    GROUP_CONCAT(DISTINCT pi.filename) as images
                 FROM products p
                 LEFT JOIN shops sh ON p.shop_id = sh.id
                 LEFT JOIN product_images pi ON p.id = pi.product_id
@@ -142,12 +133,6 @@ class UserPageService {
             return $img !== $product['main_image'];
         }));
 
-        // Process colors
-        $product['colors'] = $this->processColors($product['colors'] ?? '');
-
-        // Process sizes
-        $product['sizes'] = $this->processSizes($product['sizes'] ?? '');
-
         // Get reviews and calculate rating
         $reviewStmt = $pdo->prepare('
             SELECT r.*, c.name as customer_name, c.email as customer_email
@@ -169,10 +154,6 @@ class UserPageService {
         } else {
             $product['rating'] = 0;
         }
-
-        // Add shop stats
-        $product['shop_rating'] = $product['shop_rating'] ? round($product['shop_rating'], 1) : 0;
-        $product['shop_followers'] = rand(100, 5000); // Temporary: would come from a followers table
 
         // Get colors and sizes from new tables
         $product['colors'] = $this->getProductColorsFromDB($productId);
@@ -233,62 +214,6 @@ class UserPageService {
                 'stock' => $size['stock']
             ];
         }, $sizes);
-    }
-
-    private function processColors(string $rawColors): array {
-        $getColorCode = function(string $colorName): string {
-            $colorMap = [
-                'Black' => '#000000',
-                'White' => '#FFFFFF',
-                'Red' => '#FF0000',
-                'Green' => '#008000',
-                'Blue' => '#0000FF',
-                'Yellow' => '#FFFF00',
-                'Purple' => '#800080',
-                'Pink' => '#FFC0CB',
-                'Orange' => '#FFA500',
-                'Brown' => '#A52A2A',
-                'Gray' => '#808080'
-            ];
-            return $colorMap[$colorName] ?? '#000000';
-        };
-
-        $colorList = [];
-        if (strlen(trim($rawColors)) > 0) {
-            $parts = array_map('trim', explode(',', $rawColors));
-            $parts = array_filter($parts, function($v) { return $v !== '' && $v !== null; });
-            $parts = array_unique($parts);
-            $colorList = array_values($parts);
-        }
-
-        return array_map(function($color) use ($getColorCode) {
-            $name = (string)$color;
-            $trim = trim($name);
-            
-            if (preg_match('/^#([A-Fa-f0-9]{3}|[A-Fa-f0-9]{6})$/', $trim)) {
-                $code = $trim;
-            } else {
-                $normalized = ucwords(strtolower($trim));
-                $code = $getColorCode($normalized);
-            }
-            
-            return [
-                'name' => $name,
-                'code' => $code,
-            ];
-        }, $colorList);
-    }
-
-    private function processSizes(string $rawSizes): array {
-        if (strlen(trim($rawSizes)) === 0) {
-            return [];
-        }
-
-        $parts = array_map('trim', explode(',', $rawSizes));
-        $parts = array_filter($parts, function($v) { return $v !== '' && $v !== null; });
-        $parts = array_unique($parts);
-        
-        return array_values($parts);
     }
 
     public function getProductDetailPageData(int $productId): ?array {
@@ -681,7 +606,6 @@ class UserPageService {
         }
 
         // Add default values
-        $shop['followers'] = rand(100, 5000); // Temporary: would come from a followers table
         $shop['rating'] = $shop['rating'] ? round($shop['rating'], 1) : 0;
 
         // Get shop products

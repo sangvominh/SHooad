@@ -132,8 +132,8 @@ return [
     ],
     
     'home' => [
-        'popular_products_title' => 'Sản phẩm phổ biến của chúng tôi',
-        'popular_products_desc' => 'Khám phá những sản phẩm bán chạy nhất và làm cho ngày của bạn thêm tươi đẹp và rực rỡ.',
+        'popular_products_title' => 'Sản phẩm Mới',
+        'popular_products_desc' => 'Khám phá những sản phẩm mới nhất',
         'view_all' => 'Xem tất cả',
         'shop_now' => 'Mua ngay',
         'add_to_cart' => 'Thêm vào giỏ',
