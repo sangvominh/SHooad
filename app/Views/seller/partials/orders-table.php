@@ -6,7 +6,7 @@ $shop_orders = $data['orders'] ?? [];
 ?>
 <div class="bg-white rounded-lg border border-gray-200">
   <div class="px-6 py-4 border-b border-gray-200">
-    <div class="flex items-center justify-between mb-4">
+    <div class="flex items-center justify-between">
       <h2 class="text-lg font-semibold text-gray-900">
         <?php echo $is_dashboard ? 'Recent Orders' : 'All Orders'; ?>
       </h2>

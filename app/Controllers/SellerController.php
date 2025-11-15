@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/../services/Seller/AuthSellerService.php';
 require_once __DIR__ . '/../services/Seller/SellerService.php';
+require_once __DIR__ . '/../services/Seller/SellerAnalysisService.php';
 require_once __DIR__ . '/../services/ProductService.php';
 require_once __DIR__ . '/../services/OrderService.php';
 require_once __DIR__ . '/../middleware/AuthMiddleware.php';
@@ -9,12 +10,14 @@ require_once __DIR__ . '/../services/FlashMessageService.php';
 class SellerController {
     private $authService;
     private $sellerService;
+    private $analysisService;
     private $productService;
     private $orderService;
 
     public function __construct() {
         $this->authService = new AuthSellerService();
         $this->sellerService = new SellerService();
+        $this->analysisService = new SellerAnalysisService();
         $this->productService = new ProductService();
         $this->orderService = new OrderService();
     }
@@ -171,5 +174,44 @@ class SellerController {
     public function logout() {
         $this->authService->logout();
         $this->redirectTo('/SHooad/public/seller/login');
+    }
+
+    public function analysis() {
+        AuthMiddleware::checkSellerAuth();
+        
+        $session = $this->getSessionData();
+        $type = $_GET['type'] ?? 'orders'; // Default to orders
+        
+        // Get analysis data based on type
+        if ($type === 'products') {
+            $analysisData = $this->analysisService->getProductsAnalysis($session['shop_id']);
+        } else {
+            $analysisData = $this->analysisService->getOrdersAnalysis($session['shop_id']);
+        }
+        
+        // Load dashboard data for sidebar
+        $data = $this->loadDashboardData();
+        $current_page = 'analysis';
+        
+        // Return JSON if requested via AJAX
+        if (isset($_GET['ajax']) && $_GET['ajax'] === '1') {
+            header('Content-Type: application/json');
+            echo json_encode($analysisData);
+            exit;
+        }
+        
+        // Otherwise render the view
+        include __DIR__ . '/../Views/seller/pages/analysis.php';
+    }
+
+    public function comingSoon(string $page) {
+        AuthMiddleware::checkSellerAuth();
+        
+        // Load dashboard data for sidebar
+        $data = $this->loadDashboardData();
+        $current_page = $page;
+        
+        // Render coming soon view
+        include __DIR__ . '/../Views/seller/coming-soon.php';
     }
 }

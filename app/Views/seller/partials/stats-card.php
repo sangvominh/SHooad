@@ -28,6 +28,7 @@ $icon = $icon ?? 'chart';
     </div>
   </div>
   
+  <?php if (!empty($change)): ?>
   <div class="flex items-center gap-1">
     <span class="text-sm font-semibold 
       <?php echo $change_type === 'positive' ? 'text-green-600' : ($change_type === 'negative' ? 'text-red-600' : 'text-gray-600'); ?>">
@@ -35,4 +36,17 @@ $icon = $icon ?? 'chart';
     </span>
     <span class="text-sm text-gray-600">this week</span>
   </div>
+  <?php else: ?>
+  <!-- <div class="flex items-center gap-1">
+    <span class="text-sm text-gray-500">
+      <?php 
+      if ($change_type === 'warning') {
+        echo 'Requires attention';
+      } else {
+        echo 'Real-time data';
+      }
+      ?>
+    </span>
+  </div> -->
+  <?php endif; ?>
 </div>

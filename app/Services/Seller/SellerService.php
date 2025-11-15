@@ -50,4 +50,56 @@ class SellerService {
     public function getShopInfo(int $shop_id): ?array {
         return $this->shopModel->getInfo($shop_id);
     }
+
+    /**
+     * Get dashboard statistics
+     */
+    public function getDashboardStats(int $shop_id): array {
+        require_once __DIR__ . '/../../Core/Database.php';
+        $db = (new Database())->getConnection();
+        
+        // Get total revenue (excluding cancelled and failed orders)
+        $stmt = $db->prepare("
+            SELECT COALESCE(SUM(oi.price * oi.quantity), 0) as total_revenue
+            FROM order_items oi
+            JOIN orders o ON oi.order_id = o.id
+            WHERE o.shop_id = ? AND o.status NOT IN ('Cancelled', 'Failed')
+        ");
+        $stmt->bind_param("i", $shop_id);
+        $stmt->execute();
+        $revenueResult = $stmt->get_result()->fetch_assoc();
+        $totalRevenue = (float)$revenueResult['total_revenue'];
+        
+        // Get total orders
+        $stmt = $db->prepare("SELECT COUNT(*) as total_orders FROM orders WHERE shop_id = ?");
+        $stmt->bind_param("i", $shop_id);
+        $stmt->execute();
+        $ordersResult = $stmt->get_result()->fetch_assoc();
+        $totalOrders = (int)$ordersResult['total_orders'];
+        
+        // Get total products
+        $stmt = $db->prepare("SELECT COUNT(*) as total_products FROM products WHERE shop_id = ?");
+        $stmt->bind_param("i", $shop_id);
+        $stmt->execute();
+        $productsResult = $stmt->get_result()->fetch_assoc();
+        $totalProducts = (int)$productsResult['total_products'];
+        
+        // Get pending orders count
+        $stmt = $db->prepare("
+            SELECT COUNT(*) as pending_orders 
+            FROM orders 
+            WHERE shop_id = ? AND status IN ('Pending_Transfer', 'Pending_COD')
+        ");
+        $stmt->bind_param("i", $shop_id);
+        $stmt->execute();
+        $pendingResult = $stmt->get_result()->fetch_assoc();
+        $pendingOrders = (int)$pendingResult['pending_orders'];
+        
+        return [
+            'total_revenue' => $totalRevenue,
+            'total_orders' => $totalOrders,
+            'total_products' => $totalProducts,
+            'pending_orders' => $pendingOrders
+        ];
+    }
 }
