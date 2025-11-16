@@ -11,7 +11,7 @@ class Shop {
     }
 
     public function insertShop($seller_id, $shop_name, $shop_description) {
-        $stmt = $this->db->prepare("INSERT INTO shops (seller_id, name, description) VALUES (?, ?, ?)");
+        $stmt = $this->db->prepare("INSERT INTO shops (id, name, description) VALUES (?, ?, ?)");
         $stmt->bind_param("iss", $seller_id, $shop_name, $shop_description);
         if ($stmt->execute()) {
             return [
@@ -34,7 +34,7 @@ class Shop {
     }
 
     public function findShopBySellerId( $seller_id ) {
-        $stmt = $this->db->prepare("SELECT * FROM shops WHERE seller_id = ?");
+        $stmt = $this->db->prepare("SELECT * FROM shops WHERE sellers_id = ?");
         $stmt->bind_param("i", $seller_id);
         $stmt->execute();
         return $stmt->get_result()->fetch_assoc();
