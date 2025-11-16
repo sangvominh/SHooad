@@ -30,8 +30,6 @@ class ProductService {
             'name' => $postData['name'] ?? '',
             'brand' => $postData['brand'] ?? null,
             'description' => $postData['description'] ?? '',
-            'colors' => $postData['colors'] ?? '',
-            'sizes' => $postData['sizes'] ?? '',
             'price' => $postData['price'] ?? 0,
             'original_price' => $postData['original_price'] ?? 0,
             'stock' => $postData['stock'] ?? 0,
@@ -58,12 +56,10 @@ class ProductService {
             'name' => $postData['product_name'] ?? '',
             'brand' => $postData['brand'] ?? null,
             'description' => $postData['description'] ?? '',
-            'colors' => $postData['colors'] ?? '',
-            'sizes' => $postData['sizes'] ?? '',
             'price' => $postData['price'] ?? 0,
             'original_price' => $postData['original_price'] ?? 0,
             'stock' => $postData['stock'] ?? 0,
-            'category_id' => $postData['category_id'] ?? null,
+            'category_id' => !empty($postData['category_id']) ? $postData['category_id'] : null,
             'status' => $postData['status'] ?? 'active'
         ];
 
@@ -219,6 +215,34 @@ class ProductService {
         
         $mysqli->close();
         return $stock;
+    }
+
+    public function getProductVariants(int $productId): array {
+        return $this->productModel->getProductVariants($productId);
+    }
+
+    public function createProductVariant(array $data): ?int {
+        return $this->productModel->createProductVariant($data);
+    }
+
+    public function updateProductVariant(int $variantId, array $data): bool {
+        return $this->productModel->updateProductVariant($variantId, $data);
+    }
+
+    public function deleteProductVariant(int $variantId): bool {
+        return $this->productModel->deleteProductVariant($variantId);
+    }
+
+    public function getAllColors(): array {
+        return $this->productModel->getAllColors();
+    }
+
+    public function getAllSizes(): array {
+        return $this->productModel->getAllSizes();
+    }
+
+    public function getAllCategories(): array {
+        return $this->productModel->getAllCategories();
     }
 
     // Search products by name for realtime suggestions
