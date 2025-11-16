@@ -36,16 +36,18 @@ INSERT INTO sizes (name, sort_order) VALUES
 ('34', 15);
 
 -- ============================
--- 1. SELLER (1 người bán)
+-- 1. SELLERS (2 người bán)
 -- ============================
-INSERT INTO seller (name, email, phone, password, status) VALUES
-('Nguyễn Văn A', 'seller@example.com', '0901234567', '$2y$10$f1P.3Kx5LMS9Sxf7NAG7pOiqAOlxpDBzk8yN37NZ2.IfuhLDxlkCa', 'open');
+INSERT INTO sellers (name, email, phone, password, status) VALUES
+('Nguyễn Văn A', 'seller1@example.com', '0901234567', '$2y$10$f1P.3Kx5LMS9Sxf7NAG7pOiqAOlxpDBzk8yN37NZ2.IfuhLDxlkCa', 'open'),
+('Trần Thị B', 'seller2@example.com', '0912345678', '$2y$10$f1P.3Kx5LMS9Sxf7NAG7pOiqAOlxpDBzk8yN37NZ2.IfuhLDxlkCa', 'open');
 
 -- ============================
--- 2. SHOPS (1 shop)
+-- 2. SHOPS (2 shops)
 -- ============================
-INSERT INTO shops (seller_id, name, description, address, phone, status) VALUES
-(1, 'Shop Thời Trang AAA', 'Chuyên cung cấp quần áo thời trang nam nữ chất lượng cao', '123 Nguyễn Huệ, Q1, TP.HCM', '0287654321', 'open');
+INSERT INTO shops (sellers_id, name, description, address, phone, status) VALUES
+(1, 'Fashion House', 'Thời trang cao cấp cho giới trẻ, phong cách Hàn Quốc', '123 Nguyễn Huệ, Q1, TP.HCM', '0287654321', 'open'),
+(2, 'Trendy Store', 'Quần áo thời trang đa dạng, giá cả phải chăng', '456 Lê Lợi, Q3, TP.HCM', '0287654322', 'open');
 
 -- ============================
 -- 3. DELIVERY COMPANIES
@@ -67,9 +69,10 @@ INSERT INTO categories (name) VALUES
 ('Phụ Kiện');
 
 -- ============================
--- 5. PRODUCTS (20 sản phẩm)
+-- 5. PRODUCTS (20 sản phẩm - chia cho 2 shop)
 -- ============================
 INSERT INTO products (shop_id, category_id, name, brand, description, price, original_price, stock, sold, status) VALUES
+-- SHOP 1: Fashion House (10 sản phẩm - Nam)
 -- Áo Nam
 (1, 1, 'Áo Thun Nam Basic', 'ZARA', 'Áo thun cotton 100% thoáng mát', 199000, 299000, 150, 85, 'active'),
 (1, 1, 'Áo Sơ Mi Nam Công Sở', 'H&M', 'Áo sơ mi cao cấp, form slim fit', 350000, 500000, 100, 120, 'active'),
@@ -83,22 +86,25 @@ INSERT INTO products (shop_id, category_id, name, brand, description, price, ori
 (1, 2, 'Quần Short Nam', 'H&M', 'Quần short thể thao, thoáng mát', 180000, 280000, 110, 135, 'active'),
 (1, 2, 'Quần Jogger Nam', 'NIKE', 'Quần jogger thể thao năng động', 350000, 500000, 75, 68, 'active'),
 
--- Áo Nữ
-(1, 3, 'Áo Thun Nữ Form Rộng', 'UNIQLO', 'Áo thun oversize phong cách Hàn', 199000, 299000, 140, 165, 'active'),
-(1, 3, 'Áo Kiểu Nữ Công Sở', 'MANGO', 'Áo kiểu sơ mi nữ tính, thanh lịch', 280000, 400000, 85, 92, 'active'),
-(1, 3, 'Áo Croptop Nữ', 'ZARA', 'Áo croptop trẻ trung năng động', 150000, 250000, 100, 145, 'active'),
-(1, 3, 'Áo Khoác Cardigan Nữ', 'H&M', 'Áo khoác len nữ mỏng nhẹ', 320000, 480000, 70, 55, 'active'),
-(1, 3, 'Áo Blazer Nữ', 'ZARA', 'Áo vest nữ công sở cao cấp', 550000, 800000, 50, 38, 'active'),
-
--- Quần Nữ
-(1, 4, 'Quần Jean Nữ Skinny', 'LEVI\'S', 'Quần jean nữ ôm dáng chuẩn', 380000, 550000, 105, 98, 'active'),
-(1, 4, 'Quần Ống Rộng Nữ', 'MANGO', 'Quần ống rộng thời trang Hàn Quốc', 350000, 500000, 80, 87, 'active'),
-(1, 4, 'Quần Short Jean Nữ', 'H&M', 'Quần short jean trẻ trung', 220000, 320000, 95, 112, 'active'),
-(1, 4, 'Váy Jean Nữ', 'ZARA', 'Váy jean chữ A xinh xắn', 280000, 400000, 65, 73, 'active'),
-
 -- Phụ Kiện
 (1, 5, 'Nón Snapback', 'MLB', 'Nón lưỡi trai phong cách thể thao', 180000, 280000, 120, 88, 'active'),
-(1, 5, 'Túi Tote Canvas', 'CANVAS', 'Túi vải canvas đa năng', 120000, 200000, 150, 145, 'active');
+
+-- SHOP 2: Trendy Store (10 sản phẩm - Nữ)
+-- Áo Nữ
+(2, 3, 'Áo Thun Nữ Form Rộng', 'UNIQLO', 'Áo thun oversize phong cách Hàn', 199000, 299000, 140, 165, 'active'),
+(2, 3, 'Áo Kiểu Nữ Công Sở', 'MANGO', 'Áo kiểu sơ mi nữ tính, thanh lịch', 280000, 400000, 85, 92, 'active'),
+(2, 3, 'Áo Croptop Nữ', 'ZARA', 'Áo croptop trẻ trung năng động', 150000, 250000, 100, 145, 'active'),
+(2, 3, 'Áo Khoác Cardigan Nữ', 'H&M', 'Áo khoác len nữ mỏng nhẹ', 320000, 480000, 70, 55, 'active'),
+(2, 3, 'Áo Blazer Nữ', 'ZARA', 'Áo vest nữ công sở cao cấp', 550000, 800000, 50, 38, 'active'),
+
+-- Quần Nữ
+(2, 4, 'Quần Jean Nữ Skinny', 'LEVI\'S', 'Quần jean nữ ôm dáng chuẩn', 380000, 550000, 105, 98, 'active'),
+(2, 4, 'Quần Ống Rộng Nữ', 'MANGO', 'Quần ống rộng thời trang Hàn Quốc', 350000, 500000, 80, 87, 'active'),
+(2, 4, 'Quần Short Jean Nữ', 'H&M', 'Quần short jean trẻ trung', 220000, 320000, 95, 112, 'active'),
+(2, 4, 'Váy Jean Nữ', 'ZARA', 'Váy jean chữ A xinh xắn', 280000, 400000, 65, 73, 'active'),
+
+-- Phụ Kiện
+(2, 5, 'Túi Tote Canvas', 'MUJI', 'Túi vải canvas đa năng', 120000, 200000, 150, 132, 'active');
 
 -- ============================
 -- 6. PRODUCT VARIANTS (biến thể màu-size với SKU)
@@ -290,182 +296,153 @@ INSERT INTO customers (name, email, password, status) VALUES
 ('Từ Văn GG', 'customer30@gmail.com', '$2y$10$hashedpassword30', 'active');
 
 -- ============================
--- 8. REVIEWS (80 reviews)
+-- 8. REVIEWS (Đa dạng đánh giá cho các sản phẩm)
 -- ============================
 INSERT INTO reviews (product_id, customer_id, rating, comment, created_at) VALUES
--- Product 1 reviews
-(1, 1, 5, 'Áo đẹp, chất liệu mát, rất hài lòng!', '2024-10-01 10:00:00'),
-(1, 2, 4, 'Áo ổn, giao hàng nhanh', '2024-10-05 14:30:00'),
-(1, 3, 5, 'Mặc rất thoải mái, sẽ mua thêm', '2024-10-10 09:15:00'),
-(1, 4, 5, 'Chất lượng tốt, giá hợp lý', '2024-10-15 16:45:00'),
+-- Product 1: Áo Thun Nam Basic (5 reviews - rating cao)
+(1, 1, 5, 'Áo đẹp lắm! Chất cotton 100% mềm mại, thoáng mát. Mặc cả ngày không bị bí. Giá 199k quá hời so với chất lượng!', '2024-10-01 10:00:00'),
+(1, 3, 5, 'Mặc rất thoải mái, form chuẩn. Size M vừa khít người 65kg. Sẽ quay lại mua thêm màu khác!', '2024-10-10 09:15:00'),
+(1, 7, 4, 'Áo ổn, chất liệu tốt. Trừ 1 sao vì giao hơi lâu, nhưng sản phẩm không có gì để chê', '2024-10-18 14:30:00'),
+(1, 13, 5, 'Chất lượng tốt, giá hợp lý. Đã mua 3 cái khác màu rồi, đều đẹp hết!', '2024-10-25 16:45:00'),
+(1, 20, 5, 'Áo basic nhưng chất lượng cao cấp. Form đẹp, may kỹ, không bị lỗi chỉ. Recommend!', '2024-11-02 11:20:00'),
 
--- Product 2 reviews
-(2, 5, 5, 'Áo sơ mi đẹp, form chuẩn', '2024-09-20 11:00:00'),
-(2, 6, 4, 'Chất vải tốt, nhưng hơi nhăn', '2024-09-25 13:20:00'),
-(2, 7, 5, 'Mặc đi làm rất đẹp', '2024-10-01 08:30:00'),
-(2, 8, 5, 'Áo đẹp, giao hàng nhanh', '2024-10-08 15:00:00'),
+-- Product 2: Áo Sơ Mi Nam Công Sở (4 reviews - mix rating)
+(2, 5, 5, 'Áo sơ mi đẹp, form slim fit ôm vừa đủ. Mặc đi làm rất sang, đồng nghiệp khen nhiều!', '2024-09-20 11:00:00'),
+(2, 11, 4, 'Chất vải tốt nhưng hơi dễ nhăn. Phải ủi kỹ trước khi mặc. Ngoài ra thì OK', '2024-10-01 08:30:00'),
+(2, 19, 5, 'Mặc đi làm rất đẹp và lịch sự. Chất liệu cao cấp, xứng đáng 350k', '2024-10-15 15:00:00'),
+(2, 25, 3, 'Áo đẹp nhưng size hơi nhỏ so với mô tả. Nên chọn size lớn hơn 1 bậc', '2024-10-28 13:45:00'),
 
--- Product 3 reviews
-(3, 9, 4, 'Áo polo đẹp, form hơi rộng', '2024-09-15 10:45:00'),
-(3, 10, 5, 'Chất liệu tốt, mặc mát', '2024-09-22 14:15:00'),
-(3, 11, 5, 'Rất hài lòng với sản phẩm', '2024-10-03 09:00:00'),
-(3, 12, 4, 'Đẹp nhưng màu hơi nhạt so với ảnh', '2024-10-12 16:30:00'),
+-- Product 3: Áo Polo Nam (6 reviews)
+(3, 2, 5, 'Áo polo UNIQLO chất lượng không bàn cãi! Chất pique mát mẻ, form đẹp', '2024-09-15 10:45:00'),
+(3, 10, 4, 'Chất liệu tốt, mặc mát. Trừ 1 sao vì form hơi rộng một chút', '2024-09-22 14:15:00'),
+(3, 15, 5, 'Rất hài lòng! Đúng chuẩn polo Nhật Bản. Giá 250k là quá rẻ', '2024-10-03 09:00:00'),
+(3, 22, 4, 'Đẹp nhưng màu Navy hơi nhạt hơn ảnh một tí. Overall vẫn OK', '2024-10-12 16:30:00'),
+(3, 27, 5, 'Mua cho chồng, anh ấy rất thích. Chất vải mềm, thoáng khí', '2024-10-20 10:15:00'),
+(3, 29, 5, 'Polo đẹp, mặc đi chơi hoặc đi làm đều được. Versatile!', '2024-11-05 14:00:00'),
 
--- Product 4 reviews
-(4, 13, 5, 'Áo khoác jean đẹp lắm!', '2024-09-10 11:30:00'),
-(4, 14, 4, 'Chất jean dày dặn', '2024-09-18 13:45:00'),
-(4, 15, 5, 'Mặc rất phong cách', '2024-10-05 10:20:00'),
+-- Product 4: Áo Khoác Jean Nam (3 reviews)
+(4, 9, 5, 'Áo khoác jean LEVI\'S xịn sò! Chất jean dày dặn, wash đẹp. Mặc phong cách Hàn Quốc cực ngầu', '2024-09-10 11:30:00'),
+(4, 16, 4, 'Chất jean dày dặn, form đẹp. Nhưng giá 450k hơi cao một chút', '2024-10-05 10:20:00'),
+(4, 23, 5, 'Mặc rất phong cách! Khoác ngoài áo thun là đẹp ngay. Đáng tiền!', '2024-10-18 13:45:00'),
 
--- Product 5 reviews
-(5, 16, 5, 'Áo hoodie ấm, chất nỉ dày', '2024-09-25 09:30:00'),
-(5, 17, 5, 'Rất thích, sẽ mua thêm', '2024-10-02 14:00:00'),
-(5, 18, 4, 'Đẹp nhưng hơi nặng', '2024-10-10 11:15:00'),
-(5, 19, 5, 'Chất lượng tốt, giá ổn', '2024-10-16 15:30:00'),
+-- Product 5: Áo Hoodie Nam (5 reviews - shop 1)
+(5, 6, 5, 'Áo hoodie ấm áp, chất nỉ dày dặn. Mặc mùa đông Sài Gòn vừa vặn. ADIDAS quality!', '2024-09-25 09:30:00'),
+(5, 14, 5, 'Rất thích! Nón che kín, túi rộng. Sẽ mua thêm màu khác cho anh trai', '2024-10-02 14:00:00'),
+(5, 21, 4, 'Đẹp và ấm nhưng hơi nặng. Mặc lâu sẽ thấy mỏi vai một chút', '2024-10-10 11:15:00'),
+(5, 26, 5, 'Chất lượng tốt, logo thêu đẹp. Giá 380k so với hãng thì quá OK', '2024-10-16 15:30:00'),
+(5, 30, 5, 'Hoodie đẹp nhất từng mua! Form rộng thoải mái, chất nỉ mềm không xù lông', '2024-11-01 10:00:00'),
 
--- Product 6 reviews
-(6, 20, 5, 'Quần jean đẹp, form chuẩn', '2024-09-12 10:00:00'),
-(6, 21, 4, 'Chất jean tốt nhưng hơi bó', '2024-09-20 13:30:00'),
-(6, 22, 5, 'Mặc rất vừa, đẹp', '2024-10-01 09:45:00'),
-(6, 23, 5, 'Sẽ giới thiệu cho bạn bè', '2024-10-11 16:00:00'),
+-- Product 6: Quần Jean Nam Slim Fit (4 reviews - shop 1)
+(6, 8, 5, 'Quần jean LEVI\'S không bàn cãi! Chất jean co giãn, form slim fit ôm đẹp. Người mình 70kg mặc size 31 vừa khít', '2024-09-12 10:00:00'),
+(6, 12, 4, 'Chất jean tốt nhưng hơi bó đùi. Nên chọn size lên 1 nếu chân to', '2024-09-20 13:30:00'),
+(6, 18, 5, 'Mặc rất vừa, đẹp! Jean co giãn thoải mái, không bó cứng. Recommend', '2024-10-01 09:45:00'),
+(6, 28, 5, 'Sẽ giới thiệu cho bạn bè. Quần đẹp, giá 400k hợp lý', '2024-10-11 16:00:00'),
 
--- Product 7 reviews
-(7, 24, 4, 'Quần kaki đẹp, mặc công sở ổn', '2024-09-15 11:20:00'),
-(7, 25, 5, 'Chất vải mát, không nhăn', '2024-09-28 14:45:00'),
-(7, 26, 5, 'Rất hài lòng', '2024-10-07 10:30:00'),
+-- Product 7: Quần Kaki Nam (3 reviews - shop 1)
+(7, 4, 4, 'Quần kaki đẹp, mặc công sở ổn. Chất vải hơi cứng lúc đầu, mặc vài lần thì mềm', '2024-09-15 11:20:00'),
+(7, 17, 5, 'Chất vải mát mẻ, chống nhăn tốt. Mặc cả ngày không bị nhăn. Perfect cho dân văn phòng!', '2024-09-28 14:45:00'),
+(7, 24, 5, 'Rất hài lòng! Túi sâu, may kỹ. Đã mua thêm 2 cái khác màu', '2024-10-07 10:30:00'),
 
--- Product 8 reviews
-(8, 27, 5, 'Quần short mát, mặc thoải mái', '2024-10-01 09:00:00'),
-(8, 28, 4, 'Đẹp nhưng hơi ngắn', '2024-10-08 13:15:00'),
-(8, 29, 5, 'Chất lượng tốt', '2024-10-14 15:45:00'),
-(8, 30, 5, 'Sẽ mua thêm màu khác', '2024-10-18 11:00:00'),
+-- Product 10: Áo Thun Nữ Form Rộng - SHOP 2 (6 reviews - đa dạng)
+(11, 1, 5, 'Áo thun nữ form rộng siêu đẹp! Chất cotton mềm mại, mặc thoải mái cả ngày. Trendy Store ship nhanh lắm!', '2024-09-18 11:15:00'),
+(11, 8, 5, 'Form oversize vừa vặn, không quá rộng. Mặc với quần jean hoặc váy đều đẹp', '2024-09-26 13:45:00'),
+(11, 15, 4, 'Đẹp nhưng hơi dài. Mình cao 1m55 phải xắn lên một chút', '2024-10-04 10:00:00'),
+(11, 20, 5, 'Mặc rất thoải mái! Phong cách Hàn Quốc chuẩn. Đã mua 4 màu rồi', '2024-10-12 15:30:00'),
+(11, 25, 5, 'Chất cotton mềm mịn, không nhăn. Giặt nhiều lần vẫn giữ form tốt', '2024-10-17 09:45:00'),
+(11, 29, 5, 'Trendy Store tuyệt vời! Áo đẹp, giá rẻ, giao hàng nhanh. 5 sao xứng đáng!', '2024-11-03 14:20:00'),
 
--- Product 9 reviews
-(9, 1, 4, 'Quần jogger đẹp, mặc thể thao ok', '2024-09-22 10:30:00'),
-(9, 2, 5, 'Rất thích, form đẹp', '2024-10-03 14:00:00'),
-(9, 3, 5, 'Chất liệu co giãn tốt', '2024-10-13 09:30:00'),
+-- Product 12: Áo Kiểu Nữ Công Sở - SHOP 2 (5 reviews)
+(12, 5, 5, 'Áo kiểu đẹp lắm! Mặc đi làm rất sang trọng. Đồng nghiệp hỏi mua ở đâu hoài', '2024-09-20 10:45:00'),
+(12, 11, 4, 'Đẹp nhưng chất vải hơi dễ nhăn. Phải ủi trước khi mặc. Ngoài ra thì OK', '2024-09-30 14:15:00'),
+(12, 19, 5, 'Rất hài lòng! Áo sơ mi nữ tính, form đẹp không bó. 280k quá rẻ', '2024-10-09 11:30:00'),
+(12, 23, 5, 'Trendy Store có nhiều đồ đẹp quá! Áo này mình sẽ mua thêm màu khác', '2024-10-16 16:00:00'),
+(12, 27, 4, 'Chất liệu tốt, may đẹp. Trừ 1 sao vì size hơi nhỏ', '2024-10-25 13:30:00'),
 
--- Product 10 reviews
-(10, 4, 5, 'Áo thun nữ đẹp lắm!', '2024-09-18 11:15:00'),
-(10, 5, 5, 'Form rộng vừa vặn', '2024-09-26 13:45:00'),
-(10, 6, 4, 'Đẹp nhưng hơi dài', '2024-10-04 10:00:00'),
-(10, 7, 5, 'Mặc rất thoải mái', '2024-10-12 15:30:00'),
-(10, 8, 5, 'Chất cotton mềm mịn', '2024-10-17 09:45:00'),
+-- Product 13: Áo Croptop Nữ - SHOP 2 (4 reviews - trẻ trung)
+(13, 7, 5, 'Áo croptop đẹp, form chuẩn! Mặc đi chơi, đi biển đều OK. Giá 150k quá hời', '2024-09-25 09:30:00'),
+(13, 13, 3, 'Chất vải hơi mỏng, hơi lộ. Nên mặc áo lót dày hoặc bra đệm', '2024-10-02 13:00:00'),
+(13, 18, 5, 'Mặc rất xinh! Form crop vừa phải, không quá ngắn. Năng động trẻ trung', '2024-10-10 10:15:00'),
+(13, 22, 5, 'Giá tốt, chất lượng OK. Mua 3 màu để thay đổi phong cách', '2024-10-15 14:45:00'),
 
--- Product 11 reviews
-(11, 9, 5, 'Áo kiểu đẹp, mặc đi làm sang', '2024-09-20 10:45:00'),
-(11, 10, 4, 'Đẹp nhưng dễ nhăn', '2024-09-30 14:15:00'),
-(11, 11, 5, 'Rất hài lòng', '2024-10-09 11:30:00'),
-(11, 12, 5, 'Sẽ mua thêm', '2024-10-16 16:00:00'),
+-- Product 16: Quần Jean Nữ Skinny - SHOP 2 (5 reviews)
+(16, 2, 5, 'Quần jean nữ đẹp lắm! Form skinny ôm vừa vặn, tôn dáng cực kỳ. LEVI\'S chất lượng không phải bàn', '2024-09-19 10:00:00'),
+(16, 10, 5, 'Form chuẩn, chất jean co giãn tốt. Size 27 vừa khít người 50kg. Perfect!', '2024-09-29 14:30:00'),
+(16, 16, 4, 'Đẹp nhưng hơi dài. Mình 1m58 phải cắt bớt. Nhưng chất jean rất tốt', '2024-10-08 09:45:00'),
+(16, 21, 5, 'Rất hài lòng! Trendy Store có nhiều quần jean đẹp. Mình mua thêm quần ống rộng rồi', '2024-10-15 16:00:00'),
+(16, 26, 5, 'Jean skinny ôm đẹp, không bó chặt. Phối với boots hoặc sneakers đều xinh', '2024-10-28 11:20:00'),
 
--- Product 12 reviews
-(12, 13, 5, 'Áo croptop đẹp, form chuẩn', '2024-09-25 09:30:00'),
-(12, 14, 4, 'Chất vải hơi mỏng', '2024-10-02 13:00:00'),
-(12, 15, 5, 'Mặc rất xinh', '2024-10-10 10:15:00'),
-(12, 16, 5, 'Giá tốt, chất lượng ok', '2024-10-15 14:45:00'),
+-- Product 17: Quần Ống Rộng Nữ - SHOP 2 (4 reviews)
+(17, 4, 5, 'Quần ống rộng đẹp, mặc mát mẻ! Che khuyết điểm chân to rất tốt. Recommended!', '2024-09-24 11:30:00'),
+(17, 14, 4, 'Đẹp nhưng chất vải hơi dễ nhăn. Phải cẩn thận khi ngồi lâu', '2024-10-03 13:15:00'),
+(17, 24, 5, 'Form đẹp, ống rộng vừa phải. Mặc đi làm hoặc đi chơi đều OK', '2024-10-12 10:30:00'),
+(17, 30, 5, 'Trendy Store ship nhanh, đóng gói cẩn thận. Quần đẹp, sẽ ủng hộ shop lâu dài!', '2024-11-06 15:00:00'),
 
--- Product 13 reviews
-(13, 17, 4, 'Áo cardigan ấm, nhưng hơi dài tay', '2024-09-28 11:00:00'),
-(13, 18, 5, 'Đẹp lắm, mặc mùa đông vừa', '2024-10-06 15:30:00'),
-(13, 19, 5, 'Chất len mềm', '2024-10-14 09:00:00'),
-
--- Product 14 reviews
-(14, 20, 5, 'Áo blazer sang trọng', '2024-09-22 10:30:00'),
-(14, 21, 4, 'Đẹp nhưng hơi bó nách', '2024-10-01 13:45:00'),
-(14, 22, 5, 'Mặc đi làm rất chuyên nghiệp', '2024-10-11 11:15:00'),
-
--- Product 15 reviews
-(15, 23, 5, 'Quần jean nữ đẹp, ôm vừa', '2024-09-19 10:00:00'),
-(15, 24, 5, 'Form chuẩn, chất jean tốt', '2024-09-29 14:30:00'),
-(15, 25, 4, 'Đẹp nhưng hơi dài', '2024-10-08 09:45:00'),
-(15, 26, 5, 'Rất hài lòng', '2024-10-15 16:00:00'),
-
--- Product 16 reviews
-(16, 27, 5, 'Quần ống rộng đẹp, mặc mát', '2024-09-24 11:30:00'),
-(16, 28, 4, 'Đẹp nhưng dễ nhăn', '2024-10-03 13:15:00'),
-(16, 29, 5, 'Form đẹp, che khuyết điểm tốt', '2024-10-12 10:30:00'),
-
--- Product 17 reviews
-(17, 30, 5, 'Quần short jean đẹp lắm', '2024-10-01 09:15:00'),
-(17, 1, 4, 'Chất jean tốt', '2024-10-09 14:00:00'),
-(17, 2, 5, 'Mặc mùa hè rất mát', '2024-10-16 11:45:00'),
-
--- Product 18 reviews
-(18, 3, 5, 'Váy jean xinh, mặc đi chơi đẹp', '2024-09-26 10:45:00'),
-(18, 4, 4, 'Đẹp nhưng hơi ngắn', '2024-10-05 13:30:00'),
-(18, 5, 5, 'Rất thích', '2024-10-13 09:00:00'),
-
--- Product 19 reviews
-(19, 6, 5, 'Nón đẹp, đội vừa đầu', '2024-09-30 11:00:00'),
-(19, 7, 4, 'Ổn, nhưng logo hơi nhỏ', '2024-10-07 14:15:00'),
-(19, 8, 5, 'Chất lượng tốt', '2024-10-14 10:30:00'),
-
--- Product 20 reviews
-(20, 9, 5, 'Túi tote đẹp, đựng đồ nhiều', '2024-10-02 09:30:00'),
-(20, 10, 5, 'Chất vải dày dặn', '2024-10-10 13:00:00'),
-(20, 11, 4, 'Đẹp nhưng quai hơi ngắn', '2024-10-17 11:15:00'),
-(20, 12, 5, 'Giá rẻ, chất lượng tốt', '2024-10-19 15:45:00');
+-- Product 20: Túi Tote Canvas - SHOP 2 (3 reviews)
+(20, 6, 4, 'Túi canvas đẹp, đựng được nhiều đồ. Nhưng quai hơi ngắn, đeo vai hơi cao', '2024-10-17 11:15:00'),
+(20, 12, 5, 'Giá rẻ, chất lượng tốt! 120k mà túi to, vải dày. Đi học đi làm đều tiện', '2024-10-19 15:45:00'),
+(20, 17, 5, 'Túi MUJI style, minimalist đẹp. Trendy Store có nhiều phụ kiện hay, sẽ quay lại!', '2024-10-28 13:30:00');
 
 -- ============================
 -- 9. ORDERS (50 đơn hàng - đa dạng trạng thái)
 -- ============================
-INSERT INTO orders (shop_id, customer_id, customer_phone, shipping_address, date, status) VALUES
--- Tháng 9/2024
-(1, 1, '0912345678', '15 Lê Lợi, Q1, TP.HCM', '2024-09-01 10:30:00', 'Completed'),
-(1, 2, '0923456789', '20 Nguyễn Trãi, Q5, TP.HCM', '2024-09-02 14:15:00', 'Completed'),
-(1, 3, '0934567890', '25 Võ Văn Tần, Q3, TP.HCM', '2024-09-05 09:45:00', 'Completed'),
-(1, 4, '0945678901', '30 Điện Biên Phủ, Q10, TP.HCM', '2024-09-08 11:20:00', 'Completed'),
-(1, 5, '0956789012', '35 Cách Mạng Tháng 8, Q3, TP.HCM', '2024-09-10 15:30:00', 'Completed'),
-(1, 6, '0967890123', '40 Phan Xích Long, Phú Nhuận, TP.HCM', '2024-09-12 10:00:00', 'Completed'),
-(1, 7, '0978901234', '45 Lý Thường Kiệt, Q10, TP.HCM', '2024-09-15 13:45:00', 'Completed'),
-(1, 8, '0989012345', '50 Hai Bà Trưng, Q1, TP.HCM', '2024-09-18 09:15:00', 'Completed'),
-(1, 9, '0990123456', '55 Trần Hưng Đạo, Q1, TP.HCM', '2024-09-20 14:30:00', 'Completed'),
-(1, 10, '0901234567', '60 Pasteur, Q1, TP.HCM', '2024-09-22 11:00:00', 'Completed'),
-(1, 11, '0912345679', '65 Nguyễn Thị Minh Khai, Q3, TP.HCM', '2024-09-25 16:15:00', 'Completed'),
-(1, 12, '0923456780', '70 Lê Văn Sỹ, Q3, TP.HCM', '2024-09-27 10:45:00', 'Completed'),
+INSERT INTO orders (shop_id, customer_id, customer_phone, shipping_address, date, status, payment_method, payment_status) VALUES
+-- Tháng 9/2024 - Đơn COD đã hoàn thành - Mix Shop 1 & 2
+(1, 1, '0912345678', '15 Lê Lợi, Q1, TP.HCM', '2024-09-01 10:30:00', 'completed', 'cod', 'paid'),
+(2, 2, '0923456789', '20 Nguyễn Trãi, Q5, TP.HCM', '2024-09-02 14:15:00', 'completed', 'cod', 'paid'),
+(1, 3, '0934567890', '25 Võ Văn Tần, Q3, TP.HCM', '2024-09-05 09:45:00', 'completed', 'cod', 'paid'),
+(2, 4, '0945678901', '30 Điện Biên Phủ, Q10, TP.HCM', '2024-09-08 11:20:00', 'completed', 'cod', 'paid'),
+(1, 5, '0956789012', '35 Cách Mạng Tháng 8, Q3, TP.HCM', '2024-09-10 15:30:00', 'completed', 'cod', 'paid'),
+(2, 6, '0967890123', '40 Phan Xích Long, Phú Nhuận, TP.HCM', '2024-09-12 10:00:00', 'completed', 'online', 'paid'),
+(1, 7, '0978901234', '45 Lý Thường Kiệt, Q10, TP.HCM', '2024-09-15 13:45:00', 'completed', 'cod', 'paid'),
+(2, 8, '0989012345', '50 Hai Bà Trưng, Q1, TP.HCM', '2024-09-18 09:15:00', 'completed', 'online', 'paid'),
+(1, 9, '0990123456', '55 Trần Hưng Đạo, Q1, TP.HCM', '2024-09-20 14:30:00', 'completed', 'cod', 'paid'),
+(2, 10, '0901234567', '60 Pasteur, Q1, TP.HCM', '2024-09-22 11:00:00', 'completed', 'cod', 'paid'),
+(1, 11, '0912345679', '65 Nguyễn Thị Minh Khai, Q3, TP.HCM', '2024-09-25 16:15:00', 'completed', 'online', 'paid'),
+(2, 12, '0923456780', '70 Lê Văn Sỹ, Q3, TP.HCM', '2024-09-27 10:45:00', 'completed', 'cod', 'paid'),
 
--- Tháng 10/2024
-(1, 13, '0934567891', '75 Trường Chinh, Tân Bình, TP.HCM', '2024-10-01 09:30:00', 'Completed'),
-(1, 14, '0945678902', '80 Hoàng Văn Thụ, Tân Bình, TP.HCM', '2024-10-02 14:00:00', 'Completed'),
-(1, 15, '0956789013', '85 Cộng Hòa, Tân Bình, TP.HCM', '2024-10-03 11:30:00', 'Completed'),
-(1, 16, '0967890124', '90 Lạc Long Quân, Q11, TP.HCM', '2024-10-05 15:45:00', 'Completed'),
-(1, 17, '0978901235', '95 Âu Cơ, Tân Phú, TP.HCM', '2024-10-07 10:15:00', 'Completed'),
-(1, 18, '0989012346', '100 Lũy Bán Bích, Q11, TP.HCM', '2024-10-08 13:20:00', 'Completed'),
-(1, 19, '0990123457', '105 Nguyễn Văn Cừ, Q5, TP.HCM', '2024-10-10 09:00:00', 'Completed'),
-(1, 20, '0901234568', '110 Hùng Vương, Q5, TP.HCM', '2024-10-12 14:30:00', 'Completed'),
-(1, 21, '0912345680', '115 Hậu Giang, Q6, TP.HCM', '2024-10-14 11:45:00', 'Completed'),
-(1, 22, '0923456781', '120 Minh Phụng, Q6, TP.HCM', '2024-10-15 16:00:00', 'Completed'),
-(1, 23, '0934567892', '125 Phạm Văn Đồng, Thủ Đức, TP.HCM', '2024-10-17 10:30:00', 'Completed'),
-(1, 24, '0945678903', '130 Võ Văn Ngân, Thủ Đức, TP.HCM', '2024-10-18 13:15:00', 'Completed'),
-(1, 25, '0956789014', '135 Kha Vạn Cân, Thủ Đức, TP.HCM', '2024-10-19 09:45:00', 'Completed'),
+-- Tháng 10/2024 - Mix COD và Online - Mix Shop 1 & 2
+(1, 13, '0934567891', '75 Trường Chinh, Tân Bình, TP.HCM', '2024-10-01 09:30:00', 'completed', 'cod', 'paid'),
+(2, 14, '0945678902', '80 Hoàng Văn Thụ, Tân Bình, TP.HCM', '2024-10-02 14:00:00', 'completed', 'online', 'paid'),
+(1, 15, '0956789013', '85 Cộng Hòa, Tân Bình, TP.HCM', '2024-10-03 11:30:00', 'completed', 'cod', 'paid'),
+(2, 16, '0967890124', '90 Lạc Long Quân, Q11, TP.HCM', '2024-10-05 15:45:00', 'completed', 'online', 'paid'),
+(1, 17, '0978901235', '95 Âu Cơ, Tân Phú, TP.HCM', '2024-10-07 10:15:00', 'completed', 'cod', 'paid'),
+(2, 18, '0989012346', '100 Lũy Bán Bích, Q11, TP.HCM', '2024-10-08 13:20:00', 'completed', 'online', 'paid'),
+(1, 19, '0990123457', '105 Nguyễn Văn Cừ, Q5, TP.HCM', '2024-10-10 09:00:00', 'completed', 'cod', 'paid'),
+(2, 20, '0901234568', '110 Hùng Vương, Q5, TP.HCM', '2024-10-12 14:30:00', 'completed', 'cod', 'paid'),
+(1, 21, '0912345680', '115 Hậu Giang, Q6, TP.HCM', '2024-10-14 11:45:00', 'completed', 'online', 'paid'),
+(2, 22, '0923456781', '120 Minh Phụng, Q6, TP.HCM', '2024-10-15 16:00:00', 'completed', 'cod', 'paid'),
+(1, 23, '0934567892', '125 Phạm Văn Đồng, Thủ Đức, TP.HCM', '2024-10-17 10:30:00', 'completed', 'online', 'paid'),
+(2, 24, '0945678903', '130 Võ Văn Ngân, Thủ Đức, TP.HCM', '2024-10-18 13:15:00', 'completed', 'cod', 'paid'),
+(1, 25, '0956789014', '135 Kha Vạn Cân, Thủ Đức, TP.HCM', '2024-10-19 09:45:00', 'completed', 'online', 'paid'),
 
--- Tháng 11/2024 - Đơn gần đây với nhiều trạng thái khác nhau
-(1, 26, '0967890125', '140 Quang Trung, Gò Vấp, TP.HCM', '2024-11-01 10:00:00', 'Completed'),
-(1, 27, '0978901236', '145 Nguyễn Oanh, Gò Vấp, TP.HCM', '2024-11-02 14:15:00', 'Completed'),
-(1, 28, '0989012347', '150 Phan Văn Trị, Gò Vấp, TP.HCM', '2024-11-03 11:30:00', 'Completed'),
-(1, 29, '0990123458', '155 Lê Đức Thọ, Gò Vấp, TP.HCM', '2024-11-04 15:45:00', 'Completed'),
-(1, 30, '0901234569', '160 Nguyễn Thái Sơn, Gò Vấp, TP.HCM', '2024-11-05 09:15:00', 'Completed'),
-(1, 1, '0912345678', '15 Lê Lợi, Q1, TP.HCM', '2024-11-06 13:00:00', 'Completed'),
-(1, 2, '0923456789', '20 Nguyễn Trãi, Q5, TP.HCM', '2024-11-07 10:45:00', 'Completed'),
-(1, 3, '0934567890', '25 Võ Văn Tần, Q3, TP.HCM', '2024-11-08 14:30:00', 'Completed'),
-(1, 4, '0945678901', '30 Điện Biên Phủ, Q10, TP.HCM', '2024-11-09 11:15:00', 'Completed'),
-(1, 5, '0956789012', '35 Cách Mạng Tháng 8, Q3, TP.HCM', '2024-11-10 16:00:00', 'Completed'),
+-- Tháng 11/2024 - Đơn gần đây với nhiều trạng thái khác nhau - Mix Shop 1 & 2
+(2, 26, '0967890125', '140 Quang Trung, Gò Vấp, TP.HCM', '2024-11-01 10:00:00', 'completed', 'cod', 'paid'),
+(1, 27, '0978901236', '145 Nguyễn Oanh, Gò Vấp, TP.HCM', '2024-11-02 14:15:00', 'completed', 'online', 'paid'),
+(2, 28, '0989012347', '150 Phan Văn Trị, Gò Vấp, TP.HCM', '2024-11-03 11:30:00', 'completed', 'cod', 'paid'),
+(1, 29, '0990123458', '155 Lê Đức Thọ, Gò Vấp, TP.HCM', '2024-11-04 15:45:00', 'completed', 'online', 'paid'),
+(2, 30, '0901234569', '160 Nguyễn Thái Sơn, Gò Vấp, TP.HCM', '2024-11-05 09:15:00', 'completed', 'cod', 'paid'),
+(1, 1, '0912345678', '15 Lê Lợi, Q1, TP.HCM', '2024-11-06 13:00:00', 'completed', 'online', 'paid'),
+(2, 2, '0923456789', '20 Nguyễn Trãi, Q5, TP.HCM', '2024-11-07 10:45:00', 'completed', 'cod', 'paid'),
+(1, 3, '0934567890', '25 Võ Văn Tần, Q3, TP.HCM', '2024-11-08 14:30:00', 'completed', 'online', 'paid'),
+(2, 4, '0945678901', '30 Điện Biên Phủ, Q10, TP.HCM', '2024-11-09 11:15:00', 'completed', 'cod', 'paid'),
+(1, 5, '0956789012', '35 Cách Mạng Tháng 8, Q3, TP.HCM', '2024-11-10 16:00:00', 'completed', 'online', 'paid'),
 
--- Đơn đang xử lý (trạng thái khác nhau)
-(1, 6, '0967890123', '40 Phan Xích Long, Phú Nhuận, TP.HCM', '2024-11-11 10:30:00', 'Delivering'),
-(1, 7, '0978901234', '45 Lý Thường Kiệt, Q10, TP.HCM', '2024-11-11 14:00:00', 'Delivering'),
-(1, 8, '0989012345', '50 Hai Bà Trưng, Q1, TP.HCM', '2024-11-12 09:30:00', 'Delivering'),
-(1, 9, '0990123456', '55 Trần Hưng Đạo, Q1, TP.HCM', '2024-11-12 13:45:00', 'Processing'),
-(1, 10, '0901234567', '60 Pasteur, Q1, TP.HCM', '2024-11-13 11:00:00', 'Processing'),
-(1, 11, '0912345679', '65 Nguyễn Thị Minh Khai, Q3, TP.HCM', '2024-11-13 15:15:00', 'Processing'),
-(1, 12, '0923456780', '70 Lê Văn Sỹ, Q3, TP.HCM', '2024-11-14 10:00:00', 'Paid'),
-(1, 13, '0934567891', '75 Trường Chinh, Tân Bình, TP.HCM', '2024-11-14 14:30:00', 'Paid'),
-(1, 14, '0945678902', '80 Hoàng Văn Thụ, Tân Bình, TP.HCM', '2024-11-15 09:00:00', 'Pending_Transfer'),
-(1, 15, '0956789013', '85 Cộng Hòa, Tân Bình, TP.HCM', '2024-11-15 11:30:00', 'Pending_Transfer'),
+-- Đơn đang xử lý (trạng thái khác nhau) - Mix Shop 1 & 2
+(2, 6, '0967890123', '40 Phan Xích Long, Phú Nhuận, TP.HCM', '2024-11-11 10:30:00', 'delivering', 'cod', 'pending'),
+(1, 7, '0978901234', '45 Lý Thường Kiệt, Q10, TP.HCM', '2024-11-11 14:00:00', 'delivering', 'online', 'paid'),
+(2, 8, '0989012345', '50 Hai Bà Trưng, Q1, TP.HCM', '2024-11-12 09:30:00', 'delivering', 'cod', 'pending'),
+(1, 9, '0990123456', '55 Trần Hưng Đạo, Q1, TP.HCM', '2024-11-12 13:45:00', 'processing', 'online', 'paid'),
+(2, 10, '0901234567', '60 Pasteur, Q1, TP.HCM', '2024-11-13 11:00:00', 'processing', 'cod', 'pending'),
+(1, 11, '0912345679', '65 Nguyễn Thị Minh Khai, Q3, TP.HCM', '2024-11-13 15:15:00', 'processing', 'online', 'paid'),
+(2, 12, '0923456780', '70 Lê Văn Sỹ, Q3, TP.HCM', '2024-11-14 10:00:00', 'pending', 'cod', 'pending'),
+(1, 13, '0934567891', '75 Trường Chinh, Tân Bình, TP.HCM', '2024-11-14 14:30:00', 'pending', 'online', 'paid'),
+(2, 14, '0945678902', '80 Hoàng Văn Thụ, Tân Bình, TP.HCM', '2024-11-15 09:00:00', 'pending', 'cod', 'pending'),
+(1, 15, '0956789013', '85 Cộng Hòa, Tân Bình, TP.HCM', '2024-11-15 11:30:00', 'pending', 'online', 'paid'),
 
--- Đơn huỷ và thất bại
-(1, 16, '0967890124', '90 Lạc Long Quân, Q11, TP.HCM', '2024-11-10 10:00:00', 'Cancelled'),
-(1, 17, '0978901235', '95 Âu Cơ, Tân Phú, TP.HCM', '2024-11-12 14:00:00', 'Cancelled'),
-(1, 18, '0989012346', '100 Lũy Bán Bích, Q11, TP.HCM', '2024-11-08 11:00:00', 'Failed');
+-- Đơn huỷ và thất bại - Mix Shop 1 & 2
+(2, 16, '0967890124', '90 Lạc Long Quân, Q11, TP.HCM', '2024-11-10 10:00:00', 'cancelled', 'cod', 'pending'),
+(1, 17, '0978901235', '95 Âu Cơ, Tân Phú, TP.HCM', '2024-11-12 14:00:00', 'cancelled', 'online', 'paid'),
+(2, 18, '0989012346', '100 Lũy Bán Bích, Q11, TP.HCM', '2024-11-08 11:00:00', 'failed', 'cod', 'pending');
 
 -- ============================
 -- 10. ORDER ITEMS (Chi tiết đơn hàng)
@@ -704,7 +681,3 @@ INSERT INTO cart_items (cart_id, product_id, quantity, color, size) VALUES
 -- Cart 10
 (10, 13, 1, 'Be', 'Freesize'),
 (10, 18, 1, 'Xanh Đậm', 'M');
-
-
--- đổi mật khẩu seller 123456
-UPDATE seller SET password = '$2y$10$f1P.3Kx5LMS9Sxf7NAG7pOiqAOlxpDBzk8yN37NZ2.IfuhLDxlkCa' WHERE id = 1;
