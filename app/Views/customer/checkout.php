@@ -311,12 +311,30 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             });
             
-            // Fill form with saved address data
-            document.getElementById('full_name').value = this.dataset.fullname || '';
-            document.getElementById('phone').value = this.dataset.phone || '';
-            document.getElementById('shipping_address').value = this.dataset.address || '';
+            // Fill form with saved address data (even if form is hidden)
+            var fullNameField = document.getElementById('full_name');
+            var phoneField = document.getElementById('phone');
+            var shippingAddressField = document.getElementById('shipping_address');
+            
+            if (fullNameField) fullNameField.value = this.dataset.fullname || '';
+            if (phoneField) phoneField.value = this.dataset.phone || '';
+            if (shippingAddressField) shippingAddressField.value = this.dataset.address || '';
         });
     });
+    
+    // Initialize with first saved address if available
+    if (savedAddressRadios.length > 0) {
+        var firstChecked = document.querySelector('.saved-address-radio:checked');
+        if (firstChecked) {
+            var fullNameField = document.getElementById('full_name');
+            var phoneField = document.getElementById('phone');
+            var shippingAddressField = document.getElementById('shipping_address');
+            
+            if (fullNameField) fullNameField.value = firstChecked.dataset.fullname || '';
+            if (phoneField) phoneField.value = firstChecked.dataset.phone || '';
+            if (shippingAddressField) shippingAddressField.value = firstChecked.dataset.address || '';
+        }
+    }
     
     // Handle delivery company selection
     var deliveryRadios = document.querySelectorAll('.delivery-radio');
@@ -335,10 +353,14 @@ document.addEventListener('DOMContentLoaded', function() {
     
     if (placeOrderBtn) {
         placeOrderBtn.addEventListener('click', function() {
-            // Get form data
-            var fullName = document.getElementById('full_name').value;
-            var phone = document.getElementById('phone').value;
-            var shippingAddress = document.getElementById('shipping_address').value;
+            // Get form data - ensure fields exist and have values
+            var fullNameField = document.getElementById('full_name');
+            var phoneField = document.getElementById('phone');
+            var shippingAddressField = document.getElementById('shipping_address');
+            
+            var fullName = fullNameField ? fullNameField.value.trim() : '';
+            var phone = phoneField ? phoneField.value.trim() : '';
+            var shippingAddress = shippingAddressField ? shippingAddressField.value.trim() : '';
             
             // Validate
             if (!fullName || !phone || !shippingAddress) {
@@ -355,10 +377,16 @@ document.addEventListener('DOMContentLoaded', function() {
             formData.append('full_name', fullName);
             formData.append('phone', phone);
             formData.append('shipping_address', shippingAddress);
-            formData.append('email', document.querySelector('input[name="email"]').value);
-            formData.append('note', document.querySelector('textarea[name="note"]').value);
-            formData.append('payment_method', document.querySelector('input[name="payment_method"]:checked').value);
-            formData.append('delivery_company_id', document.querySelector('input[name="delivery_company"]:checked').value);
+            
+            var emailField = document.querySelector('input[name="email"]');
+            var noteField = document.querySelector('textarea[name="note"]');
+            var paymentMethodField = document.querySelector('input[name="payment_method"]:checked');
+            var deliveryCompanyField = document.querySelector('input[name="delivery_company"]:checked');
+            
+            formData.append('email', emailField ? emailField.value : '');
+            formData.append('note', noteField ? noteField.value : '');
+            formData.append('payment_method', paymentMethodField ? paymentMethodField.value : 'cod');
+            formData.append('delivery_company_id', deliveryCompanyField ? deliveryCompanyField.value : '1');
             formData.append('shipping_fee', currentShippingFee);
             
             // Send request

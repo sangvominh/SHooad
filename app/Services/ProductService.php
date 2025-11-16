@@ -130,12 +130,13 @@ class ProductService {
         }
         
         $stmt = $mysqli->prepare("
-            SELECT c.id, c.name, c.hex_code, pc.stock
-            FROM product_colors pc
-            JOIN colors c ON pc.color_id = c.id
-            WHERE pc.product_id = ?
-            ORDER BY c.name
-        ");
+        SELECT c.id, c.name, c.hex_code, COALESCE(SUM(pv.stock), 0) AS stock
+        FROM product_variants pv
+        JOIN colors c ON pv.color_id = c.id
+        WHERE pv.product_id = ? AND pv.color_id IS NOT NULL
+        GROUP BY c.id, c.name, c.hex_code
+        ORDER BY c.name
+    ");
         
         $stmt->bind_param("i", $productId);
         $stmt->execute();
@@ -166,12 +167,13 @@ class ProductService {
         }
         
         $stmt = $mysqli->prepare("
-            SELECT s.id, s.name, ps.stock
-            FROM product_sizes ps
-            JOIN sizes s ON ps.size_id = s.id
-            WHERE ps.product_id = ?
-            ORDER BY s.sort_order
-        ");
+        SELECT s.id, s.name, COALESCE(SUM(pv.stock), 0) AS stock
+        FROM product_variants pv
+        JOIN sizes s ON pv.size_id = s.id
+        WHERE pv.product_id = ? AND pv.size_id IS NOT NULL
+        GROUP BY s.id, s.name, s.sort_order
+        ORDER BY s.sort_order, s.name
+    ");
         
         $stmt->bind_param("i", $productId);
         $stmt->execute();
@@ -217,5 +219,10 @@ class ProductService {
         
         $mysqli->close();
         return $stock;
+    }
+
+    // Search products by name for realtime suggestions
+    public function searchByName(string $query, int $limit = 8): array {
+        return $this->productModel->searchByName($query, $limit);
     }
 }

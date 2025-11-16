@@ -39,7 +39,7 @@ INSERT INTO sizes (name, sort_order) VALUES
 -- 1. SELLER (1 người bán)
 -- ============================
 INSERT INTO seller (name, email, phone, password, status) VALUES
-('Nguyễn Văn A', 'seller@example.com', '0901234567', '$2y$10$abcdefghijklmnopqrstuvwxyz', 'open');
+('Nguyễn Văn A', 'seller@example.com', '0901234567', '$2y$10$f1P.3Kx5LMS9Sxf7NAG7pOiqAOlxpDBzk8yN37NZ2.IfuhLDxlkCa', 'open');
 
 -- ============================
 -- 2. SHOPS (1 shop)
@@ -101,113 +101,113 @@ INSERT INTO products (shop_id, category_id, name, brand, description, price, ori
 (1, 5, 'Túi Tote Canvas', 'CANVAS', 'Túi vải canvas đa năng', 120000, 200000, 150, 145, 'active');
 
 -- ============================
--- 5B. PRODUCT COLORS (màu sắc cho từng sản phẩm)
+-- 6. PRODUCT VARIANTS (biến thể màu-size với SKU)
 -- ============================
--- Product 1: Áo Thun Nam Basic - Đen, Trắng, Xám, Xanh Navy
-INSERT INTO product_colors (product_id, color_id, stock) VALUES
-(1, 1, 40), (1, 2, 35), (1, 12, 40), (1, 5, 35),
--- Product 2: Áo Sơ Mi - Trắng, Xanh Dương, Hồng Nhạt  
-(2, 2, 35), (2, 4, 35), (2, 15, 30),
--- Product 3: Áo Polo - Đen, Trắng, Xanh Lá, Đỏ
-(3, 1, 20), (3, 2, 20), (3, 6, 20), (3, 3, 20),
--- Product 4: Áo Khoác Jean - Xanh Đậm, Xanh Nhạt, Đen
-(4, 17, 20), (4, 16, 20), (4, 1, 20),
--- Product 5: Áo Hoodie - Đen, Xám, Xanh Rêu
-(5, 1, 30), (5, 12, 30), (5, 14, 30),
--- Product 6: Quần Jean - Xanh Đậm, Xanh Nhạt, Đen
-(6, 17, 40), (6, 16, 40), (6, 1, 40),
--- Product 7: Quần Kaki - Be, Xám, Xanh Navy, Đen
-(7, 13, 24), (7, 12, 24), (7, 5, 24), (7, 1, 23),
--- Product 8: Quần Short - Đen, Xám, Xanh Lá
-(8, 1, 37), (8, 12, 37), (8, 6, 36),
--- Product 9: Quần Jogger - Đen, Xám, Xanh Rêu
-(9, 1, 25), (9, 12, 25), (9, 14, 25),
--- Product 10: Áo Thun Nữ - Trắng, Đen, Hồng, Be
-(10, 2, 35), (10, 1, 35), (10, 9, 35), (10, 13, 35),
--- Product 11: Áo Kiểu Nữ - Trắng, Hồng Nhạt
-(11, 2, 43), (11, 15, 42),
--- Product 12: Áo Croptop - Đen, Trắng, Xanh Lá, Hồng
-(12, 1, 25), (12, 2, 25), (12, 6, 25), (12, 9, 25),
--- Product 13: Cardigan - Be, Xám, Hồng, Xanh Lá
-(13, 13, 18), (13, 12, 17), (13, 9, 18), (13, 6, 17),
--- Product 14: Blazer - Đen, Xám, Be
-(14, 1, 17), (14, 12, 17), (14, 13, 16),
--- Product 15: Quần Jean Nữ - Xanh Đậm, Xanh Nhạt, Đen
-(15, 17, 35), (15, 16, 35), (15, 1, 35),
--- Product 16: Quần Ống Rộng - Đen, Be, Xám
-(16, 1, 27), (16, 13, 27), (16, 12, 26),
--- Product 17: Short Jean Nữ - Xanh Dương, Đen, Trắng
-(17, 4, 32), (17, 1, 32), (17, 2, 31),
--- Product 18: Váy Jean - Xanh Đậm, Xanh Nhạt
-(18, 17, 33), (18, 16, 32),
--- Product 19: Nón - Đen, Trắng, Xanh Lá, Đỏ
-(19, 1, 30), (19, 2, 30), (19, 6, 30), (19, 3, 30),
--- Product 20: Túi - Trắng, Be, Đen
-(20, 2, 50), (20, 13, 50), (20, 1, 50);
+INSERT INTO product_variants (product_id, color_id, size_id, sku, stock, price) VALUES
+-- Product 1: Áo Thun Nam Basic (4 colors x 5 sizes = 20 variants)
+(1,1,2,'SKU-1-C1-S2',8,NULL),(1,1,3,'SKU-1-C1-S3',8,NULL),(1,1,4,'SKU-1-C1-S4',8,NULL),(1,1,5,'SKU-1-C1-S5',8,NULL),(1,1,6,'SKU-1-C1-S6',8,NULL),
+(1,2,2,'SKU-1-C2-S2',7,NULL),(1,2,3,'SKU-1-C2-S3',7,NULL),(1,2,4,'SKU-1-C2-S4',7,NULL),(1,2,5,'SKU-1-C2-S5',7,NULL),(1,2,6,'SKU-1-C2-S6',7,NULL),
+(1,12,2,'SKU-1-C12-S2',8,NULL),(1,12,3,'SKU-1-C12-S3',8,NULL),(1,12,4,'SKU-1-C12-S4',8,NULL),(1,12,5,'SKU-1-C12-S5',8,NULL),(1,12,6,'SKU-1-C12-S6',8,NULL),
+(1,5,2,'SKU-1-C5-S2',7,NULL),(1,5,3,'SKU-1-C5-S3',7,NULL),(1,5,4,'SKU-1-C5-S4',7,NULL),(1,5,5,'SKU-1-C5-S5',7,NULL),(1,5,6,'SKU-1-C5-S6',7,NULL),
 
--- ============================
--- 5C. PRODUCT SIZES (size cho từng sản phẩm)
--- ============================
--- Product 1: S, M, L, XL, XXL
-INSERT INTO product_sizes (product_id, size_id, stock) VALUES
-(1, 2, 30), (1, 3, 30), (1, 4, 30), (1, 5, 30), (1, 6, 30),
--- Product 2: M, L, XL, XXL
-(2, 3, 25), (2, 4, 25), (2, 5, 25), (2, 6, 25),
--- Product 3: S, M, L, XL
-(3, 2, 20), (3, 3, 20), (3, 4, 20), (3, 5, 20),
--- Product 4: M, L, XL
-(4, 3, 20), (4, 4, 20), (4, 5, 20),
--- Product 5: M, L, XL, XXL
-(5, 3, 23), (5, 4, 23), (5, 5, 22), (5, 6, 22),
--- Product 6: 29-34
-(6, 8, 20), (6, 9, 20), (6, 10, 20), (6, 11, 20), (6, 12, 20), (6, 13, 20),
--- Product 7: 29-33
-(7, 8, 19), (7, 9, 19), (7, 10, 19), (7, 11, 19), (7, 12, 19),
--- Product 8: M, L, XL
-(8, 3, 37), (8, 4, 37), (8, 5, 36),
--- Product 9: M, L, XL, XXL
-(9, 3, 19), (9, 4, 19), (9, 5, 19), (9, 6, 18),
--- Product 10: S, M, L, XL
-(10, 2, 35), (10, 3, 35), (10, 4, 35), (10, 5, 35),
--- Product 11: S, M, L
-(11, 2, 28), (11, 3, 29), (11, 4, 28),
--- Product 12: S, M, L
-(12, 2, 33), (12, 3, 34), (12, 4, 33),
--- Product 13: Freesize (sử dụng M làm default)
-(13, 3, 70),
--- Product 14: S, M, L, XL
-(14, 2, 13), (14, 3, 12), (14, 4, 13), (14, 5, 12),
--- Product 15: 26-30
-(15, 8, 21), (15, 9, 21), (15, 10, 21), (15, 11, 21), (15, 12, 21),
--- Product 16: S, M, L
-(16, 2, 27), (16, 3, 27), (16, 4, 26),
--- Product 17: S, M, L, XL
-(17, 2, 24), (17, 3, 24), (17, 4, 24), (17, 5, 23),
--- Product 18: S, M, L
-(18, 2, 22), (18, 3, 22), (18, 4, 21),
--- Product 19: Freesize
-(19, 3, 120),
--- Product 20: Freesize
-(20, 3, 150);
+-- Product 2: Áo Sơ Mi Nam (3 colors x 4 sizes = 12 variants)
+(2,2,3,'SKU-2-C2-S3',9,NULL),(2,2,4,'SKU-2-C2-S4',9,NULL),(2,2,5,'SKU-2-C2-S5',9,NULL),(2,2,6,'SKU-2-C2-S6',8,NULL),
+(2,4,3,'SKU-2-C4-S3',9,NULL),(2,4,4,'SKU-2-C4-S4',9,NULL),(2,4,5,'SKU-2-C4-S5',9,NULL),(2,4,6,'SKU-2-C4-S6',8,NULL),
+(2,15,3,'SKU-2-C15-S3',8,NULL),(2,15,4,'SKU-2-C15-S4',7,NULL),(2,15,5,'SKU-2-C15-S5',8,NULL),(2,15,6,'SKU-2-C15-S6',7,NULL),
 
--- ============================
--- 5D. PRODUCT VARIANTS (biến thể màu-size cụ thể)
--- ============================
--- Product 1: 4 colors x 5 sizes = 20 variants
-INSERT INTO product_variants (product_id, color_id, size_id, stock) VALUES
-(1,1,2,8), (1,1,3,8), (1,1,4,8), (1,1,5,8), (1,1,6,8),
-(1,2,2,7), (1,2,3,7), (1,2,4,7), (1,2,5,7), (1,2,6,7),
-(1,12,2,8), (1,12,3,8), (1,12,4,8), (1,12,5,8), (1,12,6,8),
-(1,5,2,7), (1,5,3,7), (1,5,4,7), (1,5,5,7), (1,5,6,7),
--- Product 2: 3 colors x 4 sizes = 12 variants
-(2,2,3,9), (2,2,4,9), (2,2,5,9), (2,2,6,8),
-(2,4,3,9), (2,4,4,9), (2,4,5,9), (2,4,6,8),
-(2,15,3,8), (2,15,4,7), (2,15,5,8), (2,15,6,7),
--- Product 3: 4 colors x 4 sizes = 16 variants
-(3,1,2,5), (3,1,3,5), (3,1,4,5), (3,1,5,5),
-(3,2,2,5), (3,2,3,5), (3,2,4,5), (3,2,5,5),
-(3,6,2,5), (3,6,3,5), (3,6,4,5), (3,6,5,5),
-(3,3,2,5), (3,3,3,5), (3,3,4,5), (3,3,5,5);
+-- Product 3: Áo Polo Nam (4 colors x 4 sizes = 16 variants)
+(3,1,2,'SKU-3-C1-S2',5,NULL),(3,1,3,'SKU-3-C1-S3',5,NULL),(3,1,4,'SKU-3-C1-S4',5,NULL),(3,1,5,'SKU-3-C1-S5',5,NULL),
+(3,2,2,'SKU-3-C2-S2',5,NULL),(3,2,3,'SKU-3-C2-S3',5,NULL),(3,2,4,'SKU-3-C2-S4',5,NULL),(3,2,5,'SKU-3-C2-S5',5,NULL),
+(3,6,2,'SKU-3-C6-S2',5,NULL),(3,6,3,'SKU-3-C6-S3',5,NULL),(3,6,4,'SKU-3-C6-S4',5,NULL),(3,6,5,'SKU-3-C6-S5',5,NULL),
+(3,3,2,'SKU-3-C3-S2',5,NULL),(3,3,3,'SKU-3-C3-S3',5,NULL),(3,3,4,'SKU-3-C3-S4',5,NULL),(3,3,5,'SKU-3-C3-S5',5,NULL),
+
+-- Product 4: Áo Khoác Jean Nam (3 colors x 3 sizes = 9 variants)
+(4,17,3,'SKU-4-C17-S3',7,NULL),(4,17,4,'SKU-4-C17-S4',7,NULL),(4,17,5,'SKU-4-C17-S5',6,NULL),
+(4,16,3,'SKU-4-C16-S3',7,NULL),(4,16,4,'SKU-4-C16-S4',7,NULL),(4,16,5,'SKU-4-C16-S5',6,NULL),
+(4,1,3,'SKU-4-C1-S3',7,NULL),(4,1,4,'SKU-4-C1-S4',7,NULL),(4,1,5,'SKU-4-C1-S5',6,NULL),
+
+-- Product 5: Áo Hoodie Nam (3 colors x 4 sizes = 12 variants)
+(5,1,3,'SKU-5-C1-S3',8,NULL),(5,1,4,'SKU-5-C1-S4',8,NULL),(5,1,5,'SKU-5-C1-S5',7,NULL),(5,1,6,'SKU-5-C1-S6',7,NULL),
+(5,12,3,'SKU-5-C12-S3',8,NULL),(5,12,4,'SKU-5-C12-S4',8,NULL),(5,12,5,'SKU-5-C12-S5',7,NULL),(5,12,6,'SKU-5-C12-S6',7,NULL),
+(5,14,3,'SKU-5-C14-S3',8,NULL),(5,14,4,'SKU-5-C14-S4',7,NULL),(5,14,5,'SKU-5-C14-S5',8,NULL),(5,14,6,'SKU-5-C14-S6',7,NULL),
+
+-- Product 6: Quần Jean Nam (3 colors x 6 sizes = 18 variants)
+(6,17,8,'SKU-6-C17-S8',7,NULL),(6,17,9,'SKU-6-C17-S9',7,NULL),(6,17,10,'SKU-6-C17-S10',7,NULL),(6,17,11,'SKU-6-C17-S11',7,NULL),(6,17,12,'SKU-6-C17-S12',6,NULL),(6,17,13,'SKU-6-C17-S13',6,NULL),
+(6,16,8,'SKU-6-C16-S8',7,NULL),(6,16,9,'SKU-6-C16-S9',7,NULL),(6,16,10,'SKU-6-C16-S10',7,NULL),(6,16,11,'SKU-6-C16-S11',7,NULL),(6,16,12,'SKU-6-C16-S12',6,NULL),(6,16,13,'SKU-6-C16-S13',6,NULL),
+(6,1,8,'SKU-6-C1-S8',7,NULL),(6,1,9,'SKU-6-C1-S9',7,NULL),(6,1,10,'SKU-6-C1-S10',7,NULL),(6,1,11,'SKU-6-C1-S11',6,NULL),(6,1,12,'SKU-6-C1-S12',6,NULL),(6,1,13,'SKU-6-C1-S13',6,NULL),
+
+-- Product 7: Quần Kaki Nam (4 colors x 5 sizes = 20 variants)
+(7,13,8,'SKU-7-C13-S8',5,NULL),(7,13,9,'SKU-7-C13-S9',5,NULL),(7,13,10,'SKU-7-C13-S10',5,NULL),(7,13,11,'SKU-7-C13-S11',5,NULL),(7,13,12,'SKU-7-C13-S12',4,NULL),
+(7,12,8,'SKU-7-C12-S8',5,NULL),(7,12,9,'SKU-7-C12-S9',5,NULL),(7,12,10,'SKU-7-C12-S10',5,NULL),(7,12,11,'SKU-7-C12-S11',5,NULL),(7,12,12,'SKU-7-C12-S12',4,NULL),
+(7,5,8,'SKU-7-C5-S8',5,NULL),(7,5,9,'SKU-7-C5-S9',5,NULL),(7,5,10,'SKU-7-C5-S10',5,NULL),(7,5,11,'SKU-7-C5-S11',5,NULL),(7,5,12,'SKU-7-C5-S12',4,NULL),
+(7,1,8,'SKU-7-C1-S8',5,NULL),(7,1,9,'SKU-7-C1-S9',5,NULL),(7,1,10,'SKU-7-C1-S10',4,NULL),(7,1,11,'SKU-7-C1-S11',5,NULL),(7,1,12,'SKU-7-C1-S12',4,NULL),
+
+-- Product 8: Quần Short Nam (3 colors x 3 sizes = 9 variants)
+(8,1,3,'SKU-8-C1-S3',13,NULL),(8,1,4,'SKU-8-C1-S4',12,NULL),(8,1,5,'SKU-8-C1-S5',12,NULL),
+(8,12,3,'SKU-8-C12-S3',13,NULL),(8,12,4,'SKU-8-C12-S4',12,NULL),(8,12,5,'SKU-8-C12-S5',12,NULL),
+(8,6,3,'SKU-8-C6-S3',12,NULL),(8,6,4,'SKU-8-C6-S4',12,NULL),(8,6,5,'SKU-8-C6-S5',12,NULL),
+
+-- Product 9: Quần Jogger Nam (3 colors x 4 sizes = 12 variants)
+(9,1,3,'SKU-9-C1-S3',7,NULL),(9,1,4,'SKU-9-C1-S4',6,NULL),(9,1,5,'SKU-9-C1-S5',6,NULL),(9,1,6,'SKU-9-C1-S6',6,NULL),
+(9,12,3,'SKU-9-C12-S3',7,NULL),(9,12,4,'SKU-9-C12-S4',6,NULL),(9,12,5,'SKU-9-C12-S5',6,NULL),(9,12,6,'SKU-9-C12-S6',6,NULL),
+(9,14,3,'SKU-9-C14-S3',6,NULL),(9,14,4,'SKU-9-C14-S4',6,NULL),(9,14,5,'SKU-9-C14-S5',7,NULL),(9,14,6,'SKU-9-C14-S6',6,NULL),
+
+-- Product 10: Áo Thun Nữ (4 colors x 4 sizes = 16 variants)
+(10,2,2,'SKU-10-C2-S2',9,NULL),(10,2,3,'SKU-10-C2-S3',9,NULL),(10,2,4,'SKU-10-C2-S4',9,NULL),(10,2,5,'SKU-10-C2-S5',8,NULL),
+(10,1,2,'SKU-10-C1-S2',9,NULL),(10,1,3,'SKU-10-C1-S3',9,NULL),(10,1,4,'SKU-10-C1-S4',9,NULL),(10,1,5,'SKU-10-C1-S5',8,NULL),
+(10,9,2,'SKU-10-C9-S2',9,NULL),(10,9,3,'SKU-10-C9-S3',9,NULL),(10,9,4,'SKU-10-C9-S4',9,NULL),(10,9,5,'SKU-10-C9-S5',8,NULL),
+(10,13,2,'SKU-10-C13-S2',9,NULL),(10,13,3,'SKU-10-C13-S3',8,NULL),(10,13,4,'SKU-10-C13-S4',9,NULL),(10,13,5,'SKU-10-C13-S5',9,NULL),
+
+-- Product 11: Áo Kiểu Nữ (2 colors x 3 sizes = 6 variants)
+(11,2,2,'SKU-11-C2-S2',14,NULL),(11,2,3,'SKU-11-C2-S3',15,NULL),(11,2,4,'SKU-11-C2-S4',14,NULL),
+(11,15,2,'SKU-11-C15-S2',14,NULL),(11,15,3,'SKU-11-C15-S3',14,NULL),(11,15,4,'SKU-11-C15-S4',14,NULL),
+
+-- Product 12: Áo Croptop Nữ (4 colors x 3 sizes = 12 variants)
+(12,1,2,'SKU-12-C1-S2',9,NULL),(12,1,3,'SKU-12-C1-S3',8,NULL),(12,1,4,'SKU-12-C1-S4',8,NULL),
+(12,2,2,'SKU-12-C2-S2',9,NULL),(12,2,3,'SKU-12-C2-S3',8,NULL),(12,2,4,'SKU-12-C2-S4',8,NULL),
+(12,6,2,'SKU-12-C6-S2',8,NULL),(12,6,3,'SKU-12-C6-S3',9,NULL),(12,6,4,'SKU-12-C6-S4',8,NULL),
+(12,9,2,'SKU-12-C9-S2',8,NULL),(12,9,3,'SKU-12-C9-S3',9,NULL),(12,9,4,'SKU-12-C9-S4',8,NULL),
+
+-- Product 13: Áo Cardigan Nữ (4 colors x 1 size = 4 variants - Freesize)
+(13,13,3,'SKU-13-C13-S3',18,NULL),
+(13,12,3,'SKU-13-C12-S3',17,NULL),
+(13,9,3,'SKU-13-C9-S3',18,NULL),
+(13,6,3,'SKU-13-C6-S3',17,NULL),
+
+-- Product 14: Áo Blazer Nữ (3 colors x 4 sizes = 12 variants)
+(14,1,2,'SKU-14-C1-S2',4,NULL),(14,1,3,'SKU-14-C1-S3',4,NULL),(14,1,4,'SKU-14-C1-S4',5,NULL),(14,1,5,'SKU-14-C1-S5',4,NULL),
+(14,12,2,'SKU-14-C12-S2',4,NULL),(14,12,3,'SKU-14-C12-S3',4,NULL),(14,12,4,'SKU-14-C12-S4',5,NULL),(14,12,5,'SKU-14-C12-S5',4,NULL),
+(14,13,2,'SKU-14-C13-S2',4,NULL),(14,13,3,'SKU-14-C13-S3',4,NULL),(14,13,4,'SKU-14-C13-S4',4,NULL),(14,13,5,'SKU-14-C13-S5',4,NULL),
+
+-- Product 15: Quần Jean Nữ (3 colors x 5 sizes = 15 variants)
+(15,17,8,'SKU-15-C17-S8',7,NULL),(15,17,9,'SKU-15-C17-S9',7,NULL),(15,17,10,'SKU-15-C17-S10',7,NULL),(15,17,11,'SKU-15-C17-S11',7,NULL),(15,17,12,'SKU-15-C17-S12',7,NULL),
+(15,16,8,'SKU-15-C16-S8',7,NULL),(15,16,9,'SKU-15-C16-S9',7,NULL),(15,16,10,'SKU-15-C16-S10',7,NULL),(15,16,11,'SKU-15-C16-S11',7,NULL),(15,16,12,'SKU-15-C16-S12',7,NULL),
+(15,1,8,'SKU-15-C1-S8',7,NULL),(15,1,9,'SKU-15-C1-S9',7,NULL),(15,1,10,'SKU-15-C1-S10',7,NULL),(15,1,11,'SKU-15-C1-S11',7,NULL),(15,1,12,'SKU-15-C1-S12',7,NULL),
+
+-- Product 16: Quần Ống Rộng Nữ (3 colors x 3 sizes = 9 variants)
+(16,1,2,'SKU-16-C1-S2',9,NULL),(16,1,3,'SKU-16-C1-S3',9,NULL),(16,1,4,'SKU-16-C1-S4',9,NULL),
+(16,13,2,'SKU-16-C13-S2',9,NULL),(16,13,3,'SKU-16-C13-S3',9,NULL),(16,13,4,'SKU-16-C13-S4',9,NULL),
+(16,12,2,'SKU-16-C12-S2',9,NULL),(16,12,3,'SKU-16-C12-S3',9,NULL),(16,12,4,'SKU-16-C12-S4',8,NULL),
+
+-- Product 17: Quần Short Jean Nữ (3 colors x 4 sizes = 12 variants)
+(17,4,2,'SKU-17-C4-S2',8,NULL),(17,4,3,'SKU-17-C4-S3',8,NULL),(17,4,4,'SKU-17-C4-S4',8,NULL),(17,4,5,'SKU-17-C4-S5',8,NULL),
+(17,1,2,'SKU-17-C1-S2',8,NULL),(17,1,3,'SKU-17-C1-S3',8,NULL),(17,1,4,'SKU-17-C1-S4',8,NULL),(17,1,5,'SKU-17-C1-S5',8,NULL),
+(17,2,2,'SKU-17-C2-S2',8,NULL),(17,2,3,'SKU-17-C2-S3',8,NULL),(17,2,4,'SKU-17-C2-S4',8,NULL),(17,2,5,'SKU-17-C2-S5',7,NULL),
+
+-- Product 18: Váy Jean Nữ (2 colors x 3 sizes = 6 variants)
+(18,17,2,'SKU-18-C17-S2',11,NULL),(18,17,3,'SKU-18-C17-S3',11,NULL),(18,17,4,'SKU-18-C17-S4',11,NULL),
+(18,16,2,'SKU-18-C16-S2',11,NULL),(18,16,3,'SKU-18-C16-S3',11,NULL),(18,16,4,'SKU-18-C16-S4',10,NULL),
+
+-- Product 19: Nón Snapback (4 colors x 1 size = 4 variants - Freesize)
+(19,1,3,'SKU-19-C1-S3',30,NULL),
+(19,2,3,'SKU-19-C2-S3',30,NULL),
+(19,6,3,'SKU-19-C6-S3',30,NULL),
+(19,3,3,'SKU-19-C3-S3',30,NULL),
+
+-- Product 20: Túi Tote Canvas (3 colors x 1 size = 3 variants - Freesize)
+(20,2,3,'SKU-20-C2-S3',50,NULL),
+(20,13,3,'SKU-20-C13-S3',50,NULL),
+(20,1,3,'SKU-20-C1-S3',50,NULL);
 
 -- ============================
 -- 6. PRODUCT IMAGES (3-5 ảnh/sản phẩm)

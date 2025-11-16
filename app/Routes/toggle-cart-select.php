@@ -32,11 +32,11 @@ try {
         exit();
     }
 
-    // NOTE: cart_items table does not have 'selected' column in current schema
-    // If needed, add column: ALTER TABLE cart_items ADD COLUMN selected TINYINT(1) DEFAULT 0;
-    // For now, return success without updating
+    // Update selected status
+    $updateStmt = $pdo->prepare('UPDATE cart_items SET selected = :selected WHERE id = :item_id');
+    $updateStmt->execute([':selected' => $selected, ':item_id' => $cart_item_id]);
     
-    echo json_encode(['success' => true, 'message' => 'Selection feature not yet implemented in schema']);
+    echo json_encode(['success' => true, 'message' => 'Cart item selection updated']);
 
 } catch (Exception $e) {
     error_log('toggle-cart-select error: ' . $e->getMessage());

@@ -1,126 +1,121 @@
 <?php
 // Lấy dữ liệu từ controller/service
-$filters = $data['filters'] ?? ['categories' => [], 'brands' => [], 'sizes' => ['XS', 'S', 'M', 'L', 'XL', 'XXL'], 'colors' => [], 'ratings' => []];
+$filters = $data['filters'] ?? ['categories' => [], 'brands' => [], 'sizes' => [], 'colors' => [], 'ratings' => []];
+$selectedCategory = isset($_GET['category']) ? trim($_GET['category']) : '';
+$selectedBrand = isset($_GET['brand']) ? trim($_GET['brand']) : '';
+$priceFrom = isset($_GET['price_from']) ? trim($_GET['price_from']) : '';
+$priceTo = isset($_GET['price_to']) ? trim($_GET['price_to']) : '';
 ?>
 
-<div class="space-y-6">
-
-    <form id="filterForm" method="get">
-        <!-- <div id="filter-categories" class="bg-white border border-gray-200 rounded-lg p-6">
-            <h3 class="text-lg font-bold text-gray-900 mb-4">Categories</h3>
-            <div class="space-y-3">
-                <?php $catCount = count($filters['categories']);
-                $showCats = array_slice($filters['categories'], 0, 10); ?>
-                <?php foreach ($showCats as $category): ?>
-                    <label class="flex items-center gap-3 cursor-pointer hover:text-teal-700 transition">
-                        <input type="radio" name="category" value="<?php echo htmlspecialchars($category['name']); ?>" class="w-4 h-4 border-gray-300 rounded">
-                        <span class="text-gray-700"><?php echo htmlspecialchars($category['name']); ?></span>
-                        <span class="text-gray-400 text-sm ml-auto">(<?php echo $category['count']; ?>)</span>
-                    </label>
-                <?php endforeach; ?>
-                <?php if ($catCount > 10): ?>
-                    <div id="more-categories" class="hidden space-y-3">
-                        <?php foreach (array_slice($filters['categories'], 10) as $category): ?>
-                            <label class="flex items-center gap-3 cursor-pointer hover:text-teal-700 transition">
-                                <input type="radio" name="category" value="<?php echo htmlspecialchars($category['name']); ?>" class="w-4 h-4 border-gray-300 rounded">
-                                <span class="text-gray-700"><?php echo htmlspecialchars($category['name']); ?></span>
-                                <span class="text-gray-400 text-sm ml-auto">(<?php echo $category['count']; ?>)</span>
-                            </label>
-                        <?php endforeach; ?>
+<div class="space-y-4">
+    <!-- Categories Section -->
+    <div class="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
+        <h3 class="text-base font-bold text-gray-900 mb-3">Categories</h3>
+        <div class="space-y-1 max-h-96 overflow-y-auto">
+            <!-- All Products Option -->
+                <a href="/SHooad/public/customer/products" 
+               class="block px-3 py-2 rounded text-sm transition <?php echo empty($selectedCategory) ? 'bg-teal-600 text-white font-semibold' : 'text-gray-700 hover:bg-teal-50'; ?>">
+                <div class="flex items-center justify-between">
+                    <span>All Products</span>
+                </div>
+            </a>
+            
+            <?php foreach ($filters['categories'] as $category): ?>
+                <?php 
+                    $isSelected = ($selectedCategory === $category['name']);
+                    $queryParams = $_GET;
+                    $queryParams['category'] = $category['name'];
+                    unset($queryParams['page']); // Reset page when changing category
+                    $url = '/SHooad/public/customer/products?' . http_build_query($queryParams);
+                ?>
+                <a href="<?php echo htmlspecialchars($url); ?>" 
+                   class="block px-3 py-2 rounded text-sm transition <?php echo $isSelected ? 'bg-teal-600 text-white font-semibold shadow-md' : 'text-gray-700 hover:bg-teal-50'; ?>">
+                    <div class="flex items-center justify-between">
+                        <span><?php echo htmlspecialchars($category['name']); ?></span>
+                        <span class="<?php echo $isSelected ? 'text-teal-100' : 'text-gray-400'; ?> text-xs">
+                            (<?php echo $category['count']; ?>)
+                        </span>
                     </div>
-                    <button id="see-more-cats" type="button" class="mt-3 text-sm text-teal-700">See More</button>
+                </a>
+            <?php endforeach; ?>
+        </div>
+    </div>
+
+    <!-- Price Range Filter -->
+    <div class="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
+        <h3 class="text-base font-bold text-gray-900 mb-3">Price Range</h3>
+        <form method="get" id="priceFilterForm">
+            <!-- Preserve existing query params -->
+            <?php foreach ($_GET as $key => $value): ?>
+                <?php if ($key !== 'price_from' && $key !== 'price_to' && $key !== 'page'): ?>
+                    <input type="hidden" name="<?php echo htmlspecialchars($key); ?>" value="<?php echo htmlspecialchars($value); ?>">
+                <?php endif; ?>
+            <?php endforeach; ?>
+            <input type="hidden" name="page" value="1">
+            
+            <div class="space-y-2">
+                <input type="number" 
+                       name="price_from" 
+                       placeholder="Min" 
+                       value="<?php echo htmlspecialchars($priceFrom); ?>"
+                       class="w-full px-3 py-2 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-teal-500 focus:border-teal-500">
+                <input type="number" 
+                       name="price_to" 
+                       placeholder="Max" 
+                       value="<?php echo htmlspecialchars($priceTo); ?>"
+                       class="w-full px-3 py-2 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-teal-500 focus:border-teal-500">
+                <button type="submit" 
+                        class="w-full px-4 py-2 bg-teal-600 text-white text-sm font-semibold rounded hover:bg-teal-700 transition">
+                    Apply Filter
+                </button>
+                <?php if (!empty($priceFrom) || !empty($priceTo)): ?>
+                    <a href="<?php 
+                        $clearParams = $_GET;
+                        unset($clearParams['price_from'], $clearParams['price_to']);
+                        echo '/SHooad/public/customer/products?' . http_build_query($clearParams);
+                    ?>" class="block w-full text-center px-4 py-2 text-sm text-gray-600 hover:text-teal-600 transition">
+                        Clear Price
+                    </a>
                 <?php endif; ?>
             </div>
-        </div> -->
+        </form>
+    </div>
 
-        <!-- <div id="filter-brands" class="bg-white border border-gray-200 rounded-lg p-6">
-            <h3 class="text-lg font-bold text-gray-900 mb-4">Brands</h3>
-            <div class="space-y-3">
-                <?php foreach (array_slice($filters['brands'], 0, 5) as $brand): ?>
-                    <label class="flex items-center gap-3 cursor-pointer hover:text-teal-700 transition">
-                        <input type="radio" name="brand" value="<?php echo htmlspecialchars($brand['name']); ?>" class="w-4 h-4 border-gray-300 rounded">
-                        <span class="text-gray-700"><?php echo htmlspecialchars($brand['name']); ?></span>
-                        <span class="text-gray-400 text-sm ml-auto">(<?php echo $brand['count']; ?>)</span>
-                    </label>
-                <?php endforeach; ?>
-            </div>
-        </div> -->
-
-        <div class="bg-white border border-gray-200 rounded-lg p-6">
-            <h3 class="text-lg font-bold text-gray-900 mb-4">Price Range</h3>
-            <div class="flex gap-2">
-                <input type="number" name="price_from" placeholder="From" class="w-full px-3 py-2 border border-gray-300 rounded text-sm">
-                <input type="number" name="price_to" placeholder="To" class="w-full px-3 py-2 border border-gray-300 rounded text-sm">
-            </div>
-
-            <button type="submit" class="w-full mt-4 px-4 py-2 bg-teal-700 text-white font-semibold rounded hover:bg-teal-800 transition">
-                Filter
-            </button>
-        </div>
-
-        <!-- Categories Table -->
-        <div class="bg-white border border-gray-200 rounded-lg p-6 mt-6">
-            <h3 class="text-lg font-bold text-gray-900 mb-4">Categories</h3>
-            <div class="grid grid-cols-1 gap-2">
-                <?php foreach ($filters['categories'] as $category): ?>
-                    <form method="get" style="display:inline;">
-                        <input type="hidden" name="category" value="<?php echo htmlspecialchars($category['name']); ?>">
-                        <?php
-                        // preserve other query params except category
-                        foreach ($_GET as $key => $value) {
-                            if ($key !== 'category') {
-                                echo '<input type="hidden" name="' . htmlspecialchars($key) . '" value="' . htmlspecialchars($value) . '">';
-                            }
-                        }
-                        ?>
-                        <button type="submit" class="w-full text-left px-3 py-2 border border-gray-200 rounded hover:bg-teal-50 transition flex items-center justify-between <?php echo (isset($_GET['category']) && $_GET['category'] == $category['name']) ? 'bg-teal-100 font-bold' : ''; ?>">
-                            <span><?php echo htmlspecialchars($category['name']); ?></span>
-                            <span class="text-gray-400 text-sm">(<?php echo $category['count']; ?>)</span>
-                        </button>
-                    </form>
-                <?php endforeach; ?>
-            </div>
-        </div>
-    </form>
-
-    <!-- (Removed colors, sizes and ratings filters as requested) -->
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            var btn = document.getElementById('see-more-cats');
-            if (btn) {
-                btn.addEventListener('click', function() {
-                    var more = document.getElementById('more-categories');
-                    if (!more) return;
-                    if (more.classList.contains('hidden')) {
-                        more.classList.remove('hidden');
-                        btn.textContent = 'See Less';
+    <!-- Brands Filter (Collapsible) -->
+    <?php if (!empty($filters['brands'])): ?>
+    <div class="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
+        <button type="button" 
+                onclick="this.parentElement.querySelector('.brands-list').classList.toggle('hidden')"
+                class="w-full flex items-center justify-between text-base font-bold text-gray-900 mb-3">
+            <span>Brands</span>
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+            </svg>
+        </button>
+        <div class="brands-list hidden space-y-1 max-h-64 overflow-y-auto">
+            <?php foreach (array_slice($filters['brands'], 0, 10) as $brand): ?>
+                <?php 
+                    $isSelected = ($selectedBrand === $brand['name']);
+                    $queryParams = $_GET;
+                    if ($isSelected) {
+                        unset($queryParams['brand']);
                     } else {
-                        more.classList.add('hidden');
-                        btn.textContent = 'See More';
+                        $queryParams['brand'] = $brand['name'];
                     }
-                });
-            }
-            // Ẩn filter khi chọn category hoặc brand
-            var catRadios = document.querySelectorAll('input[name="category"]');
-            var brandRadios = document.querySelectorAll('input[name="brand"]');
-            var catBox = document.getElementById('filter-categories');
-            var brandBox = document.getElementById('filter-brands');
-            catRadios.forEach(function(radio) {
-                radio.addEventListener('change', function() {
-                    if (radio.checked) {
-                        brandBox.style.display = 'none';
-                        catBox.style.display = '';
-                    }
-                });
-            });
-            brandRadios.forEach(function(radio) {
-                radio.addEventListener('change', function() {
-                    if (radio.checked) {
-                        catBox.style.display = 'none';
-                        brandBox.style.display = '';
-                    }
-                });
-            });
-        });
-    </script>
+                    unset($queryParams['page']);
+                    $url = '/SHooad/public/customer/products?' . http_build_query($queryParams);
+                ?>
+                <a href="<?php echo htmlspecialchars($url); ?>" 
+                   class="block px-3 py-2 rounded text-sm transition <?php echo $isSelected ? 'bg-teal-600 text-white font-semibold' : 'text-gray-700 hover:bg-gray-100'; ?>">
+                    <div class="flex items-center justify-between">
+                        <span><?php echo htmlspecialchars($brand['name']); ?></span>
+                        <span class="<?php echo $isSelected ? 'text-teal-100' : 'text-gray-400'; ?> text-xs">
+                            (<?php echo $brand['count']; ?>)
+                        </span>
+                    </div>
+                </a>
+            <?php endforeach; ?>
+        </div>
+    </div>
+    <?php endif; ?>
 </div>

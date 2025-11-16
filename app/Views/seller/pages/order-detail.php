@@ -38,19 +38,17 @@ $customer_phone = $order["customer_phone"] ?? 'N/A';
                     <span class="px-3 py-1 rounded-full text-sm font-medium 
                         <?php 
                         echo match($order['status'] ?? '') {
-                            'Pending_Transfer' => 'bg-yellow-100 text-yellow-800',
-                            'Paid' => 'bg-green-100 text-green-800',
-                            'Processing' => 'bg-blue-100 text-blue-800',
-                            'Delivering' => 'bg-indigo-100 text-indigo-800',
-                            'Pending_COD' => 'bg-orange-100 text-orange-800',
-                            'Completed' => 'bg-green-100 text-green-800',
-                            'Cancelled' => 'bg-red-100 text-red-800',
-                            'Failed' => 'bg-red-100 text-red-800',
+                            'pending' => 'bg-yellow-100 text-yellow-800',
+                            'processing' => 'bg-blue-100 text-blue-800',
+                            'delivering' => 'bg-indigo-100 text-indigo-800',
+                            'completed' => 'bg-green-100 text-green-800',
+                            'cancelled' => 'bg-red-100 text-red-800',
+                            'failed' => 'bg-red-100 text-red-800',
                             default => 'bg-gray-100 text-gray-800'
                         };
                         ?>
                     ">
-                        <?php echo str_replace('_', ' ', $order['status'] ?? 'N/A'); ?>
+                        <?php echo ucfirst(str_replace('_', ' ', $order['status'] ?? 'N/A')); ?>
                     </span>
                 </div>
             </div>
@@ -109,14 +107,12 @@ $customer_phone = $order["customer_phone"] ?? 'N/A';
                             <input type="hidden" name="order_id" value="<?php echo $order_id; ?>">
 
                             <select name="status" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-teal-500">
-                                <option value="Pending_Transfer" <?php if ($order['status'] == 'Pending_Transfer') echo 'selected'; ?>>Pending Transfer</option>
-                                <option value="Paid" <?php if ($order['status'] == 'Paid') echo 'selected'; ?>>Paid</option>
-                                <option value="Processing" <?php if ($order['status'] == 'Processing') echo 'selected'; ?>>Processing</option>
-                                <option value="Delivering" <?php if ($order['status'] == 'Delivering') echo 'selected'; ?>>Delivering</option>
-                                <option value="Pending_COD" <?php if ($order['status'] == 'Pending_COD') echo 'selected'; ?>>Pending COD</option>
-                                <option value="Completed" <?php if ($order['status'] == 'Completed') echo 'selected'; ?>>Completed</option>
-                                <option value="Cancelled" <?php if ($order['status'] == 'Cancelled') echo 'selected'; ?>>Cancelled</option>
-                                <option value="Failed" <?php if ($order['status'] == 'Failed') echo 'selected'; ?>>Failed</option>
+                                <option value="pending" <?php if ($order['status'] == 'pending') echo 'selected'; ?>>Pending (Awaiting Confirmation)</option>
+                                <option value="processing" <?php if ($order['status'] == 'processing') echo 'selected'; ?>>Processing</option>
+                                <option value="delivering" <?php if ($order['status'] == 'delivering') echo 'selected'; ?>>Delivering</option>
+                                <option value="completed" <?php if ($order['status'] == 'completed') echo 'selected'; ?>>Completed</option>
+                                <option value="cancelled" <?php if ($order['status'] == 'cancelled') echo 'selected'; ?>>Cancelled</option>
+                                <option value="failed" <?php if ($order['status'] == 'failed') echo 'selected'; ?>>Failed</option>
                             </select>
 
                             <button type="submit" name="update_status_order" class="w-full px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition-colors font-medium">

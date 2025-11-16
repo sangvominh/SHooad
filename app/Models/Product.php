@@ -128,4 +128,32 @@ class Product {
         return false;
     }
 
+    public function searchByName(string $query, int $limit = 8): array {
+        $limit = max(1, min(20, (int)$limit));
+        // Use prepared LIKE and subquery for the first image
+        $sql = "SELECT p.id, p.name, p.price,
+                       (SELECT pi.filename FROM product_images pi WHERE pi.product_id = p.id ORDER BY pi.id ASC LIMIT 1) AS image
+                FROM products p
+                WHERE p.status = 'active' AND p.name LIKE CONCAT('%', ?, '%')
+                ORDER BY p.sold DESC, p.name ASC
+                LIMIT ?";
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->bind_param('si', $query, $limit);
+        $stmt->execute();
+        $rows = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+
+        // Map to API-friendly payload
+        $items = [];
+        foreach ($rows as $row) {
+            $items[] = [
+                'id' => (int)$row['id'],
+                'name' => $row['name'],
+                'price' => (float)$row['price'],
+                'image' => $row['image'] ? ('/SHooad/public/assets/products/' . $row['image']) : null,
+                'url' => '/SHooad/public/customer/product-detail?id=' . (int)$row['id']
+            ];
+        }
+        return $items;
+    }
 }

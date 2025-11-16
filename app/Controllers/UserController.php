@@ -321,4 +321,22 @@ class UserController {
         $data = $this->pageService->getOrdersPageData();
         $this->renderWithLayout('orders', $data, 'My Orders - SHooad');
     }
+
+    // Realtime product search API (JSON)
+    public function searchProducts() {
+        header('Content-Type: application/json');
+        $q = trim($_GET['q'] ?? '');
+        $limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 8;
+        if ($limit < 1 || $limit > 20) { $limit = 8; }
+
+        if ($q === '' || mb_strlen($q) < 2) {
+            echo json_encode([ 'items' => [] ]);
+            return;
+        }
+
+        require_once __DIR__ . '/../Services/ProductService.php';
+        $productService = new ProductService();
+        $items = $productService->searchByName($q, $limit);
+        echo json_encode([ 'items' => $items ]);
+    }
 }

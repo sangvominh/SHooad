@@ -1,15 +1,16 @@
 <div class="block group relative product-card transition-all duration-200 overflow-hidden">
     <!-- Product Image Container -->
     <a href="/SHooad/public/customer/product-detail?id=<?php echo urlencode($product['id']); ?>" class="block relative bg-gray-100 mb-4 overflow-hidden">
+        <?php $hasHover = isset($product['image_hover']) && !empty($product['image_hover']); ?>
         <img
             src="<?php echo htmlspecialchars($product['image'] ?? '/SHooad/public/assets/logo/default-avatar.png'); ?>"
             alt="<?php echo htmlspecialchars($product['name']); ?>"
-            class="w-full h-96 object-cover transition-opacity duration-300 group-hover:opacity-0">
-        <?php if (isset($product['image_hover'])): ?>
+            class="w-full h-56 object-cover transition-opacity duration-300 <?php echo $hasHover ? 'group-hover:opacity-0' : ''; ?>">
+        <?php if ($hasHover): ?>
         <img
             src="<?php echo htmlspecialchars($product['image_hover']); ?>"
             alt="<?php echo htmlspecialchars($product['name']); ?>"
-            class="w-full h-96 object-cover absolute inset-0 transition-opacity duration-300 opacity-0 group-hover:opacity-100">
+            class="w-full h-56 object-cover absolute inset-0 transition-opacity duration-300 opacity-0 group-hover:opacity-100">
         <?php endif; ?>
         
         <!-- Add to Cart Icon - Floating on Hover -->

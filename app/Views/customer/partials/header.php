@@ -13,7 +13,7 @@ $lang = LanguageHelper::getCurrentLanguage();
 
         <!-- Search Bar -->
         <div class="flex-1 min-w-[180px] max-w-md md:max-w-none md:mx-8">
-            <div class="flex">
+            <div class="flex relative" id="searchWrapper">
                 <input
                     type="text"
                     id="searchInput"
@@ -22,6 +22,10 @@ $lang = LanguageHelper::getCurrentLanguage();
                 <button class="px-2 md:px-4 bg-[#001F5D] rounded-r-lg hover:bg-[#003082]">
                     <i class="fa-solid fa-magnifying-glass text-white text-sm md:text-base"></i>
                 </button>
+                <!-- Realtime search dropdown -->
+                <div id="searchDropdown" class="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-xl z-[9999] hidden max-h-80 overflow-auto">
+                    <!-- Results rendered by JS -->
+                </div>
             </div>
         </div>
 
@@ -113,6 +117,7 @@ $lang = LanguageHelper::getCurrentLanguage();
     </div>
 </header>
 <script src="/SHooad/public/assets/js/customer/avatar-dropdown.js"></script>
+<script src="/SHooad/public/assets/js/customer/search.js"></script>
 <script>
     // Simple shake animation for cart icon
     function shakeCartIcon() {

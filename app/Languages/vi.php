@@ -156,6 +156,8 @@ return [
         'remove' => 'Xóa',
         'color' => 'Màu sắc',
         'size' => 'Kích thước',
+        'original_total' => 'Giá gốc',
+        'discount' => 'Giảm giá',
     ],
     
     'checkout' => [

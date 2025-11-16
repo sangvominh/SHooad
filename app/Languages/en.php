@@ -156,6 +156,8 @@ return [
         'remove' => 'Remove',
         'color' => 'Color',
         'size' => 'Size',
+        'original_total' => 'Original Total',
+        'discount' => 'Discount',
     ],
     
     'checkout' => [

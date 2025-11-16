@@ -98,46 +98,23 @@ CREATE TABLE IF NOT EXISTS sizes (
 );
 
 -- ============================
--- PRODUCT COLORS (junction table)
--- ============================
-CREATE TABLE IF NOT EXISTS product_colors (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    product_id INT NOT NULL,
-    color_id INT NOT NULL,
-    stock INT DEFAULT 0,
-    FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
-    FOREIGN KEY (color_id) REFERENCES colors(id) ON DELETE CASCADE,
-    UNIQUE KEY unique_product_color (product_id, color_id)
-);
-
--- ============================
--- PRODUCT SIZES (junction table)
--- ============================
-CREATE TABLE IF NOT EXISTS product_sizes (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    product_id INT NOT NULL,
-    size_id INT NOT NULL,
-    stock INT DEFAULT 0,
-    FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
-    FOREIGN KEY (size_id) REFERENCES sizes(id) ON DELETE CASCADE,
-    UNIQUE KEY unique_product_size (product_id, size_id)
-);
-
--- ============================
 -- PRODUCT VARIANTS (color-size combinations)
+-- New design: each row is a unique variant (product + color + size), with its own SKU, stock and price
 -- ============================
 CREATE TABLE IF NOT EXISTS product_variants (
     id INT AUTO_INCREMENT PRIMARY KEY,
     product_id INT NOT NULL,
-    color_id INT,
-    size_id INT,
-    sku VARCHAR(100),
-    stock INT DEFAULT 0,
-    price_adjustment DECIMAL(10,2) DEFAULT 0,
+    color_id INT NULL,
+    size_id INT NULL,
+    sku VARCHAR(100) NOT NULL UNIQUE,
+    stock INT NOT NULL DEFAULT 0,
+    price DECIMAL(10,2) NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
     FOREIGN KEY (color_id) REFERENCES colors(id) ON DELETE SET NULL,
     FOREIGN KEY (size_id) REFERENCES sizes(id) ON DELETE SET NULL,
-    UNIQUE KEY unique_variant (product_id, color_id, size_id)
+    UNIQUE KEY unique_variant (product_id, color_id, size_id),
+    CONSTRAINT chk_variant_attrs CHECK (color_id IS NOT NULL OR size_id IS NOT NULL)
 );
 
 -- ============================

@@ -12,6 +12,7 @@ try {
 
     // Validate POST parameters
     $product_id = isset($_POST['product_id']) ? intval($_POST['product_id']) : 0;
+    $variant_id = isset($_POST['variant_id']) ? intval($_POST['variant_id']) : 0;
     $color = isset($_POST['color']) ? trim($_POST['color']) : '';
     $size = isset($_POST['size']) ? trim($_POST['size']) : '';
     $quantity = isset($_POST['quantity']) ? intval($_POST['quantity']) : 0;
@@ -27,7 +28,7 @@ try {
         exit();
     }
 
-    if (!$color || !$size) {
+    if (!$variant_id && (!$color || !$size)) {
         http_response_code(400);
         echo json_encode(['success' => false, 'message' => 'Please select color and size'], JSON_UNESCAPED_UNICODE);
         exit();
@@ -37,8 +38,8 @@ try {
     $pdo = new PDO('mysql:host=localhost;dbname=SHooad;charset=utf8mb4', 'root', '');
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-    // Check product exists and get stock
-    $productStmt = $pdo->prepare('SELECT id, stock FROM products WHERE id = :pid AND status = "active"');
+    // Check product exists
+    $productStmt = $pdo->prepare('SELECT id FROM products WHERE id = :pid AND status = "active"');
     $productStmt->execute([':pid' => $product_id]);
     $product = $productStmt->fetch(PDO::FETCH_ASSOC);
 
@@ -48,11 +49,24 @@ try {
         exit();
     }
 
-    // Check stock
-    if ($quantity > $product['stock']) {
-        http_response_code(400);
-        echo json_encode(['success' => false, 'message' => 'Requested quantity exceeds stock. Available: ' . $product['stock']], JSON_UNESCAPED_UNICODE);
-        exit();
+    // If variant provided, validate variant stock and resolve color/size names
+    if ($variant_id > 0) {
+        $variantStmt = $pdo->prepare('SELECT pv.id, pv.product_id, pv.stock, pv.price, c.name AS color_name, s.name AS size_name FROM product_variants pv LEFT JOIN colors c ON pv.color_id = c.id LEFT JOIN sizes s ON pv.size_id = s.id WHERE pv.id = :vid AND pv.product_id = :pid');
+        $variantStmt->execute([':vid' => $variant_id, ':pid' => $product_id]);
+        $variant = $variantStmt->fetch(PDO::FETCH_ASSOC);
+        if (!$variant) {
+            http_response_code(404);
+            echo json_encode(['success' => false, 'message' => 'Variant not found'], JSON_UNESCAPED_UNICODE);
+            exit();
+        }
+        if ($quantity > intval($variant['stock'])) {
+            http_response_code(400);
+            echo json_encode(['success' => false, 'message' => 'Requested quantity exceeds variant stock. Available: ' . intval($variant['stock'])], JSON_UNESCAPED_UNICODE);
+            exit();
+        }
+        // Ensure color/size names carry to cart snapshot
+        $color = $variant['color_name'] ?? $color;
+        $size  = $variant['size_name'] ?? $size;
     }
 
     // Get or create cart for customer
@@ -80,13 +94,13 @@ try {
     $existingItem = $checkItemStmt->fetch(PDO::FETCH_ASSOC);
 
     if ($existingItem) {
-        // Update existing item and set selected=1
+        // Update existing item quantity (keep current selected state)
         $newQuantity = $existingItem['quantity'] + $quantity;
-        $updateStmt = $pdo->prepare('UPDATE cart_items SET quantity = :quantity, selected = 1 WHERE id = :id');
+        $updateStmt = $pdo->prepare('UPDATE cart_items SET quantity = :quantity WHERE id = :id');
         $updateStmt->execute([':quantity' => $newQuantity, ':id' => $existingItem['id']]);
     } else {
-        // Insert new item with selected=1 by default
-        $insertStmt = $pdo->prepare('INSERT INTO cart_items (cart_id, product_id, color, size, quantity, selected) VALUES (:cart_id, :product_id, :color, :size, :quantity, 1)');
+        // Insert new item with selected=0 by default (user must manually select)
+        $insertStmt = $pdo->prepare('INSERT INTO cart_items (cart_id, product_id, color, size, quantity, selected) VALUES (:cart_id, :product_id, :color, :size, :quantity, 0)');
         $insertStmt->execute([
             ':cart_id' => $cart_id,
             ':product_id' => $product_id,

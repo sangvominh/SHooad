@@ -148,6 +148,7 @@
 <!-- Hidden form for add to cart -->
 <form id="addToCartForm" method="POST" style="display:none;">
     <input type="hidden" name="product_id" value="<?php echo $productId; ?>">
+    <input type="hidden" name="variant_id" id="selectedVariantId" value="">
     <input type="hidden" name="color" id="selectedColor" value="">
     <input type="hidden" name="size" id="selectedSize" value="">
     <input type="hidden" name="quantity" id="selectedQuantity" value="">
@@ -155,6 +156,8 @@
 
 <script>
   document.addEventListener('DOMContentLoaded', function() {
+    const API_BASE = '/SHooad/app/Routes';
+    const PRODUCT_ID = <?php echo (int)$productId; ?>;
     // Quantity input handlers
     var qtyInput = document.getElementById('qtyInput');
     var minusBtn = document.getElementById('qtyMinus');
@@ -192,6 +195,10 @@
     colorRadios.forEach(function(radio) {
       radio.addEventListener('change', function() {
         updateColorLabels();
+        const colorId = parseInt(radio.getAttribute('data-color-id') || '0', 10);
+        if (colorId > 0) {
+          fetchAvailableSizes(PRODUCT_ID, colorId).then(updateSizesUI);
+        }
         validateFormAndUpdateButtons();
       });
     });
@@ -199,6 +206,10 @@
     sizeRadios.forEach(function(radio) {
       radio.addEventListener('change', function() {
         updateSizeLabels();
+        const sizeId = parseInt(radio.getAttribute('data-size-id') || '0', 10);
+        if (sizeId > 0) {
+          fetchAvailableColors(PRODUCT_ID, sizeId).then(updateColorsUI);
+        }
         validateFormAndUpdateButtons();
       });
     });
@@ -248,7 +259,7 @@
       }
     }
 
-    function validateFormAndUpdateButtons() {
+    async function validateFormAndUpdateButtons() {
       // Get selected values
       var selectedColor = document.querySelector('input[name="color"]:checked');
       var selectedSize = document.querySelector('input[name="size"]:checked');
@@ -256,6 +267,8 @@
       
       var colorVal = selectedColor ? selectedColor.value : '';
       var sizeVal = selectedSize ? selectedSize.value : '';
+      var colorId  = selectedColor ? parseInt(selectedColor.getAttribute('data-color-id') || '0', 10) : 0;
+      var sizeId   = selectedSize ? parseInt(selectedSize.getAttribute('data-size-id') || '0', 10) : 0;
       
       // Get stock from container or body
       var container = document.querySelector('[data-stock]');
@@ -268,7 +281,30 @@
       // Validate: color selected (if exists), size selected (if exists), qty >= 1, qty <= stock
       var colorValid = !hasColorOptions || (hasColorOptions && colorVal !== '');
       var sizeValid = !hasSizeOptions || (hasSizeOptions && sizeVal !== '');
-      var isValid = colorValid && sizeValid && qty >= 1 && (stock === 0 || qty <= stock);
+
+      // If both selected, fetch the exact variant to know real stock and id
+      var variantOk = true;
+      if ((colorValid || !hasColorOptions) && (sizeValid || !hasSizeOptions)) {
+        if ((hasColorOptions ? colorId > 0 : true) && (hasSizeOptions ? sizeId > 0 : true)) {
+          try {
+            const variant = await fetchVariant(PRODUCT_ID, colorId || null, sizeId || null);
+            if (variant) {
+              stock = variant.stock ?? stock;
+              document.getElementById('selectedVariantId').value = variant.id;
+              // Store latest stock snapshot for qty validation
+              if (container) container.setAttribute('data-stock', String(stock));
+            } else {
+              variantOk = false;
+              document.getElementById('selectedVariantId').value = '';
+            }
+          } catch (e) {
+            variantOk = false;
+            document.getElementById('selectedVariantId').value = '';
+          }
+        }
+      }
+
+      var isValid = colorValid && sizeValid && variantOk && qty >= 1 && (stock === 0 || qty <= stock);
       
       var addToCartBtn = document.getElementById('addToCartBtn');
       var buyNowBtn = document.getElementById('buyNowBtn');
@@ -295,6 +331,93 @@
       document.getElementById('selectedColor').value = colorVal || '';
       document.getElementById('selectedSize').value = sizeVal || '';
       document.getElementById('selectedQuantity').value = qty;
+    }
+
+    async function fetchAvailableSizes(productId, colorId) {
+      const fd = new FormData();
+      fd.append('product_id', String(productId));
+      fd.append('color_id', String(colorId));
+      const res = await fetch(`${API_BASE}/get-available-sizes.php`, { method: 'POST', body: fd });
+      const data = await res.json();
+      if (!data.success) throw new Error(data.message || 'fetch sizes failed');
+      return data.sizes || [];
+    }
+
+    function updateSizesUI(sizes) {
+      const sizeInputs = document.querySelectorAll('input.size-radio');
+      sizeInputs.forEach(function(input){
+        const sizeId = parseInt(input.getAttribute('data-size-id') || '0', 10);
+        const info = sizes.find(s => s.id === sizeId);
+        const label = document.querySelector('label[for="' + input.id + '"]');
+        if (!label) return;
+        const stockSpan = label.querySelectorAll('span')[1] || null; // [0]=name, [1]=stock
+        if (info) {
+          const available = !!info.available;
+          input.disabled = !available;
+          label.classList.toggle('opacity-50', !available);
+          label.classList.toggle('cursor-not-allowed', !available);
+          label.classList.toggle('hover:border-blue-600', available);
+          label.classList.toggle('hover:bg-blue-50', available);
+          if (stockSpan) {
+            stockSpan.textContent = available ? (info.stock <= 10 ? `Còn ${info.stock}` : `Còn ${info.stock}`) : 'Hết';
+            stockSpan.className = 'text-xs ' + (available ? (info.stock <= 10 ? 'text-orange-500' : 'text-green-600') : 'text-red-500 font-semibold');
+          }
+          if (!available && input.checked) {
+            input.checked = false;
+            updateSizeLabels();
+          }
+        }
+      });
+    }
+
+    async function fetchAvailableColors(productId, sizeId) {
+      const fd = new FormData();
+      fd.append('product_id', String(productId));
+      fd.append('size_id', String(sizeId));
+      const res = await fetch(`${API_BASE}/get-available-colors.php`, { method: 'POST', body: fd });
+      const data = await res.json();
+      if (!data.success) throw new Error(data.message || 'fetch colors failed');
+      return data.colors || [];
+    }
+
+    function updateColorsUI(colors) {
+      const colorInputs = document.querySelectorAll('input.color-radio');
+      colorInputs.forEach(function(input){
+        const colorId = parseInt(input.getAttribute('data-color-id') || '0', 10);
+        const info = colors.find(c => c.id === colorId);
+        const label = document.querySelector('label[for="' + input.id + '"]');
+        if (!label) return;
+        const spans = label.querySelectorAll('span');
+        const stockSpan = spans[2] || null; // [0]=swatch, [1]=name, [2]=stock
+        if (info) {
+          const available = !!info.available;
+          input.disabled = !available;
+          label.classList.toggle('opacity-50', !available);
+          label.classList.toggle('cursor-not-allowed', !available);
+          label.classList.toggle('hover:border-blue-600', available);
+          label.classList.toggle('hover:bg-blue-50', available);
+          if (stockSpan) {
+            stockSpan.textContent = available ? (info.stock <= 10 ? `Còn ${info.stock} sản phẩm` : `Còn ${info.stock} sản phẩm`) : 'Hết hàng';
+            stockSpan.className = 'text-xs ' + (available ? (info.stock <= 10 ? 'text-orange-500' : 'text-green-600') : 'text-red-500 font-semibold');
+          }
+          if (!available && input.checked) {
+            input.checked = false;
+            updateColorLabels();
+          }
+        }
+      });
+    }
+
+    async function fetchVariant(productId, colorId, sizeId) {
+      const fd = new FormData();
+      fd.append('product_id', String(productId));
+      if (colorId) fd.append('color_id', String(colorId));
+      if (sizeId) fd.append('size_id', String(sizeId));
+      const res = await fetch(`${API_BASE}/get-variant.php`, { method: 'POST', body: fd });
+      if (res.status === 404) return null;
+      const data = await res.json();
+      if (!data.success) return null;
+      return data.variant || null;
     }
     
     // Add to cart handler
@@ -408,6 +531,17 @@
     // Initial updates
     updateColorLabels();
     updateSizeLabels();
+    // Trigger initial availability refresh based on defaults
+    const initColor = document.querySelector('input[name="color"]:checked');
+    const initSize  = document.querySelector('input[name="size"]:checked');
+    if (initColor) {
+      const initColorId = parseInt(initColor.getAttribute('data-color-id') || '0', 10);
+      if (initColorId > 0) fetchAvailableSizes(PRODUCT_ID, initColorId).then(updateSizesUI).catch(()=>{});
+    }
+    if (initSize) {
+      const initSizeId = parseInt(initSize.getAttribute('data-size-id') || '0', 10);
+      if (initSizeId > 0) fetchAvailableColors(PRODUCT_ID, initSizeId).then(updateColorsUI).catch(()=>{});
+    }
     validateFormAndUpdateButtons();
   });
 </script>

@@ -73,6 +73,17 @@ switch ($path) {
         $customerController->orders();
         break;
     
+    case 'search-products':
+        // Lightweight JSON API for realtime search suggestions
+        if (method_exists($customerController, 'searchProducts')) {
+            $customerController->searchProducts();
+        } else {
+            header('Content-Type: application/json');
+            http_response_code(404);
+            echo json_encode(['error' => 'Not found']);
+        }
+        break;
+
     case 'set-language':
         require_once __DIR__ . '/../Helpers/LanguageHelper.php';
         $lang = $_GET['lang'] ?? 'vi';

@@ -169,12 +169,13 @@ class UserPageService {
         $pdo = new PDO('mysql:host=localhost;dbname=SHooad;charset=utf8', 'root', '');
         
         $stmt = $pdo->prepare("
-            SELECT c.id, c.name, c.hex_code, pc.stock
-            FROM product_colors pc
-            JOIN colors c ON pc.color_id = c.id
-            WHERE pc.product_id = ?
-            ORDER BY c.name
-        ");
+        SELECT c.id, c.name, c.hex_code, COALESCE(SUM(pv.stock), 0) AS stock
+        FROM product_variants pv
+        JOIN colors c ON pv.color_id = c.id
+        WHERE pv.product_id = ? AND pv.color_id IS NOT NULL
+        GROUP BY c.id, c.name, c.hex_code
+        ORDER BY c.name
+    ");
         
         $stmt->execute([$productId]);
         $colors = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -197,12 +198,13 @@ class UserPageService {
         $pdo = new PDO('mysql:host=localhost;dbname=SHooad;charset=utf8', 'root', '');
         
         $stmt = $pdo->prepare("
-            SELECT s.id, s.name, ps.stock
-            FROM product_sizes ps
-            JOIN sizes s ON ps.size_id = s.id
-            WHERE ps.product_id = ?
-            ORDER BY s.sort_order
-        ");
+        SELECT s.id, s.name, COALESCE(SUM(pv.stock), 0) AS stock
+        FROM product_variants pv
+        JOIN sizes s ON pv.size_id = s.id
+        WHERE pv.product_id = ? AND pv.size_id IS NOT NULL
+        GROUP BY s.id, s.name, s.sort_order
+        ORDER BY s.sort_order, s.name
+    ");
         
         $stmt->execute([$productId]);
         $sizes = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -243,10 +245,13 @@ class UserPageService {
         // Get filter params
         $selectedCategory = isset($_GET['category']) ? trim($_GET['category']) : '';
         $selectedBrand = isset($_GET['brand']) ? trim($_GET['brand']) : '';
-        $priceFrom = isset($_GET['price_from']) ? floatval($_GET['price_from']) : 0;
-        $priceTo = isset($_GET['price_to']) ? floatval($_GET['price_to']) : 0;
+        $priceFrom = isset($_GET['price_from']) ? max(0, floatval($_GET['price_from'])) : 0;
+        $priceTo = isset($_GET['price_to']) ? max(0, floatval($_GET['price_to'])) : 0;
+        if ($priceFrom > 0 && $priceTo > 0 && $priceFrom > $priceTo) {
+            $tmp = $priceFrom; $priceFrom = $priceTo; $priceTo = $tmp; // swap to make a valid range
+        }
         $page = isset($_GET['page']) ? max(1, intval($_GET['page'])) : 1;
-        $perPage = 9;
+        $perPage = 18; // Tăng từ 9 lên 18 để phù hợp với grid 6 cột
         $offset = ($page - 1) * $perPage;
         $sort = isset($_GET['sort']) ? trim($_GET['sort']) : 'latest';
 
@@ -315,12 +320,11 @@ class UserPageService {
             }
 
             // Get products
-            $sql = "SELECT p.id, p.name, p.price, p.original_price, p.stock, p.sold, p.brand, c.name AS category_name, pi.filename AS image_file
+                $sql = "SELECT p.id, p.name, p.price, p.original_price, p.stock, p.sold, p.brand, c.name AS category_name,
+                    (SELECT filename FROM product_images pi2 WHERE pi2.product_id = p.id ORDER BY pi2.id ASC LIMIT 1) AS image_file
                     FROM products p
                     LEFT JOIN categories c ON c.id = p.category_id
-                    LEFT JOIN product_images pi ON pi.product_id = p.id
                     " . $whereSql . "
-                    GROUP BY p.id
                     " . $orderSql . "
                     LIMIT " . intval($perPage) . " OFFSET " . intval($offset);
 
@@ -337,7 +341,7 @@ class UserPageService {
                     $products[] = [
                         'id' => $row['id'],
                         'name' => $row['name'],
-                        'thumbnail_url' => $thumbnail,
+                        'image' => $thumbnail,
                         'price' => $row['price'],
                         'original_price' => $row['original_price'],
                         'stock' => $row['stock'],
@@ -364,7 +368,7 @@ class UserPageService {
 
     public function getFiltersData(): array {
         $mysqli = new mysqli('localhost', 'root', '', 'SHooad');
-        $filters = ['categories' => [], 'brands' => [], 'sizes' => ['XS', 'S', 'M', 'L', 'XL', 'XXL'], 'colors' => [], 'ratings' => []];
+        $filters = ['categories' => [], 'brands' => [], 'sizes' => [], 'colors' => [], 'ratings' => []];
         
         if (!$mysqli->connect_error) {
             // Top categories by sold
@@ -397,19 +401,30 @@ class UserPageService {
                 $bres->free();
             }
 
+            // Sizes
+            $sizeSql = "SELECT DISTINCT s.name AS size
+                        FROM sizes s
+                        INNER JOIN product_variants pv ON pv.size_id = s.id
+                        ORDER BY s.sort_order, s.name
+                        LIMIT 100";
+            $sres = $mysqli->query($sizeSql);
+            if ($sres) {
+                while ($srow = $sres->fetch_assoc()) {
+                    $filters['sizes'][] = $srow['size'];
+                }
+                $sres->free();
+            }
+
             // Colors
-            $colorSql = "SELECT DISTINCT TRIM(cval) AS color FROM (
-                            SELECT SUBSTRING_INDEX(SUBSTRING_INDEX(p.colors, ',', nums.n), ',', -1) AS cval
-                          FROM products p
-                          JOIN (
-                            SELECT 1 AS n UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4 UNION ALL SELECT 5 UNION ALL SELECT 6
-                          ) nums ON CHAR_LENGTH(p.colors) - CHAR_LENGTH(REPLACE(p.colors, ',', '')) >= nums.n-1
-                          WHERE p.colors IS NOT NULL AND p.colors != ''
-                          ) t WHERE TRIM(cval) != '' LIMIT 100";
+            $colorSql = "SELECT DISTINCT c.name AS color, c.hex_code AS code
+                         FROM colors c
+                         INNER JOIN product_variants pv ON pv.color_id = c.id
+                         ORDER BY c.name
+                         LIMIT 100";
             $cres2 = $mysqli->query($colorSql);
             if ($cres2) {
                 while ($crow2 = $cres2->fetch_assoc()) {
-                    $filters['colors'][] = ['name' => $crow2['color'], 'code' => '#cccccc'];
+                    $filters['colors'][] = ['name' => $crow2['color'], 'code' => $crow2['code']];
                 }
                 $cres2->free();
             }
@@ -436,7 +451,7 @@ class UserPageService {
             $customerId = intval($_SESSION['customer_id']);
             $mysqli = new mysqli('localhost', 'root', '', 'SHooad');
             if (!$mysqli->connect_error) {
-                $sql = "SELECT ci.id AS cart_item_id, ci.product_id, ci.color, ci.size, ci.quantity, ci.selected, p.name, p.price, p.original_price, p.stock, p.colors AS available_colors, p.sizes AS available_sizes, pi.filename AS image_file
+                $sql = "SELECT ci.id AS cart_item_id, ci.product_id, ci.color, ci.size, ci.quantity, ci.selected, p.name, p.price, p.original_price, p.stock, pi.filename AS image_file
                         FROM carts c
                         JOIN cart_items ci ON ci.cart_id = c.id
                         JOIN products p ON p.id = ci.product_id
@@ -466,8 +481,6 @@ class UserPageService {
                             'color' => $row['color'],
                             'quantity' => $row['quantity'],
                             'stock' => $row['stock'],
-                            'available_colors' => $row['available_colors'],
-                            'available_sizes' => $row['available_sizes'],
                             'selected' => $row['selected']
                         ];
                     }
