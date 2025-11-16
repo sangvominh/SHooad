@@ -29,14 +29,12 @@
                 
                 <?php
                 $statuses = [
-                    'Pending_Transfer' => ['label' => 'Pending Payment', 'color' => 'orange'],
-                    'Paid' => ['label' => 'Paid', 'color' => 'green'],
-                    'Processing' => ['label' => 'Processing', 'color' => 'blue'],
-                    'Delivering' => ['label' => 'Shipping', 'color' => 'indigo'],
-                    'Pending_COD' => ['label' => 'COD Pending', 'color' => 'yellow'],
-                    'Completed' => ['label' => 'Completed', 'color' => 'green'],
-                    'Cancelled' => ['label' => 'Cancelled', 'color' => 'red'],
-                    'Failed' => ['label' => 'Failed', 'color' => 'red']
+                    'pending' => ['label' => 'Pending', 'color' => 'yellow'],
+                    'processing' => ['label' => 'Processing', 'color' => 'blue'],
+                    'delivering' => ['label' => 'Shipping', 'color' => 'indigo'],
+                    'completed' => ['label' => 'Completed', 'color' => 'green'],
+                    'cancelled' => ['label' => 'Cancelled', 'color' => 'red'],
+                    'failed' => ['label' => 'Failed', 'color' => 'red']
                 ];
                 
                 foreach ($statuses as $status => $info):
@@ -79,15 +77,14 @@
                                 <div>
                                     <span class="px-3 py-1 text-sm font-medium rounded-full <?php
                                         echo match($order['status']) {
-                                            'Completed' => 'bg-green-100 text-green-800',
-                                            'Cancelled', 'Failed' => 'bg-red-100 text-red-800',
-                                            'Delivering' => 'bg-indigo-100 text-indigo-800',
-                                            'Processing' => 'bg-blue-100 text-blue-800',
-                                            'Paid' => 'bg-green-100 text-green-800',
-                                            'Pending_COD' => 'bg-yellow-100 text-yellow-800',
-                                            default => 'bg-orange-100 text-orange-800'
+                                            'completed' => 'bg-green-100 text-green-800',
+                                            'cancelled', 'failed' => 'bg-red-100 text-red-800',
+                                            'delivering' => 'bg-indigo-100 text-indigo-800',
+                                            'processing' => 'bg-blue-100 text-blue-800',
+                                            'pending' => 'bg-yellow-100 text-yellow-800',
+                                            default => 'bg-gray-100 text-gray-800'
                                         };
-                                    ?>"><?= str_replace('_', ' ', $order['status']) ?></span>
+                                    ?>"><?= ucfirst($order['status']) ?></span>
                                 </div>
                             </div>
                         </div>
@@ -107,11 +104,22 @@
                                         <?= htmlspecialchars($order['customer_phone']) ?>
                                     </p>
                                 </div>
-                                <div class="text-right">
+                                <div class="text-right flex gap-2 justify-end">
                                     <a href="/SHooad/public/customer/order-detail?id=<?= $order['id'] ?>" 
                                        class="inline-block bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium transition">
                                         <i class="fas fa-eye mr-2"></i>View Details
                                     </a>
+                                    <?php if (in_array($order['status'], ['pending', 'processing'])): ?>
+                                        <form method="POST" action="/SHooad/public/customer/cancel-order" 
+                                              onsubmit="return confirm('Are you sure you want to cancel this order?');" 
+                                              class="inline-block">
+                                            <input type="hidden" name="order_id" value="<?= $order['id'] ?>">
+                                            <button type="submit" 
+                                                    class="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-lg font-medium transition">
+                                                <i class="fas fa-times mr-2"></i>Cancel Order
+                                            </button>
+                                        </form>
+                                    <?php endif; ?>
                                 </div>
                             </div>
                         </div>

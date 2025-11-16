@@ -13,14 +13,25 @@ ADD COLUMN IF NOT EXISTS selected TINYINT(1) DEFAULT 0 AFTER size;
 -- This prevents automatic selection of all items
 UPDATE cart_items SET selected = 0;
 
--- Step 3: Update old order status values to new lowercase format
-UPDATE orders SET status = 'pending' WHERE status IN ('Pending_Transfer', 'Pending_COD', 'Pending');
+-- Step 3: First, modify the ENUM to support both old and new values temporarily
+ALTER TABLE orders MODIFY COLUMN status ENUM(
+    'pending', 'processing', 'delivering', 'completed', 'cancelled', 'failed',
+    'Pending_Transfer', 'Pending_COD', 'Pending', 'Paid', 
+    'Processing', 'Delivering', 'Completed', 'Cancelled', 'Failed'
+) DEFAULT 'pending';
+
+-- Step 4: Update old order status values to new lowercase format
+UPDATE orders SET status = 'pending' WHERE status IN ('Pending_Transfer', 'Pending_COD', 'Pending', 'Paid');
 UPDATE orders SET status = 'processing' WHERE status = 'Processing';
 UPDATE orders SET status = 'delivering' WHERE status = 'Delivering';
 UPDATE orders SET status = 'completed' WHERE status = 'Completed';
 UPDATE orders SET status = 'cancelled' WHERE status = 'Cancelled';
 UPDATE orders SET status = 'failed' WHERE status = 'Failed';
-UPDATE orders SET status = 'paid' WHERE status = 'Paid';
+
+-- Step 5: Remove old ENUM values, keep only lowercase
+ALTER TABLE orders MODIFY COLUMN status ENUM(
+    'pending', 'processing', 'delivering', 'completed', 'cancelled', 'failed'
+) DEFAULT 'pending';
 
 -- Step 4: Verify the changes
 SELECT 'Cart Items Summary:' as info;

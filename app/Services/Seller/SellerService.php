@@ -63,7 +63,7 @@ class SellerService {
             SELECT COALESCE(SUM(oi.price * oi.quantity), 0) as total_revenue
             FROM order_items oi
             JOIN orders o ON oi.order_id = o.id
-            WHERE o.shop_id = ? AND o.status NOT IN ('Cancelled', 'Failed')
+            WHERE o.shop_id = ? AND o.status NOT IN ('cancelled', 'failed')
         ");
         $stmt->bind_param("i", $shop_id);
         $stmt->execute();
@@ -88,7 +88,7 @@ class SellerService {
         $stmt = $db->prepare("
             SELECT COUNT(*) as pending_orders 
             FROM orders 
-            WHERE shop_id = ? AND status IN ('Pending_Transfer', 'Pending_COD')
+            WHERE shop_id = ? AND status = 'pending'
         ");
         $stmt->bind_param("i", $shop_id);
         $stmt->execute();

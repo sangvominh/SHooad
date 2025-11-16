@@ -4,11 +4,15 @@ $subtotal = 0;
 foreach ($order_items as $item) {
     $subtotal += ($item['price'] ?? 0) * ($item['quantity'] ?? 0);
 }
-$shipping = 0; // Not in database
-$tax = 0; // Not in database
-$total = $subtotal;
+$shipping_fee = $order['shipping_fee'] ?? 0;
+$total = $subtotal + $shipping_fee;
 $shipping_address = $order["shipping_address"] ?? 'N/A';
 $customer_phone = $order["customer_phone"] ?? 'N/A';
+
+// Format currency to Vietnamese Dong
+function formatVND($amount) {
+    return number_format($amount, 0, ',', '.') . 'đ';
+}
 ?>
 
 <!DOCTYPE html>
@@ -69,7 +73,7 @@ $customer_phone = $order["customer_phone"] ?? 'N/A';
                             </div>
                             <div>
                                 <p class="text-sm text-gray-600 mb-1">Total Amount</p>
-                                <p class="font-medium text-gray-900">$<?php echo number_format($total, 2); ?></p>
+                                <p class="font-medium text-gray-900"><?php echo formatVND($total); ?></p>
                             </div>
                         </div>
                     </div>
@@ -84,11 +88,11 @@ $customer_phone = $order["customer_phone"] ?? 'N/A';
                             <div class="px-6 py-4 flex justify-between items-center hover:bg-gray-50 transition-colors">
                                 <div>
                                     <p class="font-medium text-gray-900"><?php echo htmlspecialchars($item['product_name']); ?></p>
-                                    <p class="text-sm text-gray-600">Price: $<?php echo number_format($item['price'], 2); ?></p>
+                                    <p class="text-sm text-gray-600">Price: <?php echo formatVND($item['price']); ?></p>
                                 </div>
                                 <div class="text-right">
                                     <p class="text-sm text-gray-600 mb-1">Qty: <span class="font-medium"><?php echo $item['quantity']; ?></span></p>
-                                    <p class="font-medium text-gray-900">$<?php echo number_format($item['price'] * $item['quantity'], 2); ?></p>
+                                    <p class="font-medium text-gray-900"><?php echo formatVND($item['price'] * $item['quantity']); ?></p>
                                 </div>
                             </div>
                             <?php endforeach; ?>
@@ -126,20 +130,16 @@ $customer_phone = $order["customer_phone"] ?? 'N/A';
                         <div class="space-y-3 pb-4 border-b border-gray-200">
                             <div class="flex justify-between text-sm">
                                 <span class="text-gray-600">Subtotal:</span>
-                                <span class="text-gray-900">$<?php echo number_format($subtotal, 2); ?></span>
+                                <span class="text-gray-900"><?php echo formatVND($subtotal); ?></span>
                             </div>
                             <div class="flex justify-between text-sm">
-                                <span class="text-gray-600">Shipping:</span>
-                                <span class="text-gray-900">$<?php echo number_format($shipping, 2); ?></span>
-                            </div>
-                            <div class="flex justify-between text-sm">
-                                <span class="text-gray-600">Tax:</span>
-                                <span class="text-gray-900">$<?php echo number_format($tax, 2); ?></span>
+                                <span class="text-gray-600">Shipping Fee:</span>
+                                <span class="text-gray-900"><?php echo formatVND($shipping_fee); ?></span>
                             </div>
                         </div>
                         <div class="flex justify-between items-center pt-4">
                             <span class="font-bold text-gray-900">Total:</span>
-                            <span class="text-2xl font-bold text-teal-600">$<?php echo number_format($total, 2); ?></span>
+                            <span class="text-2xl font-bold text-teal-600"><?php echo formatVND($total); ?></span>
                         </div>
                     </div>
 

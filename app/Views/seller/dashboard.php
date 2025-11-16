@@ -11,10 +11,15 @@ $shopId = $_SESSION['shop_id'] ?? null;
 if ($shopId) {
     $dashboardStats = $sellerService->getDashboardStats($shopId);
     
+    // Format currency to Vietnamese Dong
+    function formatVND($amount) {
+        return number_format($amount, 0, ',', '.') . 'đ';
+    }
+    
     $stats = [
       [
         'title' => 'Total Revenue',
-        'value' => '$' . number_format($dashboardStats['total_revenue'], 2),
+        'value' => formatVND($dashboardStats['total_revenue']),
         'change' => '',
         'change_type' => 'neutral',
         'icon' => 'chart'
@@ -44,7 +49,7 @@ if ($shopId) {
 } else {
     // Fallback if no shop_id
     $stats = [
-      ['title' => 'Total Revenue', 'value' => '$0.00', 'change' => '', 'change_type' => 'neutral', 'icon' => 'chart'],
+      ['title' => 'Total Revenue', 'value' => '0đ', 'change' => '', 'change_type' => 'neutral', 'icon' => 'chart'],
       ['title' => 'Total Orders', 'value' => '0', 'change' => '', 'change_type' => 'neutral', 'icon' => 'shopping'],
       ['title' => 'Total Products', 'value' => '0', 'change' => '', 'change_type' => 'neutral', 'icon' => 'users'],
       ['title' => 'Pending Orders', 'value' => '0', 'change' => '', 'change_type' => 'neutral', 'icon' => 'trending']

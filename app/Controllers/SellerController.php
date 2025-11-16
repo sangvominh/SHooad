@@ -214,4 +214,92 @@ class SellerController {
         // Render coming soon view
         include __DIR__ . '/../Views/seller/coming-soon.php';
     }
+
+    // Forgot Password - Step 1: Enter Email
+    public function forgotPassword() {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $email = trim($_POST['email'] ?? '');
+            
+            if (empty($email)) {
+                FlashMessageService::setFlashMessage('error', 'Please enter your email');
+                header('Location: /SHooad/public/seller/forgot-password');
+                exit;
+            }
+            
+            // Check if email exists
+            require_once __DIR__ . '/../Models/Seller.php';
+            $sellerModel = new Seller();
+            $seller = $sellerModel->findEmail($email);
+            
+            if (!$seller) {
+                FlashMessageService::setFlashMessage('error', 'Email not found in our system');
+                header('Location: /SHooad/public/seller/forgot-password');
+                exit;
+            }
+            
+            // Email exists - redirect to reset password page
+            header('Location: /SHooad/public/seller/reset-password?email=' . urlencode($email));
+            exit;
+        }
+        
+        // Show forgot password form
+        include __DIR__ . '/../Views/seller/forgot-password.php';
+    }
+
+    // Reset Password - Step 2: Enter New Password
+    public function resetPassword() {
+        $email = $_GET['email'] ?? $_POST['email'] ?? '';
+        
+        if (empty($email)) {
+            FlashMessageService::setFlashMessage('error', 'Invalid request');
+            header('Location: /SHooad/public/seller/forgot-password');
+            exit;
+        }
+        
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $newPassword = $_POST['new_password'] ?? '';
+            $confirmPassword = $_POST['confirm_password'] ?? '';
+            
+            // Validate passwords
+            if (empty($newPassword) || empty($confirmPassword)) {
+                FlashMessageService::setFlashMessage('error', 'Please fill in all fields');
+                header('Location: /SHooad/public/seller/reset-password?email=' . urlencode($email));
+                exit;
+            }
+            
+            if (strlen($newPassword) < 6) {
+                FlashMessageService::setFlashMessage('error', 'Password must be at least 6 characters');
+                header('Location: /SHooad/public/seller/reset-password?email=' . urlencode($email));
+                exit;
+            }
+            
+            if ($newPassword !== $confirmPassword) {
+                FlashMessageService::setFlashMessage('error', 'Passwords do not match');
+                header('Location: /SHooad/public/seller/reset-password?email=' . urlencode($email));
+                exit;
+            }
+            
+            // Update password
+            require_once __DIR__ . '/../Core/Database.php';
+            
+            $db = (new Database())->getConnection();
+            $hashedPassword = password_hash($newPassword, PASSWORD_DEFAULT);
+            
+            $stmt = $db->prepare("UPDATE sellers SET password = ? WHERE email = ?");
+            $stmt->bind_param("ss", $hashedPassword, $email);
+            
+            if ($stmt->execute()) {
+                FlashMessageService::setFlashMessage('success', 'Password reset successfully! Please login with your new password');
+                header('Location: /SHooad/public/seller/login');
+            } else {
+                FlashMessageService::setFlashMessage('error', 'Failed to reset password. Please try again');
+                header('Location: /SHooad/public/seller/reset-password?email=' . urlencode($email));
+            }
+            exit;
+        }
+        
+        // Show reset password form
+        $data = ['email' => $email];
+        include __DIR__ . '/../Views/seller/reset-password.php';
+    }
 }

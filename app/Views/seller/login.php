@@ -54,7 +54,7 @@
                         <input type="checkbox" name="remember" class="w-4 h-4 text-teal-600 rounded">
                         <span class="ml-2 text-sm text-gray-600">Remember me</span>
                     </label>
-                    <a href="#" class="text-sm text-teal-600 hover:text-teal-700 font-medium">Forgot password?</a>
+                    <a href="/SHooad/public/seller/forgot-password" class="text-sm text-teal-600 hover:text-teal-700 font-medium">Forgot password?</a>
                 </div>
 
                 <?php if (!empty($error)): ?>

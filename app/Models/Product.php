@@ -8,10 +8,17 @@ class Product {
     }
 
     public function getProductByShop($shop_id, $limit = null, $orderBy = null) {
-        $sql = "SELECT * FROM products WHERE shop_id = ?";
+        // Calculate total stock from product_variants if available, fallback to products.stock
+        $sql = "SELECT p.*, 
+                COALESCE(
+                    (SELECT SUM(pv.stock) FROM product_variants pv WHERE pv.product_id = p.id),
+                    p.stock
+                ) as calculated_stock
+                FROM products p 
+                WHERE p.shop_id = ?";
         
         if ($orderBy === 'top_sold') {
-            $sql .= " ORDER BY sold DESC";
+            $sql .= " ORDER BY p.sold DESC";
         }
         
         if ($limit !== null) {
@@ -26,14 +33,38 @@ class Product {
         }
         
         $stmt->execute();
-        return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+        $products = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+        
+        // Replace stock with calculated_stock for display
+        foreach ($products as &$product) {
+            $product['stock'] = $product['calculated_stock'];
+            unset($product['calculated_stock']);
+        }
+        
+        return $products;
     }
 
     public function getProductById($id) {
-        $stmt = $this->db->prepare("SELECT * FROM products WHERE id = ?");
+        // Get product with calculated stock from variants
+        $stmt = $this->db->prepare("
+            SELECT p.*, 
+            COALESCE(
+                (SELECT SUM(pv.stock) FROM product_variants pv WHERE pv.product_id = p.id),
+                p.stock
+            ) as calculated_stock
+            FROM products p 
+            WHERE p.id = ?
+        ");
         $stmt->bind_param("i", $id);
         $stmt->execute();
-        return $stmt->get_result()->fetch_assoc();
+        $product = $stmt->get_result()->fetch_assoc();
+        
+        if ($product) {
+            $product['stock'] = $product['calculated_stock'];
+            unset($product['calculated_stock']);
+        }
+        
+        return $product;
     }
 
     public function getProductImages(int $productId): array {

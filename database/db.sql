@@ -158,15 +158,13 @@ CREATE TABLE IF NOT EXISTS orders (
     date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
     status ENUM(
-        'Pending_Transfer',
-        'Paid',
-        'Processing',
-        'Delivering',
-        'Pending_COD',
-        'Completed',
-        'Cancelled',
-        'Failed'
-    ),
+        'pending',
+        'processing',
+        'delivering',
+        'completed',
+        'cancelled',
+        'failed'
+    ) DEFAULT 'pending',
 
     FOREIGN KEY (shop_id) REFERENCES shops(id),
     FOREIGN KEY (customer_id) REFERENCES customers(id)

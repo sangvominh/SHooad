@@ -138,10 +138,10 @@ $shop_products = $data['products'] ?? [];
               <td class="px-6 py-4 text-sm text-gray-700"><?php echo $product['category_id'] ?? '-'; ?></td>
               <?php endif; ?>
               
-              <td class="px-6 py-4 text-sm font-medium text-gray-900">$<?php echo number_format($product['price'] ?? 0, 2); ?></td>
+              <td class="px-6 py-4 text-sm font-medium text-gray-900"><?php echo number_format($product['price'] ?? 0, 0, ',', '.') . 'đ'; ?></td>
               
               <?php if (!$is_dashboard): ?>
-              <td class="px-6 py-4 text-sm text-gray-500 line-through">$<?php echo number_format($product['original_price'] ?? 0, 2); ?></td>
+              <td class="px-6 py-4 text-sm text-gray-500 line-through"><?php echo number_format($product['original_price'] ?? 0, 0, ',', '.') . 'đ'; ?></td>
               <?php endif; ?>
               
               <td class="px-6 py-4 text-sm">
@@ -234,7 +234,7 @@ $shop_products = $data['products'] ?? [];
           <div class="grid grid-cols-2 gap-2 text-sm mb-3">
             <div>
               <span class="text-gray-600">Price:</span>
-              <span class="font-semibold text-gray-900 ml-1">$<?php echo number_format($product['price'] ?? 0, 2); ?></span>
+              <span class="font-semibold text-gray-900 ml-1"><?php echo number_format($product['price'] ?? 0, 0, ',', '.') . 'đ'; ?></span>
             </div>
             <div>
               <span class="text-gray-600">Stock:</span>

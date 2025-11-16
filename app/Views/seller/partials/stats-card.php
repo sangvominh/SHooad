@@ -2,7 +2,7 @@
 // Stats card partial
 // Variables: $title, $value, $change, $change_type, $icon
 $title = $title ?? 'Total Sales';
-$value = $value ?? '$0.00';
+$value = $value ?? '0đ';
 $change = $change ?? '+0%';
 $change_type = $change_type ?? 'positive'; // 'positive', 'negative', 'neutral'
 $icon = $icon ?? 'chart';

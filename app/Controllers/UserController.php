@@ -322,6 +322,89 @@ class UserController {
         $this->renderWithLayout('orders', $data, 'My Orders - SHooad');
     }
 
+    public function orderDetail() {
+        AuthMiddleware::checkUserAuth();
+        $orderId = isset($_GET['id']) ? (int)$_GET['id'] : 0;
+        
+        if (!$orderId) {
+            header('Location: /SHooad/public/customer/orders');
+            exit;
+        }
+
+        require_once __DIR__ . '/../Services/OrderService.php';
+        require_once __DIR__ . '/../Models/Order.php';
+        require_once __DIR__ . '/../Models/OrderItem.php';
+        
+        $orderService = new OrderService();
+        $orderModel = new Order();
+        $orderItemModel = new OrderItem();
+        
+        $order = $orderModel->getOrder($orderId);
+        
+        // Verify order belongs to logged in customer
+        if (!$order || $order['customer_id'] != $_SESSION['customer_id']) {
+            header('Location: /SHooad/public/customer/orders');
+            exit;
+        }
+        
+        $orderItems = $orderItemModel->getOrderItemByOrderId($orderId);
+        
+        $data = [
+            'order' => $order,
+            'order_items' => $orderItems
+        ];
+        
+        $this->renderWithLayout('order-detail', $data, 'Order #' . $orderId . ' - SHooad');
+    }
+
+    public function cancelOrder() {
+        AuthMiddleware::checkUserAuth();
+        
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            header('Location: /SHooad/public/customer/orders');
+            exit;
+        }
+        
+        $orderId = isset($_POST['order_id']) ? (int)$_POST['order_id'] : 0;
+        
+        if (!$orderId) {
+            FlashMessageService::setFlashMessage('error', 'Invalid order ID');
+            header('Location: /SHooad/public/customer/orders');
+            exit;
+        }
+        
+        require_once __DIR__ . '/../Services/OrderService.php';
+        require_once __DIR__ . '/../Models/Order.php';
+        
+        $orderService = new OrderService();
+        $orderModel = new Order();
+        $order = $orderModel->getOrder($orderId);
+        
+        // Verify order belongs to logged in customer
+        if (!$order || $order['customer_id'] != $_SESSION['customer_id']) {
+            FlashMessageService::setFlashMessage('error', 'Order not found');
+            header('Location: /SHooad/public/customer/orders');
+            exit;
+        }
+        
+        // Only allow cancellation from pending or processing status
+        if (!in_array($order['status'], ['pending', 'processing'])) {
+            FlashMessageService::setFlashMessage('error', 'Cannot cancel order in ' . $order['status'] . ' status');
+            header('Location: /SHooad/public/customer/order-detail?id=' . $orderId);
+            exit;
+        }
+        
+        // Update order status to cancelled
+        if ($orderService->updateOrderStatus($orderId, 'cancelled')) {
+            FlashMessageService::setFlashMessage('success', 'Order cancelled successfully');
+        } else {
+            FlashMessageService::setFlashMessage('error', 'Failed to cancel order');
+        }
+        
+        header('Location: /SHooad/public/customer/orders');
+        exit;
+    }
+
     // Realtime product search API (JSON)
     public function searchProducts() {
         header('Content-Type: application/json');
@@ -338,5 +421,94 @@ class UserController {
         $productService = new ProductService();
         $items = $productService->searchByName($q, $limit);
         echo json_encode([ 'items' => $items ]);
+    }
+
+    // Forgot Password - Step 1: Enter Email
+    public function forgotPassword() {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $email = trim($_POST['email'] ?? '');
+            
+            if (empty($email)) {
+                FlashMessageService::setFlashMessage('error', 'Please enter your email');
+                header('Location: /SHooad/public/customer/forgot-password');
+                exit;
+            }
+            
+            // Check if email exists
+            require_once __DIR__ . '/../Models/Customer.php';
+            $customerModel = new Customer();
+            $customer = $customerModel->findByEmail($email);
+            
+            if (!$customer) {
+                FlashMessageService::setFlashMessage('error', 'Email not found in our system');
+                header('Location: /SHooad/public/customer/forgot-password');
+                exit;
+            }
+            
+            // Email exists - redirect to reset password page
+            header('Location: /SHooad/public/customer/reset-password?email=' . urlencode($email));
+            exit;
+        }
+        
+        // Show forgot password form
+        require_once __DIR__ . '/../Views/customer/forgot-password.php';
+    }
+
+    // Reset Password - Step 2: Enter New Password
+    public function resetPassword() {
+        $email = $_GET['email'] ?? $_POST['email'] ?? '';
+        
+        if (empty($email)) {
+            FlashMessageService::setFlashMessage('error', 'Invalid request');
+            header('Location: /SHooad/public/customer/forgot-password');
+            exit;
+        }
+        
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $newPassword = $_POST['new_password'] ?? '';
+            $confirmPassword = $_POST['confirm_password'] ?? '';
+            
+            // Validate passwords
+            if (empty($newPassword) || empty($confirmPassword)) {
+                FlashMessageService::setFlashMessage('error', 'Please fill in all fields');
+                header('Location: /SHooad/public/customer/reset-password?email=' . urlencode($email));
+                exit;
+            }
+            
+            if (strlen($newPassword) < 6) {
+                FlashMessageService::setFlashMessage('error', 'Password must be at least 6 characters');
+                header('Location: /SHooad/public/customer/reset-password?email=' . urlencode($email));
+                exit;
+            }
+            
+            if ($newPassword !== $confirmPassword) {
+                FlashMessageService::setFlashMessage('error', 'Passwords do not match');
+                header('Location: /SHooad/public/customer/reset-password?email=' . urlencode($email));
+                exit;
+            }
+            
+            // Update password
+            require_once __DIR__ . '/../Models/Customer.php';
+            require_once __DIR__ . '/../Core/Database.php';
+            
+            $db = (new Database())->getConnection();
+            $hashedPassword = password_hash($newPassword, PASSWORD_DEFAULT);
+            
+            $stmt = $db->prepare("UPDATE customers SET password = ? WHERE email = ?");
+            $stmt->bind_param("ss", $hashedPassword, $email);
+            
+            if ($stmt->execute()) {
+                FlashMessageService::setFlashMessage('success', 'Password reset successfully! Please login with your new password');
+                header('Location: /SHooad/public/customer/login');
+            } else {
+                FlashMessageService::setFlashMessage('error', 'Failed to reset password. Please try again');
+                header('Location: /SHooad/public/customer/reset-password?email=' . urlencode($email));
+            }
+            exit;
+        }
+        
+        // Show reset password form
+        $data = ['email' => $email];
+        require_once __DIR__ . '/../Views/customer/reset-password.php';
     }
 }

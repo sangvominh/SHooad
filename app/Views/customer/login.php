@@ -44,6 +44,10 @@ $errorMessage = FlashMessageService::getFlashMessage('error');
                 </button>
             </form>
 
+            <div class="text-center mt-4">
+                <a href="/SHooad/public/customer/forgot-password" class="text-sm text-teal-700 hover:underline">Forgot Password?</a>
+            </div>
+
             <p class="text-center text-gray-600 mt-6">
                 Don't have an account?
                 <a href="/SHooad/public/customer/register" class="text-teal-700 hover:underline font-medium">Register here</a>

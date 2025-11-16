@@ -30,11 +30,9 @@ $shop_orders = $data['orders'] ?? [];
           <div class="p-2">
             <div class="text-xs font-semibold text-gray-500 uppercase mb-2 px-2">Order Status</div>
             <button data-filter-status="all" class="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded">All Statuses</button>
-            <button data-filter-status="pending_transfer" class="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded">Pending Transfer</button>
-            <button data-filter-status="paid" class="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded">Paid</button>
+            <button data-filter-status="pending" class="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded">Pending</button>
             <button data-filter-status="processing" class="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded">Processing</button>
             <button data-filter-status="delivering" class="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded">Delivering</button>
-            <button data-filter-status="pending_cod" class="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded">Pending COD</button>
             <button data-filter-status="completed" class="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded">Completed</button>
             <button data-filter-status="cancelled" class="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded">Cancelled</button>
             <button data-filter-status="failed" class="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded">Failed</button>
@@ -128,17 +126,19 @@ $shop_orders = $data['orders'] ?? [];
               <td class="px-6 py-4 text-sm">
                 <span class="inline-block px-3 py-1 rounded-full text-xs font-semibold
                   <?php 
-                    $status = $order['status'] ?? 'Pending';
-                    if ($status === 'Completed') echo 'bg-green-100 text-green-800';
-                    elseif ($status === 'Pending') echo 'bg-yellow-100 text-yellow-800';
-                    elseif ($status === 'Cancelled') echo 'bg-red-100 text-red-800';
+                    $status = $order['status'] ?? 'pending';
+                    if ($status === 'completed') echo 'bg-green-100 text-green-800';
+                    elseif ($status === 'pending') echo 'bg-yellow-100 text-yellow-800';
+                    elseif ($status === 'cancelled') echo 'bg-red-100 text-red-800';
+                    elseif ($status === 'failed') echo 'bg-red-100 text-red-800';
+                    elseif ($status === 'delivering') echo 'bg-indigo-100 text-indigo-800';
                     else echo 'bg-blue-100 text-blue-800';
                   ?>">
                   <?php echo htmlspecialchars(ucfirst($status)); ?>
                 </span>
               </td>
               <?php if (!$is_dashboard): ?>
-                <td class="px-6 py-4 text-sm font-semibold text-gray-900">$<?php echo number_format($order['total_amount'] ?? 0, 2); ?></td>
+                <td class="px-6 py-4 text-sm font-semibold text-gray-900"><?php echo number_format($order['total_amount'] ?? 0, 0, ',', '.') . 'đ'; ?></td>
               <?php endif; ?>
               <td class="px-6 py-4 text-sm text-gray-700">
                 <?php 
@@ -186,10 +186,11 @@ $shop_orders = $data['orders'] ?? [];
             </div>
             <span class="inline-block px-3 py-1 rounded-full text-xs font-semibold ml-2
               <?php 
-                $status = $order['status'] ?? 'Pending';
-                if ($status === 'Completed') echo 'bg-green-100 text-green-800';
-                elseif ($status === 'Pending') echo 'bg-yellow-100 text-yellow-800';
-                elseif ($status === 'Cancelled') echo 'bg-red-100 text-red-800';
+                $status = $order['status'] ?? 'pending';
+                if ($status === 'completed') echo 'bg-green-100 text-green-800';
+                elseif ($status === 'pending') echo 'bg-yellow-100 text-yellow-800';
+                elseif ($status === 'cancelled' || $status === 'failed') echo 'bg-red-100 text-red-800';
+                elseif ($status === 'delivering') echo 'bg-indigo-100 text-indigo-800';
                 else echo 'bg-blue-100 text-blue-800';
               ?>">
               <?php echo htmlspecialchars(ucfirst($status)); ?>
@@ -200,7 +201,7 @@ $shop_orders = $data['orders'] ?? [];
             <?php if (!$is_dashboard): ?>
               <div>
                 <span class="text-gray-600">Total:</span>
-                <span class="font-semibold text-gray-900 ml-1">$<?php echo number_format($order['total_amount'] ?? 0, 2); ?></span>
+                <span class="font-semibold text-gray-900 ml-1"><?php echo number_format($order['total_amount'] ?? 0, 0, ',', '.') . 'đ'; ?></span>
               </div>
               <div>
                 <span class="text-gray-600">Payment:</span>

@@ -132,12 +132,12 @@ require_once __DIR__ . '/../../Helpers/LanguageHelper.php';
                         <div class="grid grid-cols-3 md:grid-cols-6 gap-2 mb-6">
                             <?php
                             $statuses = [
-                                'Pending_Transfer' => ['icon' => 'fa-clock', 'label' => 'Pending', 'color' => 'orange'],
-                                'Paid' => ['icon' => 'fa-check-circle', 'label' => 'Paid', 'color' => 'green'],
-                                'Processing' => ['icon' => 'fa-box', 'label' => 'Processing', 'color' => 'blue'],
-                                'Delivering' => ['icon' => 'fa-truck', 'label' => 'Shipping', 'color' => 'indigo'],
-                                'Completed' => ['icon' => 'fa-check-double', 'label' => 'Completed', 'color' => 'green'],
-                                'Cancelled' => ['icon' => 'fa-times-circle', 'label' => 'Cancelled', 'color' => 'red']
+                                'pending' => ['icon' => 'fa-clock', 'label' => 'Pending', 'color' => 'yellow'],
+                                'processing' => ['icon' => 'fa-box', 'label' => 'Processing', 'color' => 'blue'],
+                                'delivering' => ['icon' => 'fa-truck', 'label' => 'Shipping', 'color' => 'indigo'],
+                                'completed' => ['icon' => 'fa-check-double', 'label' => 'Completed', 'color' => 'green'],
+                                'cancelled' => ['icon' => 'fa-times-circle', 'label' => 'Cancelled', 'color' => 'red'],
+                                'failed' => ['icon' => 'fa-exclamation-triangle', 'label' => 'Failed', 'color' => 'red']
                             ];
                             
                             foreach ($statuses as $status => $info):

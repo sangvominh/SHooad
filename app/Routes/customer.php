@@ -20,6 +20,14 @@ switch ($path) {
     case 'logout':
         $customerController->logout();
         break;
+    
+    case 'forgot-password':
+        $customerController->forgotPassword();
+        break;
+    
+    case 'reset-password':
+        $customerController->resetPassword();
+        break;
 
     case 'cart':
         $customerController->cart();
@@ -71,6 +79,14 @@ switch ($path) {
     
     case 'orders':
         $customerController->orders();
+        break;
+    
+    case 'order-detail':
+        $customerController->orderDetail();
+        break;
+    
+    case 'cancel-order':
+        $customerController->cancelOrder();
         break;
     
     case 'search-products':

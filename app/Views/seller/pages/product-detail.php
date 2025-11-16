@@ -133,7 +133,24 @@
                 <div class="grid grid-cols-2 gap-6">
                     <div>
                         <label for="stock" class="block text-sm font-medium text-gray-900 mb-2">Stock Quantity</label>
-                        <input type="number" id="stock" name="stock" value="<?php echo htmlspecialchars($product['stock'] ?? '0'); ?>" min="0" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-teal-600">
+                        <input type="number" id="stock" name="stock" value="<?php echo htmlspecialchars($product['stock'] ?? '0'); ?>" min="0" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-teal-600" readonly>
+                        <p class="text-xs text-gray-500 mt-1">
+                            <?php
+                            $hasVariants = false;
+                            if (isset($product['id'])) {
+                                $db = (new Database())->getConnection();
+                                $stmt = $db->prepare("SELECT COUNT(*) as count FROM product_variants WHERE product_id = ?");
+                                $stmt->bind_param("i", $product['id']);
+                                $stmt->execute();
+                                $result = $stmt->get_result()->fetch_assoc();
+                                $hasVariants = $result['count'] > 0;
+                            }
+                            if ($hasVariants): ?>
+                                Total stock calculated from product variants. Manage variants to adjust stock.
+                            <?php else: ?>
+                                This product has no variants. Stock is managed here.
+                            <?php endif; ?>
+                        </p>
                     </div>
 
                     <div>

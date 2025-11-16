@@ -16,6 +16,12 @@ switch ($path) {
     case 'logout':
         $seller_controller->logout();
         exit;
+    case 'forgot-password':
+        $seller_controller->forgotPassword();
+        exit;
+    case 'reset-password':
+        $seller_controller->resetPassword();
+        exit;
 }
 
 // Protected routes (cần auth)
