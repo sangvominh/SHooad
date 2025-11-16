@@ -111,7 +111,7 @@
                                     </a>
                                     <?php if (in_array($order['status'], ['pending', 'processing'])): ?>
                                         <form method="POST" action="/SHooad/public/customer/cancel-order" 
-                                              onsubmit="return confirm('Are you sure you want to cancel this order?');" 
+                                              onsubmit="return confirmCancelOrder<?= $order['id'] ?>(event);" 
                                               class="inline-block">
                                             <input type="hidden" name="order_id" value="<?= $order['id'] ?>">
                                             <button type="submit" 
@@ -119,6 +119,23 @@
                                                 <i class="fas fa-times mr-2"></i>Cancel Order
                                             </button>
                                         </form>
+                                        
+                                        <script>
+                                        function confirmCancelOrder<?= $order['id'] ?>(event) {
+                                            event.preventDefault();
+                                            var message = 'Are you sure you want to cancel this order?';
+                                            
+                                            <?php if (isset($order['payment_method']) && $order['payment_method'] === 'online' && 
+                                                      isset($order['payment_status']) && $order['payment_status'] === 'paid'): ?>
+                                                message = 'Bạn có chắc chắn muốn hủy đơn hàng này?\n\nTiền sẽ được hoàn lại vào tài khoản của bạn trong vòng 1-3 ngày làm việc.';
+                                            <?php endif; ?>
+                                            
+                                            if (confirm(message)) {
+                                                event.target.submit();
+                                            }
+                                            return false;
+                                        }
+                                        </script>
                                     <?php endif; ?>
                                 </div>
                             </div>
@@ -158,3 +175,38 @@
         <?php endif; ?>
     </div>
 </div>
+
+<!-- Refund Notice Modal -->
+<?php if (isset($_SESSION['show_refund_notice']) && $_SESSION['show_refund_notice']): ?>
+<div id="refundNoticeModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div class="bg-white rounded-lg p-8 max-w-md w-full mx-4">
+        <div class="text-center">
+            <div class="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4">
+                <i class="fas fa-check-circle text-green-600 text-3xl"></i>
+            </div>
+            <h3 class="text-2xl font-bold text-gray-900 mb-3">Đơn hàng đã được hủy</h3>
+            <p class="text-gray-600 mb-6">
+                Đơn hàng <strong>#<?= $_SESSION['refund_order_id'] ?? '' ?></strong> của bạn đã được hủy thành công.
+                <br><br>
+                <span class="text-green-600 font-semibold">Tiền đã được hoàn lại vào tài khoản của bạn.</span>
+                <br>
+                <span class="text-sm text-gray-500">Vui lòng kiểm tra tài khoản ngân hàng trong vòng 1-3 ngày làm việc.</span>
+            </p>
+            <button onclick="closeRefundModal()" 
+                    class="w-full px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium">
+                Đã hiểu
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+function closeRefundModal() {
+    document.getElementById('refundNoticeModal').style.display = 'none';
+    <?php 
+    unset($_SESSION['show_refund_notice']);
+    unset($_SESSION['refund_order_id']);
+    ?>
+}
+</script>
+<?php endif; ?>

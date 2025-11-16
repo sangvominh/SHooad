@@ -175,11 +175,17 @@ $total = $subtotal + $shipping + $tax;
                 <div class="space-y-3">
                     <label class="flex items-center p-4 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50 transition">
                         <input type="radio" name="payment_method" value="cod" checked class="w-4 h-4 text-blue-600">
-                        <span class="ml-3 text-gray-700 font-medium"><?= LanguageHelper::t('checkout.cod') ?></span>
+                        <div class="ml-3">
+                            <span class="text-gray-900 font-medium block"><?= LanguageHelper::t('checkout.cod') ?></span>
+                            <span class="text-sm text-gray-500">Thanh toán khi nhận hàng</span>
+                        </div>
                     </label>
-                    <label class="flex items-center p-4 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50 transition opacity-50">
-                        <input type="radio" name="payment_method" value="bank" disabled class="w-4 h-4 text-blue-600">
-                        <span class="ml-3 text-gray-700"><?= LanguageHelper::t('checkout.bank_transfer') ?> (<?= LanguageHelper::t('checkout.coming_soon') ?>)</span>
+                    <label class="flex items-center p-4 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50 transition">
+                        <input type="radio" name="payment_method" value="online" class="w-4 h-4 text-blue-600">
+                        <div class="ml-3">
+                            <span class="text-gray-900 font-medium block"><?= LanguageHelper::t('checkout.bank_transfer') ?></span>
+                            <span class="text-sm text-gray-500">Chuyển khoản ngân hàng (QR Code)</span>
+                        </div>
                     </label>
                 </div>
             </div>
@@ -235,6 +241,40 @@ $total = $subtotal + $shipping + $tax;
     
     <?php endif; ?>
 </main>
+
+<!-- QR Payment Modal -->
+<div id="qrPaymentModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50" style="display: none;">
+    <div class="bg-white rounded-lg p-8 max-w-md w-full mx-4">
+        <div class="text-center">
+            <h3 class="text-2xl font-bold text-gray-900 mb-4">Quét mã QR để thanh toán</h3>
+            <p class="text-gray-600 mb-6">Vui lòng quét mã QR bên dưới để hoàn tất thanh toán</p>
+            
+            <!-- QR Code Image -->
+            <div class="bg-gray-100 p-6 rounded-lg mb-6">
+                <img src="/SHooad/public/assets/qrcode.png" alt="QR Code" class="mx-auto w-64 h-64" 
+                        src="../../../public/assets/qrcode.png" >
+            </div>
+            
+            <!-- Payment Info -->
+            <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6 text-left">
+                <p class="text-sm text-gray-700 mb-2"><strong>Số tiền:</strong> <span id="qrPaymentAmount" class="text-red-600 font-bold"></span></p>
+                <p class="text-sm text-gray-700 mb-2"><strong>Ngân hàng:</strong> MB Bank</p>
+                <p class="text-sm text-gray-700 mb-2"><strong>Số tài khoản:</strong> 0123456789</p>
+                <p class="text-sm text-gray-700"><strong>Chủ TK:</strong> NGUYEN VAN A</p>
+            </div>
+            
+            <!-- Action Buttons -->
+            <div class="flex gap-3">
+                <button id="cancelPaymentBtn" type="button" class="flex-1 px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition font-medium">
+                    Hủy
+                </button>
+                <button id="confirmPaymentBtn" type="button" class="flex-1 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition font-medium">
+                    <i class="fas fa-check mr-2"></i>Đã chuyển khoản
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
@@ -351,6 +391,64 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('total-display').textContent = formatVND(total);
     }
     
+    // QR Payment Modal handling
+    var qrModal = document.getElementById('qrPaymentModal');
+    var confirmPaymentBtn = document.getElementById('confirmPaymentBtn');
+    var cancelPaymentBtn = document.getElementById('cancelPaymentBtn');
+    var pendingOrderData = null;
+    
+    function showQRModal(totalAmount) {
+        document.getElementById('qrPaymentAmount').textContent = formatVND(totalAmount);
+        qrModal.style.display = 'flex';
+    }
+    
+    function hideQRModal() {
+        qrModal.style.display = 'none';
+        pendingOrderData = null;
+    }
+    
+    if (cancelPaymentBtn) {
+        cancelPaymentBtn.addEventListener('click', function() {
+            hideQRModal();
+            placeOrderBtn.disabled = false;
+            placeOrderBtn.textContent = '<?= LanguageHelper::t('checkout.place_order') ?>';
+        });
+    }
+    
+    if (confirmPaymentBtn) {
+        confirmPaymentBtn.addEventListener('click', function() {
+            // User confirmed payment, proceed with order
+            if (!pendingOrderData) return;
+            
+            confirmPaymentBtn.disabled = true;
+            confirmPaymentBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Đang xử lý...';
+            
+            fetch('/SHooad/app/Routes/place-order.php', {
+                method: 'POST',
+                body: pendingOrderData
+            })
+            .then(function(response) {
+                return response.json();
+            })
+            .then(function(data) {
+                if (data.success) {
+                    hideQRModal();
+                    window.location.href = '/SHooad/public/customer/order-success?order_id=' + data.order_id;
+                } else {
+                    alert('Lỗi: ' + (data.message || 'Không thể đặt hàng'));
+                    confirmPaymentBtn.disabled = false;
+                    confirmPaymentBtn.innerHTML = '<i class="fas fa-check mr-2"></i>Đã chuyển khoản';
+                }
+            })
+            .catch(function(err) {
+                console.error('Error:', err);
+                alert('Có lỗi xảy ra: ' + err.message);
+                confirmPaymentBtn.disabled = false;
+                confirmPaymentBtn.innerHTML = '<i class="fas fa-check mr-2"></i>Đã chuyển khoản';
+            });
+        });
+    }
+    
     if (placeOrderBtn) {
         placeOrderBtn.addEventListener('click', function() {
             // Get form data - ensure fields exist and have values
@@ -385,33 +483,43 @@ document.addEventListener('DOMContentLoaded', function() {
             
             formData.append('email', emailField ? emailField.value : '');
             formData.append('note', noteField ? noteField.value : '');
-            formData.append('payment_method', paymentMethodField ? paymentMethodField.value : 'cod');
+            var paymentMethod = paymentMethodField ? paymentMethodField.value : 'cod';
+            formData.append('payment_method', paymentMethod);
             formData.append('delivery_company_id', deliveryCompanyField ? deliveryCompanyField.value : '1');
             formData.append('shipping_fee', currentShippingFee);
             
-            // Send request
-            fetch('/SHooad/app/Routes/place-order.php', {
-                method: 'POST',
-                body: formData
-            })
-            .then(function(response) {
-                return response.json();
-            })
-            .then(function(data) {
-                if (data.success) {
-                    window.location.href = '/SHooad/public/customer/order-success?order_id=' + data.order_id;
-                } else {
-                    alert('Lỗi: ' + (data.message || 'Không thể đặt hàng'));
+            // Check if online payment selected
+            if (paymentMethod === 'online') {
+                // Show QR modal first, don't send request yet
+                pendingOrderData = formData;
+                var total = subtotal + currentShippingFee;
+                showQRModal(total);
+                // Don't re-enable button here - will be done on modal close
+            } else {
+                // COD: proceed directly
+                fetch('/SHooad/app/Routes/place-order.php', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(function(response) {
+                    return response.json();
+                })
+                .then(function(data) {
+                    if (data.success) {
+                        window.location.href = '/SHooad/public/customer/order-success?order_id=' + data.order_id;
+                    } else {
+                        alert('Lỗi: ' + (data.message || 'Không thể đặt hàng'));
+                        placeOrderBtn.disabled = false;
+                        placeOrderBtn.textContent = '<?= LanguageHelper::t('checkout.place_order') ?>';
+                    }
+                })
+                .catch(function(err) {
+                    console.error('Error:', err);
+                    alert('Có lỗi xảy ra: ' + err.message);
                     placeOrderBtn.disabled = false;
-                    placeOrderBtn.textContent = 'Đặt hàng';
-                }
-            })
-            .catch(function(err) {
-                console.error('Error:', err);
-                alert('Có lỗi xảy ra: ' + err.message);
-                placeOrderBtn.disabled = false;
-                placeOrderBtn.textContent = 'Đặt hàng';
-            });
+                    placeOrderBtn.textContent = '<?= LanguageHelper::t('checkout.place_order') ?>';
+                });
+            }
         });
     }
 });

@@ -76,10 +76,15 @@ try {
     // Set status to 'pending' - seller must confirm before processing
     $status = 'pending';
 
+    // Determine payment status based on payment method
+    // For online payment: payment_status = 'paid' (user confirmed payment)
+    // For COD: payment_status = 'pending' (will be paid on delivery)
+    $payment_status = ($payment_method === 'online') ? 'paid' : 'pending';
+
     // Prepare statements aligned with DB schema
     $orderStmt = $pdo->prepare('
-        INSERT INTO orders (shop_id, customer_id, customer_phone, shipping_address, status)
-        VALUES (:shop_id, :customer_id, :customer_phone, :shipping_address, :status)
+        INSERT INTO orders (shop_id, customer_id, customer_phone, shipping_address, status, payment_method, payment_status)
+        VALUES (:shop_id, :customer_id, :customer_phone, :shipping_address, :status, :payment_method, :payment_status)
     ');
 
     $orderItemStmt = $pdo->prepare('
@@ -93,13 +98,15 @@ try {
     $createdOrderIds = [];
 
     foreach ($itemsByShop as $shopId => $shopItems) {
-        // Create one order per shop
+        // Create one order per shop (auto-split by shop)
         $orderStmt->execute([
             ':shop_id' => $shopId,
             ':customer_id' => $customer_id,
             ':customer_phone' => $phone,
             ':shipping_address' => $shipping_address,
             ':status' => $status,
+            ':payment_method' => $payment_method,
+            ':payment_status' => $payment_status,
         ]);
         $orderId = (int)$pdo->lastInsertId();
         $createdOrderIds[] = $orderId;

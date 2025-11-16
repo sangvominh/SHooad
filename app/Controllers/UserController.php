@@ -396,6 +396,12 @@ class UserController {
         
         // Update order status to cancelled
         if ($orderService->updateOrderStatus($orderId, 'cancelled')) {
+            // Check if order was paid online - set refund flag for notification
+            if (isset($order['payment_method']) && $order['payment_method'] === 'online' && 
+                isset($order['payment_status']) && $order['payment_status'] === 'paid') {
+                $_SESSION['show_refund_notice'] = true;
+                $_SESSION['refund_order_id'] = $orderId;
+            }
             FlashMessageService::setFlashMessage('success', 'Order cancelled successfully');
         } else {
             FlashMessageService::setFlashMessage('error', 'Failed to cancel order');

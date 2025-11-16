@@ -159,13 +159,29 @@
             
             <?php if (in_array($order['status'], ['pending', 'processing'])): ?>
                 <form method="POST" action="/SHooad/public/customer/cancel-order" 
-                      onsubmit="return confirm('Are you sure you want to cancel this order? This action cannot be undone.');">
+                      onsubmit="return confirmCancelOrder(event, '<?= $order['payment_method'] ?? 'cod' ?>', '<?= $order['payment_status'] ?? 'pending' ?>');">
                     <input type="hidden" name="order_id" value="<?= $order['id'] ?>">
                     <button type="submit" 
                             class="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg font-medium transition">
                         <i class="fas fa-times-circle mr-2"></i>Cancel Order
                     </button>
                 </form>
+                
+                <script>
+                function confirmCancelOrder(event, paymentMethod, paymentStatus) {
+                    event.preventDefault();
+                    var message = 'Are you sure you want to cancel this order?';
+                    
+                    if (paymentMethod === 'online' && paymentStatus === 'paid') {
+                        message = 'Bạn có chắc chắn muốn hủy đơn hàng này?\n\nTiền sẽ được hoàn lại vào tài khoản của bạn trong vòng 1-3 ngày làm việc.';
+                    }
+                    
+                    if (confirm(message)) {
+                        event.target.submit();
+                    }
+                    return false;
+                }
+                </script>
             <?php elseif ($order['status'] === 'completed'): ?>
                 <button class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition cursor-not-allowed" disabled>
                     <i class="fas fa-star mr-2"></i>Leave Review (Coming Soon)

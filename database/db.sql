@@ -2,9 +2,9 @@ SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
 
 -- ============================
--- SELLER
+-- SELLERS
 -- ============================
-CREATE TABLE IF NOT EXISTS seller (
+CREATE TABLE IF NOT EXISTS sellers (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     email VARCHAR(100) NOT NULL UNIQUE,
@@ -14,17 +14,17 @@ CREATE TABLE IF NOT EXISTS seller (
 );
 
 -- ============================
--- SHOPS (thuộc seller)
+-- SHOPS (thuộc sellers)
 -- ============================
 CREATE TABLE IF NOT EXISTS shops (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    seller_id INT NOT NULL,
+    sellers_id INT NOT NULL,
     name VARCHAR(255) NOT NULL,
     description TEXT,
     address VARCHAR(255),
     phone VARCHAR(20),
     status ENUM('open','closed','banned') DEFAULT 'open',
-    FOREIGN KEY (seller_id) REFERENCES seller(id) ON DELETE CASCADE
+    FOREIGN KEY (sellers_id) REFERENCES sellers(id) ON DELETE CASCADE
 );
 
 -- ============================
@@ -165,6 +165,10 @@ CREATE TABLE IF NOT EXISTS orders (
         'cancelled',
         'failed'
     ) DEFAULT 'pending',
+
+    -- Payment information
+    payment_method ENUM('cod', 'online') DEFAULT 'cod',
+    payment_status ENUM('pending', 'paid', 'failed', 'refunded') DEFAULT 'pending',
 
     FOREIGN KEY (shop_id) REFERENCES shops(id),
     FOREIGN KEY (customer_id) REFERENCES customers(id)
