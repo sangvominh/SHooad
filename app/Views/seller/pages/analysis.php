@@ -31,8 +31,8 @@
                     <!-- Type Selector Dropdown -->
                     <div class="relative">
                         <select id="analysisTypeSelector" class="px-6 py-3 bg-white border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-700 font-medium cursor-pointer">
-                            <option value="orders" <?php echo (!isset($_GET['type']) || $_GET['type'] === 'orders') ? 'selected' : ''; ?>>Orders Analysis</option>
-                            <option value="products" <?php echo (isset($_GET['type']) && $_GET['type'] === 'products') ? 'selected' : ''; ?>>Products Analysis</option>
+                            <option value="orders" <?php echo (isset($_GET['type']) && $_GET['type'] === 'orders') ? 'selected' : ''; ?>>Orders Analysis</option>
+                            <option value="products" <?php echo (!isset($_GET['type']) || $_GET['type'] === 'products') ? 'selected' : ''; ?>>Products Analysis</option>
                         </select>
                     </div>
                 </div>
@@ -44,7 +44,7 @@
                 </div>
 
                 <!-- Orders Analysis Content -->
-                <div id="ordersAnalysis" class="analysis-content" style="display: <?php echo (!isset($_GET['type']) || $_GET['type'] === 'orders') ? 'block' : 'none'; ?>;">
+                <div id="ordersAnalysis" class="analysis-content" style="display: <?php echo (isset($_GET['type']) && $_GET['type'] === 'orders') ? 'block' : 'none'; ?>;">
                     <!-- Stats Cards -->
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
                         <!-- Total Orders Card -->
@@ -175,7 +175,7 @@
                 </div>
 
                 <!-- Products Analysis Content -->
-                <div id="productsAnalysis" class="analysis-content" style="display: <?php echo (isset($_GET['type']) && $_GET['type'] === 'products') ? 'block' : 'none'; ?>;">
+                <div id="productsAnalysis" class="analysis-content" style="display: <?php echo (!isset($_GET['type']) || $_GET['type'] === 'products') ? 'block' : 'none'; ?>;">
                     <!-- Stats Cards -->
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
                         <!-- Total Products Card -->
@@ -267,7 +267,7 @@
     <script>
         // Pass initial data from PHP to JavaScript
         const initialAnalysisData = <?php echo json_encode($analysisData); ?>;
-        const currentAnalysisType = '<?php echo $_GET['type'] ?? 'orders'; ?>';
+        const currentAnalysisType = '<?php echo $_GET['type'] ?? 'products'; ?>';
         
         // Debug - log data to console
         console.log('Analysis Type:', currentAnalysisType);

@@ -3,14 +3,17 @@ require_once __DIR__ . '/../Services/User/AuthUserService.php';
 require_once __DIR__ . '/../Services/User/UserPageService.php';
 require_once __DIR__ . '/../middleware/AuthMiddleware.php';
 require_once __DIR__ . '/../Services/FlashMessageService.php';
+require_once __DIR__ . '/../Services/ReviewService.php';
 
 class UserController {
     private $authService;
     private $pageService;
+    private $reviewService;
 
     public function __construct() {
         $this->authService = new AuthUserService();
         $this->pageService = new UserPageService();
+        $this->reviewService = new ReviewService();
     }
 
     private function redirectTo(string $url): void {
@@ -349,9 +352,16 @@ class UserController {
         
         $orderItems = $orderItemModel->getOrderItemByOrderId($orderId);
         
+        // Check review status for each product
+        $reviewStatuses = [];
+        foreach ($orderItems as $item) {
+            $reviewStatuses[$item['product_id']] = $this->reviewService->canUserReviewProduct($_SESSION['customer_id'], $item['product_id']);
+        }
+        
         $data = [
             'order' => $order,
-            'order_items' => $orderItems
+            'order_items' => $orderItems,
+            'review_statuses' => $reviewStatuses
         ];
         
         $this->renderWithLayout('order-detail', $data, 'Order #' . $orderId . ' - SHooad');
@@ -516,5 +526,34 @@ class UserController {
         // Show reset password form
         $data = ['email' => $email];
         require_once __DIR__ . '/../Views/customer/reset-password.php';
+    }
+
+    public function submitReview() {
+        AuthMiddleware::checkUserAuth();
+        
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            header('HTTP/1.1 405 Method Not Allowed');
+            exit;
+        }
+
+        $customerId = $_SESSION['customer_id'];
+        $productId = $_POST['product_id'] ?? null;
+        $rating = $_POST['rating'] ?? null;
+        $comment = $_POST['comment'] ?? null;
+
+        if (!$productId || !$rating) {
+            FlashMessageService::setFlashMessage('error', 'Thiếu thông tin cần thiết.');
+            header('Location: ' . $_SERVER['HTTP_REFERER']);
+            exit;
+        }
+
+        $success = $this->reviewService->submitReview($customerId, $productId, $rating, $comment);
+        
+        if ($success) {
+            header('Location: ' . $_SERVER['HTTP_REFERER']);
+        } else {
+            header('Location: ' . $_SERVER['HTTP_REFERER']);
+        }
+        exit;
     }
 }

@@ -227,7 +227,7 @@ class SellerController {
         AuthMiddleware::checkSellerAuth();
         
         $session = $this->getSessionData();
-        $type = $_GET['type'] ?? 'orders'; // Default to orders
+        $type = $_GET['type'] ?? 'products'; // Default to products
         
         // Get analysis data based on type
         if ($type === 'products') {

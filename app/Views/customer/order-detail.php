@@ -125,26 +125,39 @@
                 <h3 class="text-lg font-bold text-gray-900">Order Items</h3>
             </div>
             <div class="divide-y divide-gray-200">
-                <?php foreach ($orderItems as $item): ?>
-                    <div class="px-6 py-4 flex justify-between items-center hover:bg-gray-50 transition">
-                        <div class="flex-1">
-                            <p class="font-medium text-gray-900"><?= htmlspecialchars($item['product_name']) ?></p>
-                            <div class="flex gap-4 mt-2 text-sm text-gray-600">
-                                <?php if (!empty($item['product_color'])): ?>
-                                    <span><i class="fas fa-palette mr-1"></i>Color: <?= htmlspecialchars($item['product_color']) ?></span>
-                                <?php endif; ?>
-                                <?php if (!empty($item['product_size'])): ?>
-                                    <span><i class="fas fa-ruler mr-1"></i>Size: <?= htmlspecialchars($item['product_size']) ?></span>
+                <?php 
+                $reviewStatuses = $data['review_statuses'] ?? [];
+                foreach ($orderItems as $item): 
+                ?>
+                    <div class="px-6 py-4 hover:bg-gray-50 transition">
+                        <div class="flex justify-between items-center">
+                            <div class="flex-1">
+                                <p class="font-medium text-gray-900"><?= htmlspecialchars($item['product_name']) ?></p>
+                                <div class="flex gap-4 mt-2 text-sm text-gray-600">
+                                    <?php if (!empty($item['product_color'])): ?>
+                                        <span><i class="fas fa-palette mr-1"></i>Color: <?= htmlspecialchars($item['product_color']) ?></span>
+                                    <?php endif; ?>
+                                    <?php if (!empty($item['product_size'])): ?>
+                                        <span><i class="fas fa-ruler mr-1"></i>Size: <?= htmlspecialchars($item['product_size']) ?></span>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+                            <div class="text-right ml-4 flex items-center gap-4">
+                                <div>
+                                    <p class="text-sm text-gray-600">
+                                        <?= formatVND($item['price']) ?> × <?= $item['quantity'] ?>
+                                    </p>
+                                    <p class="font-bold text-gray-900 mt-1">
+                                        <?= formatVND($item['price'] * $item['quantity']) ?>
+                                    </p>
+                                </div>
+                                <?php if ($order['status'] === 'completed' && isset($reviewStatuses[$item['product_id']]) && $reviewStatuses[$item['product_id']]): ?>
+                                    <button onclick="openReviewModal(<?= $item['product_id'] ?>, '<?= htmlspecialchars($item['product_name']) ?>')" 
+                                            class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition text-sm">
+                                        <i class="fas fa-star mr-1"></i>Review
+                                    </button>
                                 <?php endif; ?>
                             </div>
-                        </div>
-                        <div class="text-right ml-4">
-                            <p class="text-sm text-gray-600">
-                                <?= formatVND($item['price']) ?> × <?= $item['quantity'] ?>
-                            </p>
-                            <p class="font-bold text-gray-900 mt-1">
-                                <?= formatVND($item['price'] * $item['quantity']) ?>
-                            </p>
                         </div>
                     </div>
                 <?php endforeach; ?>
@@ -184,9 +197,7 @@
                 }
                 </script>
             <?php elseif ($order['status'] === 'completed'): ?>
-                <button class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition cursor-not-allowed" disabled>
-                    <i class="fas fa-star mr-2"></i>Leave Review (Coming Soon)
-                </button>
+                <!-- Review buttons are now per product item -->
             <?php endif; ?>
         </div>
 
@@ -267,3 +278,97 @@
         </div>
     </div>
 </div>
+
+<!-- Review Modal -->
+<div id="reviewModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50">
+    <div class="flex items-center justify-center min-h-screen p-4">
+        <div class="bg-white rounded-lg max-w-md w-full p-6">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-bold text-gray-900">Review Product</h3>
+                <button onclick="closeReviewModal()" class="text-gray-400 hover:text-gray-600">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="reviewForm" action="/SHooad/public/customer/submit-review" method="POST">
+                <input type="hidden" id="reviewProductId" name="product_id">
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Product</label>
+                    <p id="reviewProductName" class="text-gray-900 font-medium"></p>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Rating</label>
+                    <div class="flex gap-1">
+                        <input type="radio" id="star1" name="rating" value="1" class="hidden">
+                        <label for="star1" class="cursor-pointer text-gray-300 hover:text-yellow-400">
+                            <i class="fas fa-star text-2xl star-rating"></i>
+                        </label>
+                        <input type="radio" id="star2" name="rating" value="2" class="hidden">
+                        <label for="star2" class="cursor-pointer text-gray-300 hover:text-yellow-400">
+                            <i class="fas fa-star text-2xl star-rating"></i>
+                        </label>
+                        <input type="radio" id="star3" name="rating" value="3" class="hidden">
+                        <label for="star3" class="cursor-pointer text-gray-300 hover:text-yellow-400">
+                            <i class="fas fa-star text-2xl star-rating"></i>
+                        </label>
+                        <input type="radio" id="star4" name="rating" value="4" class="hidden">
+                        <label for="star4" class="cursor-pointer text-gray-300 hover:text-yellow-400">
+                            <i class="fas fa-star text-2xl star-rating"></i>
+                        </label>
+                        <input type="radio" id="star5" name="rating" value="5" class="hidden">
+                        <label for="star5" class="cursor-pointer text-gray-300 hover:text-yellow-400">
+                            <i class="fas fa-star text-2xl star-rating"></i>
+                        </label>
+                    </div>
+                </div>
+                <div class="mb-4">
+                    <label for="comment" class="block text-sm font-medium text-gray-700 mb-2">Comment (Optional)</label>
+                    <textarea id="comment" name="comment" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500" placeholder="Share your experience..."></textarea>
+                </div>
+                <div class="flex justify-end gap-3">
+                    <button type="button" onclick="closeReviewModal()" class="px-4 py-2 text-gray-600 hover:text-gray-800">Cancel</button>
+                    <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Submit Review</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+function openReviewModal(productId, productName) {
+    document.getElementById('reviewProductId').value = productId;
+    document.getElementById('reviewProductName').textContent = productName;
+    document.getElementById('reviewModal').classList.remove('hidden');
+}
+
+function closeReviewModal() {
+    document.getElementById('reviewModal').classList.add('hidden');
+    // Reset form
+    document.getElementById('reviewForm').reset();
+    // Reset stars
+    document.querySelectorAll('.star-rating').forEach(star => {
+        star.classList.remove('text-yellow-400');
+        star.classList.add('text-gray-300');
+    });
+}
+
+// Star rating functionality
+document.querySelectorAll('.star-rating').forEach((star, index) => {
+    star.addEventListener('click', function() {
+        const rating = index + 1;
+        document.querySelector(`input[name="rating"][value="${rating}"]`).checked = true;
+        updateStars(rating);
+    });
+});
+
+function updateStars(rating) {
+    document.querySelectorAll('.star-rating').forEach((star, index) => {
+        if (index < rating) {
+            star.classList.remove('text-gray-300');
+            star.classList.add('text-yellow-400');
+        } else {
+            star.classList.remove('text-yellow-400');
+            star.classList.add('text-gray-300');
+        }
+    });
+}
+</script>

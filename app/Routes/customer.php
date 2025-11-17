@@ -89,6 +89,10 @@ switch ($path) {
         $customerController->cancelOrder();
         break;
     
+    case 'submit-review':
+        $customerController->submitReview();
+        break;
+    
     case 'search-products':
         // Lightweight JSON API for realtime search suggestions
         if (method_exists($customerController, 'searchProducts')) {
