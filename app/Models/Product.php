@@ -75,27 +75,32 @@ class Product {
     }
 
     public function createProduct(array $data): ?int {
-        $fields = ['shop_id', 'name', 'brand', 'description', 'colors', 'sizes', 'price', 'original_price', 'stock', 'category_id', 'status'];
-        $placeholders = array_fill(0, count($fields), '?');
-        
-        $sql = "INSERT INTO products (" . implode(', ', $fields) . ", sold) VALUES (" . implode(', ', $placeholders) . ", 0)";
-        $stmt = $this->db->prepare($sql);
-        
+        $fields = [];
+        $placeholders = [];
         $values = [];
         $types = '';
-        foreach ($fields as $field) {
+        
+        $allFields = ['shop_id', 'name', 'brand', 'description', 'price', 'original_price', 'stock', 'category_id', 'status'];
+        
+        foreach ($allFields as $field) {
             $value = $data[$field] ?? null;
-            $values[] = $value;
-            
-            if ($field === 'shop_id' || $field === 'stock' || $field === 'category_id') {
-                $types .= 'i';
-            } elseif ($field === 'price' || $field === 'original_price') {
-                $types .= 'd';
-            } else {
-                $types .= 's';
+            if ($value !== null) {
+                $fields[] = $field;
+                $placeholders[] = '?';
+                $values[] = $value;
+                
+                if ($field === 'shop_id' || $field === 'stock' || $field === 'category_id') {
+                    $types .= 'i';
+                } elseif ($field === 'price' || $field === 'original_price') {
+                    $types .= 'd';
+                } else {
+                    $types .= 's';
+                }
             }
         }
         
+        $sql = "INSERT INTO products (" . implode(', ', $fields) . ", sold) VALUES (" . implode(', ', $placeholders) . ", 0)";
+        $stmt = $this->db->prepare($sql);
         $stmt->bind_param($types, ...$values);
         
         if ($stmt->execute()) {
@@ -115,9 +120,13 @@ class Product {
         $types = '';
 
         foreach ($data as $key => $value) {
-            $fields[] = "$key = ?";
-            $values[] = $value;
-            $types .= is_int($value) ? 'i' : (is_float($value) ? 'd' : 's');
+            if ($value === null) {
+                $fields[] = "$key = NULL";
+            } else {
+                $fields[] = "$key = ?";
+                $values[] = $value;
+                $types .= is_int($value) ? 'i' : (is_float($value) ? 'd' : 's');
+            }
         }
 
         $values[] = $product_id;
@@ -186,5 +195,102 @@ class Product {
             ];
         }
         return $items;
+    }
+
+    public function getProductVariants(int $productId): array {
+        $stmt = $this->db->prepare("
+            SELECT pv.*, c.name as color_name, c.hex_code, s.name as size_name
+            FROM product_variants pv
+            LEFT JOIN colors c ON pv.color_id = c.id
+            LEFT JOIN sizes s ON pv.size_id = s.id
+            WHERE pv.product_id = ?
+            ORDER BY pv.id
+        ");
+        $stmt->bind_param("i", $productId);
+        $stmt->execute();
+        return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+    }
+
+    public function createProductVariant(array $data): ?int {
+        $fields = [];
+        $placeholders = [];
+        $values = [];
+        $types = '';
+        
+        $allFields = ['product_id', 'color_id', 'size_id', 'sku', 'stock', 'price'];
+        
+        foreach ($allFields as $field) {
+            $value = $data[$field] ?? null;
+            $fields[] = $field;
+            $placeholders[] = '?';
+            $values[] = $value;
+            
+            if ($field === 'product_id' || $field === 'color_id' || $field === 'size_id' || $field === 'stock') {
+                $types .= 'i';
+            } elseif ($field === 'price') {
+                $types .= 'd';
+            } else {
+                $types .= 's';
+            }
+        }
+        
+        $sql = "INSERT INTO product_variants (" . implode(', ', $fields) . ") VALUES (" . implode(', ', $placeholders) . ")";
+        $stmt = $this->db->prepare($sql);
+        $stmt->bind_param($types, ...$values);
+        
+        if ($stmt->execute()) {
+            return $stmt->insert_id;
+        }
+        
+        return null;
+    }
+
+    public function updateProductVariant(int $variantId, array $data): bool {
+        if (empty($data)) {
+            return false;
+        }
+
+        $fields = [];
+        $values = [];
+        $types = '';
+
+        foreach ($data as $key => $value) {
+            $fields[] = "$key = ?";
+            $values[] = $value;
+            $types .= is_int($value) ? 'i' : (is_float($value) ? 'd' : 's');
+        }
+
+        $values[] = $variantId;
+        $types .= 'i';
+
+        $sql = "UPDATE product_variants SET " . implode(', ', $fields) . " WHERE id = ?";
+        $stmt = $this->db->prepare($sql);
+        $stmt->bind_param($types, ...$values);
+        
+        return $stmt->execute();
+    }
+
+    public function deleteProductVariant(int $variantId): bool {
+        $stmt = $this->db->prepare("DELETE FROM product_variants WHERE id = ?");
+        $stmt->bind_param("i", $variantId);
+        return $stmt->execute();
+    }
+
+    public function getAllColors(): array {
+        $stmt = $this->db->prepare("SELECT * FROM colors ORDER BY name");
+        $stmt->execute();
+        return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+    }
+
+    public function getAllSizes(): array {
+        $stmt = $this->db->prepare("SELECT * FROM sizes ORDER BY sort_order, name");
+        $stmt->execute();
+        return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+    }
+
+    public function getAllCategories(): array {
+        $stmt = $this->db->prepare("SELECT * FROM categories ORDER BY name");
+        $stmt->execute();
+        return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
     }
 }

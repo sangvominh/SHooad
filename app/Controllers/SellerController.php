@@ -95,6 +95,49 @@ class SellerController {
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_product'])) {
             $this->productService->updateProduct($product_id, $_POST);
 
+            // Handle variants
+            $submittedVariantIds = [];
+            if (isset($_POST['variants']) && is_array($_POST['variants'])) {
+                foreach ($_POST['variants'] as $variantData) {
+                    $variantId = $variantData['id'] ?? null;
+                    $stock = $variantData['stock'] ?? 0;
+                    $price = !empty($variantData['price']) ? $variantData['price'] : null;
+                    $sku = $variantData['sku'] ?? '';
+                    $colorId = !empty($variantData['color_id']) ? $variantData['color_id'] : null;
+                    $sizeId = !empty($variantData['size_id']) ? $variantData['size_id'] : null;
+
+                    if ($variantId) {
+                        // Update existing variant
+                        $this->productService->updateProductVariant($variantId, [
+                            'color_id' => $colorId,
+                            'size_id' => $sizeId,
+                            'stock' => $stock,
+                            'price' => $price,
+                            'sku' => $sku
+                        ]);
+                        $submittedVariantIds[] = $variantId;
+                    } else {
+                        // Create new variant
+                        $this->productService->createProductVariant([
+                            'product_id' => $product_id,
+                            'color_id' => $colorId,
+                            'size_id' => $sizeId,
+                            'stock' => $stock,
+                            'price' => $price,
+                            'sku' => $sku
+                        ]);
+                    }
+                }
+            }
+
+            // Delete variants that are no longer in the form
+            $currentVariants = $this->productService->getProductVariants($product_id);
+            foreach ($currentVariants as $variant) {
+                if (!in_array($variant['id'], $submittedVariantIds)) {
+                    $this->productService->deleteProductVariant($variant['id']);
+                }
+            }
+
             if (!empty($_FILES['new_images']['name'][0])) {
                 $this->productService->uploadProductImages($product_id, $_FILES['new_images']);
             }
@@ -105,6 +148,10 @@ class SellerController {
         $data = $this->loadDashboardData();
         $product = $this->productService->getProductById($product_id);
         $product['images'] = $this->productService->getProductImages($product_id);
+        $product['variants'] = $this->productService->getProductVariants($product_id);
+        $allColors = $this->productService->getAllColors();
+        $allSizes = $this->productService->getAllSizes();
+        $allCategories = $this->productService->getAllCategories();
 
         include __DIR__ . '/../Views/seller/pages/product-detail.php';
     }

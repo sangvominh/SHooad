@@ -74,14 +74,14 @@ INSERT INTO categories (name) VALUES
 INSERT INTO products (shop_id, category_id, name, brand, description, price, original_price, stock, sold, status) VALUES
 -- SHOP 1: Fashion House (10 sản phẩm - Nam)
 -- Áo Nam
-(1, 1, 'Áo Thun Nam Basic', 'ZARA', 'Áo thun cotton 100% thoáng mát', 199000, 299000, 150, 85, 'active'),
-(1, 1, 'Áo Sơ Mi Nam Công Sở', 'H&M', 'Áo sơ mi cao cấp, form slim fit', 350000, 500000, 100, 120, 'active'),
-(1, 1, 'Áo Polo Nam', 'UNIQLO', 'Áo polo có cổ, chất liệu pique', 250000, 350000, 80, 95, 'active'),
+(1, 1, 'Áo Thun Nam Basic', 'ZARA', 'Áo thun cotton 100% thoáng mát', 199000, 299000, 0, 85, 'active'),
+(1, 1, 'Áo Sơ Mi Nam Công Sở', 'H&M', 'Áo sơ mi cao cấp, form slim fit', 350000, 500000, 0, 120, 'active'),
+(1, 1, 'Áo Polo Nam', 'UNIQLO', 'Áo polo có cổ, chất liệu pique', 250000, 350000, 0, 95, 'active'),
 (1, 1, 'Áo Khoác Jean Nam', 'LEVI\'S', 'Áo khoác jean phong cách Hàn Quốc', 450000, 650000, 60, 45, 'active'),
 (1, 1, 'Áo Hoodie Nam', 'ADIDAS', 'Áo hoodie có nón, chất nỉ dày', 380000, 550000, 90, 110, 'active'),
 
 -- Quần Nam
-(1, 2, 'Quần Jean Nam Slim Fit', 'LEVI\'S', 'Quần jean co giãn nhẹ, form slim', 400000, 600000, 120, 88, 'active'),
+(1, 2, 'Quần Jean Nam Slim Fit', 'LEVI\'S', 'Quần jean co giãn nhẹ, form slim', 400000, 600000, 0, 88, 'active'),
 (1, 2, 'Quần Kaki Nam', 'ZARA', 'Quần kaki công sở, chống nhăn', 320000, 450000, 95, 72, 'active'),
 (1, 2, 'Quần Short Nam', 'H&M', 'Quần short thể thao, thoáng mát', 180000, 280000, 110, 135, 'active'),
 (1, 2, 'Quần Jogger Nam', 'NIKE', 'Quần jogger thể thao năng động', 350000, 500000, 75, 68, 'active'),
@@ -91,9 +91,9 @@ INSERT INTO products (shop_id, category_id, name, brand, description, price, ori
 
 -- SHOP 2: Trendy Store (10 sản phẩm - Nữ)
 -- Áo Nữ
-(2, 3, 'Áo Thun Nữ Form Rộng', 'UNIQLO', 'Áo thun oversize phong cách Hàn', 199000, 299000, 140, 165, 'active'),
+(2, 3, 'Áo Thun Nữ Form Rộng', 'UNIQLO', 'Áo thun oversize phong cách Hàn', 199000, 299000, 0, 165, 'active'),
 (2, 3, 'Áo Kiểu Nữ Công Sở', 'MANGO', 'Áo kiểu sơ mi nữ tính, thanh lịch', 280000, 400000, 85, 92, 'active'),
-(2, 3, 'Áo Croptop Nữ', 'ZARA', 'Áo croptop trẻ trung năng động', 150000, 250000, 100, 145, 'active'),
+(2, 3, 'Áo Croptop Nữ', 'ZARA', 'Áo croptop trẻ trung năng động', 150000, 250000, 0, 145, 'active'),
 (2, 3, 'Áo Khoác Cardigan Nữ', 'H&M', 'Áo khoác len nữ mỏng nhẹ', 320000, 480000, 70, 55, 'active'),
 (2, 3, 'Áo Blazer Nữ', 'ZARA', 'Áo vest nữ công sở cao cấp', 550000, 800000, 50, 38, 'active'),
 
@@ -638,6 +638,45 @@ INSERT INTO order_items (order_id, product_id, quantity, price, product_name, pr
 -- ============================
 INSERT INTO carts (customer_id) VALUES
 (1), (2), (3), (4), (5), (6), (7), (8), (9), (10);
+
+-- ============================
+-- PRODUCT VARIANTS (với giá đa dạng để test)
+-- ============================
+INSERT INTO product_variants (product_id, color_id, size_id, sku, stock, price) VALUES
+-- Áo Thun Nam Basic (product_id=1, base_price=199000)
+(1, 1, 2, 'ATN-BLK-S', 25, 180000),  -- Đen-S: giá thấp hơn
+(1, 1, 3, 'ATN-BLK-M', 30, 199000),  -- Đen-M: giá gốc
+(1, 1, 4, 'ATN-BLK-L', 35, 220000),  -- Đen-L: giá cao hơn
+(1, 2, 3, 'ATN-WHT-M', 20, 210000),  -- Trắng-M: giá cao hơn
+(1, 2, 4, 'ATN-WHT-L', 15, NULL),    -- Trắng-L: không có giá riêng (dùng giá gốc)
+
+-- Áo Sơ Mi Nam Công Sở (product_id=2, base_price=350000)
+(2, 1, 3, 'ASM-BLK-M', 15, 320000),  -- Đen-M: giá thấp hơn
+(2, 1, 4, 'ASM-BLK-L', 20, 350000),  -- Đen-L: giá gốc
+(2, 1, 5, 'ASM-BLK-XL', 10, 380000), -- Đen-XL: giá cao hơn
+(2, 4, 4, 'ASM-BLU-L', 12, 360000),  -- Xanh Dương-L: giá trung bình
+(2, 4, 5, 'ASM-BLU-XL', 8, NULL),    -- Xanh Dương-XL: không có giá riêng
+
+-- Áo Thun Nữ Form Rộng (product_id=11, base_price=199000)
+(11, 9, 1, 'ATN-PNK-XS', 20, 170000), -- Hồng-XS: giá thấp hơn
+(11, 9, 2, 'ATN-PNK-S', 25, 199000),  -- Hồng-S: giá gốc
+(11, 9, 3, 'ATN-PNK-M', 30, 210000),  -- Hồng-M: giá cao hơn
+(11, 2, 2, 'ATN-WHT-S', 18, 185000),  -- Trắng-S: giá trung bình
+(11, 2, 3, 'ATN-WHT-M', 22, NULL),    -- Trắng-M: không có giá riêng
+
+-- Áo Polo Nam (product_id=3, base_price=250000) - chỉ một vài variant
+(3, 1, 3, 'APL-BLK-M', 15, 240000),  -- Đen-M: giá thấp hơn một chút
+(3, 2, 3, 'APL-WHT-M', 12, 260000),  -- Trắng-M: giá cao hơn một chút
+
+-- Quần Jean Nam (product_id=6, base_price=400000) - chỉ một vài variant
+(6, 1, 11, 'QJN-BLK-30', 18, 380000), -- Đen-30: giá thấp hơn
+(6, 1, 12, 'QJN-BLK-31', 20, 400000), -- Đen-31: giá gốc
+(6, 1, 13, 'QJN-BLK-32', 15, 420000), -- Đen-32: giá cao hơn
+
+-- Áo Croptop Nữ (product_id=13, base_price=150000) - giá thấp
+(13, 1, 2, 'ACT-BLK-S', 15, 140000),  -- Đen-S: giá thấp hơn
+(13, 9, 2, 'ACT-PNK-S', 12, 160000),  -- Hồng-S: giá cao hơn
+(13, 2, 2, 'ACT-WHT-S', 10, NULL);    -- Trắng-S: không có giá riêng
 
 -- ============================
 -- 12. CART ITEMS (Sản phẩm trong giỏ)

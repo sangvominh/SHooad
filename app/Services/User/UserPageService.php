@@ -159,6 +159,12 @@ class UserPageService {
         $product['colors'] = $this->getProductColorsFromDB($productId);
         $product['sizes'] = $this->getProductSizesFromDB($productId);
 
+        // Get variants with prices
+        $product['variants'] = $this->getProductVariantsFromDB($productId);
+
+        // Calculate price range or specific price
+        $this->calculateProductPrice($product);
+
         return $product;
     }
 
@@ -216,6 +222,83 @@ class UserPageService {
                 'stock' => $size['stock']
             ];
         }, $sizes);
+    }
+
+    /**
+     * Get product variants from database
+     */
+    private function getProductVariantsFromDB(int $productId): array {
+        $pdo = new PDO('mysql:host=localhost;dbname=SHooad;charset=utf8', 'root', '');
+        
+        $stmt = $pdo->prepare("
+        SELECT pv.*, c.name as color_name, c.hex_code, s.name as size_name
+        FROM product_variants pv
+        LEFT JOIN colors c ON pv.color_id = c.id
+        LEFT JOIN sizes s ON pv.size_id = s.id
+        WHERE pv.product_id = ?
+        ORDER BY pv.id
+    ");
+        
+        $stmt->execute([$productId]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    /**
+     * Calculate product price based on variants
+     */
+    private function calculateProductPrice(array &$product): void {
+        $variants = $product['variants'] ?? [];
+        
+        if (empty($variants)) {
+            // No variants, use product price
+            return;
+        }
+
+        // Get all variant prices (use variant price if set, otherwise product price)
+        $prices = [];
+        foreach ($variants as $variant) {
+            $price = $variant['price'] ?? $product['price'] ?? 0;
+            if ($price > 0) {
+                $prices[] = $price;
+            }
+        }
+
+        if (empty($prices)) {
+            // No valid prices, use product price
+            return;
+        }
+
+        $minPrice = min($prices);
+        $maxPrice = max($prices);
+
+        // Set price range
+        $product['min_price'] = $minPrice;
+        $product['max_price'] = $maxPrice;
+        
+        // If all prices are the same, use single price
+        if ($minPrice === $maxPrice) {
+            $product['price'] = $minPrice;
+        } else {
+            // Multiple prices, set range
+            $product['price_range'] = true;
+        }
+
+        // Also check original prices for discount calculation
+        $originalPrices = [];
+        foreach ($variants as $variant) {
+            // For now, we don't have variant-level original_price
+            // So use product original_price if all variants have same price
+            if ($minPrice === $maxPrice) {
+                $originalPrices[] = $product['original_price'] ?? 0;
+            }
+        }
+        
+        if (!empty($originalPrices) && $minPrice === $maxPrice) {
+            $originalPrice = $originalPrices[0];
+            if ($originalPrice > $minPrice) {
+                $product['original_price'] = $originalPrice;
+            }
+        }
     }
 
     public function getProductDetailPageData(int $productId): ?array {

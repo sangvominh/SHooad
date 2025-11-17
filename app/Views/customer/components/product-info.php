@@ -9,23 +9,46 @@
     <div class="border-y border-gray-200 py-4">
         <div class="flex items-center justify-between flex-wrap gap-4">
             <!-- Price -->
-            <div class="flex items-center gap-3">
+            <div id="priceContainer" class="flex items-center gap-3">
                 <?php 
-                $price = $product['price'] ?? '';
+                $hasPriceRange = isset($product['price_range']) && $product['price_range'];
+                $minPrice = $product['min_price'] ?? $product['price'] ?? '';
+                $maxPrice = $product['max_price'] ?? $product['price'] ?? '';
                 $original = $product['original_price'] ?? '';
-                // Nếu có giá gốc và giá gốc khác giá sale thì hiển thị cả hai
-                if ($original !== '' && $original != $price && $original > $price) {
-                    $discount = round((($original - $price) / $original) * 100);
-                ?>
-                    <div class="flex items-center gap-2">
-                        <span class="text-3xl font-bold text-red-600"><?php echo number_format($price, 0, ',', '.'); ?>₫</span>
-                        <span class="bg-red-100 text-red-600 px-2 py-1 rounded text-sm font-bold">-<?php echo $discount; ?>%</span>
-                    </div>
-                    <span class="text-lg text-gray-400 line-through"><?php echo number_format($original, 0, ',', '.'); ?>₫</span>
-                <?php 
+                
+                if ($hasPriceRange && $minPrice !== $maxPrice) {
+                    // Display price range
+                    if ($original !== '' && $original > $maxPrice) {
+                        $discount = round((($original - $maxPrice) / $original) * 100);
+                    ?>
+                        <div class="flex items-center gap-2">
+                            <span class="text-3xl font-bold text-red-600"><?php echo number_format($minPrice, 0, ',', '.'); ?>₫ - <?php echo number_format($maxPrice, 0, ',', '.'); ?>₫</span>
+                            <span class="bg-red-100 text-red-600 px-2 py-1 rounded text-sm font-bold">-<?php echo $discount; ?>%</span>
+                        </div>
+                        <span class="text-lg text-gray-400 line-through"><?php echo number_format($original, 0, ',', '.'); ?>₫</span>
+                    <?php 
+                    } else {
+                    ?>
+                        <span class="text-3xl font-bold text-gray-900"><?php echo number_format($minPrice, 0, ',', '.'); ?>₫ - <?php echo number_format($maxPrice, 0, ',', '.'); ?>₫</span>
+                    <?php 
+                    }
                 } else {
-                ?>
-                    <span class="text-3xl font-bold text-gray-900"><?php echo number_format($price, 0, ',', '.'); ?>₫</span>
+                    // Single price
+                    $price = $product['price'] ?? '';
+                    // Nếu có giá gốc và giá gốc khác giá sale thì hiển thị cả hai
+                    if ($original !== '' && $original != $price && $original > $price) {
+                        $discount = round((($original - $price) / $original) * 100);
+                    ?>
+                        <div class="flex items-center gap-2">
+                            <span class="text-3xl font-bold text-red-600"><?php echo number_format($price, 0, ',', '.'); ?>₫</span>
+                            <span class="bg-red-100 text-red-600 px-2 py-1 rounded text-sm font-bold">-<?php echo $discount; ?>%</span>
+                        </div>
+                        <span class="text-lg text-gray-400 line-through"><?php echo number_format($original, 0, ',', '.'); ?>₫</span>
+                    <?php 
+                    } else {
+                    ?>
+                        <span class="text-3xl font-bold text-gray-900"><?php echo number_format($price, 0, ',', '.'); ?>₫</span>
+                    <?php } ?>
                 <?php } ?>
             </div>
             <!-- Rating -->
@@ -199,6 +222,7 @@
         if (colorId > 0) {
           fetchAvailableSizes(PRODUCT_ID, colorId).then(updateSizesUI);
         }
+        updatePriceForVariant();
         validateFormAndUpdateButtons();
       });
     });
@@ -210,6 +234,7 @@
         if (sizeId > 0) {
           fetchAvailableColors(PRODUCT_ID, sizeId).then(updateColorsUI);
         }
+        updatePriceForVariant();
         validateFormAndUpdateButtons();
       });
     });
@@ -528,20 +553,64 @@
       });
     }
     
-    // Initial updates
-    updateColorLabels();
-    updateSizeLabels();
-    // Trigger initial availability refresh based on defaults
-    const initColor = document.querySelector('input[name="color"]:checked');
-    const initSize  = document.querySelector('input[name="size"]:checked');
-    if (initColor) {
-      const initColorId = parseInt(initColor.getAttribute('data-color-id') || '0', 10);
-      if (initColorId > 0) fetchAvailableSizes(PRODUCT_ID, initColorId).then(updateSizesUI).catch(()=>{});
+    // Product variants data
+    const VARIANTS = <?php echo json_encode($product['variants'] ?? []); ?>;
+    const DEFAULT_PRICE = <?php echo $product['price'] ?? 0; ?>;
+    const ORIGINAL_PRICE = <?php echo $product['original_price'] ?? 0; ?>;
+
+    // Function to update price based on selected variant
+    function updatePriceForVariant() {
+      const selectedColor = document.querySelector('input[name="color"]:checked');
+      const selectedSize = document.querySelector('input[name="size"]:checked');
+      
+      const colorId = selectedColor ? parseInt(selectedColor.getAttribute('data-color-id') || '0', 10) : null;
+      const sizeId = selectedSize ? parseInt(selectedSize.getAttribute('data-size-id') || '0', 10) : null;
+      
+      let variantPrice = null;
+      let variantOriginalPrice = ORIGINAL_PRICE;
+      
+      // Find matching variant
+      if (VARIANTS && VARIANTS.length > 0) {
+        for (const variant of VARIANTS) {
+          const variantColorId = variant.color_id ? parseInt(variant.color_id, 10) : null;
+          const variantSizeId = variant.size_id ? parseInt(variant.size_id, 10) : null;
+          
+          // Match based on selected options
+          const colorMatch = (colorId === null && variantColorId === null) || (colorId === variantColorId);
+          const sizeMatch = (sizeId === null && variantSizeId === null) || (sizeId === variantSizeId);
+          
+          if (colorMatch && sizeMatch) {
+            variantPrice = variant.price ? parseFloat(variant.price) : null;
+            break;
+          }
+        }
+      }
+      
+      // Update price display
+      const priceContainer = document.getElementById('priceContainer');
+      if (!priceContainer) return;
+      
+      // Use variant price if available, otherwise use default
+      const displayPrice = variantPrice !== null ? variantPrice : DEFAULT_PRICE;
+      
+      // Always update price display
+      let priceHtml = '';
+      if (ORIGINAL_PRICE > 0 && ORIGINAL_PRICE > displayPrice) {
+        const discount = Math.round(((ORIGINAL_PRICE - displayPrice) / ORIGINAL_PRICE) * 100);
+        priceHtml = `
+          <div class="flex items-center gap-2">
+            <span class="text-3xl font-bold text-red-600">${displayPrice.toLocaleString('vi-VN')}₫</span>
+            <span class="bg-red-100 text-red-600 px-2 py-1 rounded text-sm font-bold">-${discount}%</span>
+          </div>
+          <span class="text-lg text-gray-400 line-through">${ORIGINAL_PRICE.toLocaleString('vi-VN')}₫</span>
+        `;
+      } else {
+        priceHtml = `<span class="text-3xl font-bold text-gray-900">${displayPrice.toLocaleString('vi-VN')}₫</span>`;
+      }
+      priceContainer.innerHTML = priceHtml;
     }
-    if (initSize) {
-      const initSizeId = parseInt(initSize.getAttribute('data-size-id') || '0', 10);
-      if (initSizeId > 0) fetchAvailableColors(PRODUCT_ID, initSizeId).then(updateColorsUI).catch(()=>{});
-    }
-    validateFormAndUpdateButtons();
+
+    // Initial price update
+    updatePriceForVariant();
   });
 </script>
