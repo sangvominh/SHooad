@@ -1,0 +1,20 @@
+/* Custom styles if needed */
+
+@layer components {
+  .dropdown-item {
+    @apply block w-full text-left px-4 py-2 hover:bg-gray-100 transition;
+  }
+
+  .dropdown-item:first-child {
+    @apply rounded-t;
+  }
+
+  .dropdown-item:last-child {
+    @apply rounded-b;
+  }
+}
+
+/* Smooth transitions */
+* {
+  @apply transition-colors duration-200;
+}
