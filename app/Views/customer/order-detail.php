@@ -74,10 +74,11 @@
                         <p class="text-sm text-gray-600">Order Date</p>
                         <p class="font-medium"><?= date('d/m/Y H:i', strtotime($order['date'])) ?></p>
                     </div>
-                    <div>
+                    <!-- TODO: BUG -->
+                    <!-- <div>
                         <p class="text-sm text-gray-600">Shop</p>
                         <p class="font-medium"><?= htmlspecialchars($order['shop_name'] ?? 'N/A') ?></p>
-                    </div>
+                    </div> -->
                 </div>
             </div>
 

@@ -100,8 +100,8 @@ $shop_orders = $data['orders'] ?? [];
                 data-customer-name="<?php echo htmlspecialchars($order['customer_name'] ?? 'Customer'); ?>"
                 data-customer-email="<?php echo htmlspecialchars($order['customer_email'] ?? ''); ?>"
                 data-customer-phone="<?php echo htmlspecialchars($order['customer_phone'] ?? ''); ?>"
-                data-status="<?php echo htmlspecialchars($order['status'] ?? 'Pending'); ?>"
-                data-payment-status="<?php echo htmlspecialchars($order['payment_status'] ?? 'Pending'); ?>"
+                data-status="<?php echo htmlspecialchars($order['status'] ?? 'pending'); ?>"
+                data-payment-status="<?php echo htmlspecialchars($order['payment_status'] ?? 'pending'); ?>"
                 data-total="<?php echo $order['total_amount'] ?? 0; ?>"
                 data-date="<?php echo $order['date'] ?? date('Y-m-d H:i:s'); ?>"
                 class="hover:bg-gray-50 transition-colors">
@@ -113,13 +113,13 @@ $shop_orders = $data['orders'] ?? [];
                 <td class="px-6 py-4 text-sm">
                   <span class="inline-block px-2 py-1 rounded text-xs font-semibold
                     <?php 
-                      $payment_status = $order['payment_status'] ?? 'Pending';
-                      if ($payment_status === 'Paid') echo 'bg-green-100 text-green-800';
-                      elseif ($payment_status === 'Pending') echo 'bg-yellow-100 text-yellow-800';
-                      elseif ($payment_status === 'Refunded') echo 'bg-red-100 text-red-800';
+                      $payment_status = $order['payment_status'] ?? 'pending';
+                      if ($payment_status === 'paid') echo 'bg-green-100 text-green-800';
+                      elseif ($payment_status === 'pending') echo 'bg-yellow-100 text-yellow-800';
+                      elseif ($payment_status === 'refunded') echo 'bg-red-100 text-red-800';
                       else echo 'bg-gray-100 text-gray-800';
                     ?>">
-                    <?php echo htmlspecialchars($payment_status); ?>
+                    <?php echo htmlspecialchars(ucfirst($payment_status)); ?>
                   </span>
                 </td>
               <?php endif; ?>
@@ -169,8 +169,8 @@ $shop_orders = $data['orders'] ?? [];
              data-customer-name="<?php echo htmlspecialchars($order['customer_name'] ?? 'Customer'); ?>"
              data-customer-email="<?php echo htmlspecialchars($order['customer_email'] ?? ''); ?>"
              data-customer-phone="<?php echo htmlspecialchars($order['customer_phone'] ?? ''); ?>"
-             data-status="<?php echo htmlspecialchars($order['status'] ?? 'Pending'); ?>"
-             data-payment-status="<?php echo htmlspecialchars($order['payment_status'] ?? 'Pending'); ?>"
+             data-status="<?php echo htmlspecialchars($order['status'] ?? 'pending'); ?>"
+             data-payment-status="<?php echo htmlspecialchars($order['payment_status'] ?? 'pending'); ?>"
              data-total="<?php echo $order['total_amount'] ?? 0; ?>"
              data-date="<?php echo $order['date'] ?? date('Y-m-d H:i:s'); ?>"
              class="px-4 py-4 hover:bg-gray-50">
@@ -207,13 +207,13 @@ $shop_orders = $data['orders'] ?? [];
                 <span class="text-gray-600">Payment:</span>
                 <span class="inline-block px-2 py-0.5 rounded text-xs font-semibold ml-1
                   <?php 
-                    $payment_status = $order['payment_status'] ?? 'Pending';
-                    if ($payment_status === 'Paid') echo 'bg-green-100 text-green-800';
-                    elseif ($payment_status === 'Pending') echo 'bg-yellow-100 text-yellow-800';
-                    elseif ($payment_status === 'Refunded') echo 'bg-red-100 text-red-800';
+                    $payment_status = $order['payment_status'] ?? 'pending';
+                    if ($payment_status === 'paid') echo 'bg-green-100 text-green-800';
+                    elseif ($payment_status === 'pending') echo 'bg-yellow-100 text-yellow-800';
+                    elseif ($payment_status === 'refunded') echo 'bg-red-100 text-red-800';
                     else echo 'bg-gray-100 text-gray-800';
                   ?>">
-                  <?php echo htmlspecialchars($payment_status); ?>
+                  <?php echo htmlspecialchars(ucfirst($payment_status)); ?>
                 </span>
               </div>
               <div>

@@ -30,7 +30,14 @@ class Order {
     }
 
     public function getOrderByShop(int $shop_id, ?int $limit = null): array {
-        $sql = "SELECT * FROM orders WHERE shop_id = ? ORDER BY date DESC";
+        $sql = "SELECT o.*, c.name as customer_name, c.email as customer_email, 
+                       COALESCE(SUM(oi.price * oi.quantity), 0) as total_amount
+                FROM orders o
+                JOIN customers c ON o.customer_id = c.id
+                LEFT JOIN order_items oi ON o.id = oi.order_id
+                WHERE o.shop_id = ?
+                GROUP BY o.id
+                ORDER BY o.date DESC";
         if ($limit !== null) {
             $sql .= " LIMIT ?";
         }

@@ -42,41 +42,76 @@ class SellerAnalysisService {
         ];
     }
 
-    /**
-     * Get order statistics
-     */
     private function getOrderStats(int $shop_id): array {
         $sql = "
             SELECT 
                 COUNT(*) as total_orders,
-                SUM(CASE WHEN status NOT IN ('cancelled', 'failed') THEN 
-                    (SELECT SUM(price * quantity) FROM order_items WHERE order_id = orders.id)
+                SUM(CASE WHEN LOWER(status) NOT IN ('cancelled', 'failed') THEN 
+                    COALESCE((SELECT SUM(price * quantity) FROM order_items WHERE order_id = orders.id), 0)
                 ELSE 0 END) as total_revenue,
-                SUM(CASE WHEN status = 'pending' THEN 1 ELSE 0 END) as pending,
-                SUM(CASE WHEN status = 'processing' THEN 1 ELSE 0 END) as processing,
-                SUM(CASE WHEN status = 'delivering' THEN 1 ELSE 0 END) as delivering,
-                SUM(CASE WHEN status = 'completed' THEN 1 ELSE 0 END) as completed,
-                SUM(CASE WHEN status = 'cancelled' THEN 1 ELSE 0 END) as cancelled,
-                SUM(CASE WHEN status = 'failed' THEN 1 ELSE 0 END) as failed
+                SUM(CASE WHEN LOWER(status) = 'pending' THEN 1 ELSE 0 END) as pending,
+                SUM(CASE WHEN LOWER(status) = 'processing' THEN 1 ELSE 0 END) as processing,
+                SUM(CASE WHEN LOWER(status) = 'delivering' THEN 1 ELSE 0 END) as delivering,
+                SUM(CASE WHEN LOWER(status) IN ('completed', 'paid') THEN 1 ELSE 0 END) as completed,
+                SUM(CASE WHEN LOWER(status) = 'cancelled' THEN 1 ELSE 0 END) as cancelled,
+                SUM(CASE WHEN LOWER(status) = 'failed' THEN 1 ELSE 0 END) as failed
             FROM orders 
             WHERE shop_id = ?
         ";
         
         $stmt = $this->db->prepare($sql);
+        if (!$stmt) {
+            error_log("Failed to prepare statement: " . $this->db->error);
+            return [
+                'total_orders' => 0,
+                'total_revenue' => 0.0,
+                'by_status' => [
+                    'pending' => 0,
+                    'processing' => 0,
+                    'delivering' => 0,
+                    'completed' => 0,
+                    'cancelled' => 0,
+                    'failed' => 0
+                ]
+            ];
+        }
         $stmt->bind_param("i", $shop_id);
-        $stmt->execute();
-        $result = $stmt->get_result()->fetch_assoc();
+        if (!$stmt->execute()) {
+            error_log("Failed to execute statement: " . $stmt->error);
+            return [
+                'total_orders' => 0,
+                'total_revenue' => 0.0,
+                'by_status' => [
+                    'pending' => 0,
+                    'processing' => 0,
+                    'delivering' => 0,
+                    'completed' => 0,
+                    'cancelled' => 0,
+                    'failed' => 0
+                ]
+            ];
+        }
+        $result = $stmt->get_result()->fetch_assoc() ?? [
+            'total_orders' => 0,
+            'total_revenue' => 0,
+            'pending' => 0,
+            'processing' => 0,
+            'delivering' => 0,
+            'completed' => 0,
+            'cancelled' => 0,
+            'failed' => 0
+        ];
         
         return [
             'total_orders' => (int)$result['total_orders'],
             'total_revenue' => (float)($result['total_revenue'] ?? 0),
             'by_status' => [
-                'pending' => (int)$result['pending'],
-                'processing' => (int)$result['processing'],
-                'delivering' => (int)$result['delivering'],
-                'completed' => (int)$result['completed'],
-                'cancelled' => (int)$result['cancelled'],
-                'failed' => (int)$result['failed']
+                'Pending' => (int)$result['pending'],
+                'Processing' => (int)$result['processing'],
+                'Delivering' => (int)$result['delivering'],
+                'Completed' => (int)$result['completed'],
+                'Cancelled' => (int)$result['cancelled'],
+                'Failed' => (int)$result['failed']
             ]
         ];
     }
@@ -123,8 +158,8 @@ class SellerAnalysisService {
             FROM orders o
             JOIN order_items oi ON o.id = oi.order_id
             WHERE o.shop_id = ? 
-            AND o.status NOT IN ('cancelled', 'failed')
-            AND o.date >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)
+            AND LOWER(o.status) NOT IN ('cancelled', 'failed')
+            AND o.date >= DATE_SUB(CURDATE(), INTERVAL 365 DAY)
             GROUP BY DATE(o.date)
             ORDER BY order_date ASC
         ";
@@ -159,7 +194,7 @@ class SellerAnalysisService {
             JOIN order_items oi ON p.id = oi.product_id
             JOIN orders o ON oi.order_id = o.id
             WHERE p.shop_id = ? 
-            AND o.status NOT IN ('cancelled', 'failed')
+            AND LOWER(o.status) NOT IN ('cancelled', 'failed')
             GROUP BY p.id, p.name
             ORDER BY total_quantity DESC
             LIMIT ?
@@ -245,7 +280,7 @@ class SellerAnalysisService {
                 'order_id' => (int)$row['order_id'],
                 'customer' => $row['customer_name'],
                 'date' => $row['date'],
-                'status' => $row['status'],
+                'status' => ucfirst($row['status']),
                 'total' => (float)$row['total']
             ];
         }
