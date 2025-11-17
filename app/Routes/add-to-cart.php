@@ -109,14 +109,13 @@ try {
         $updateStmt->execute([':quantity' => $newQuantity, ':id' => $existingItem['id']]);
     } else {
         // Insert new item with selected=0 by default (user must manually select)
-        $insertStmt = $pdo->prepare('INSERT INTO cart_items (cart_id, product_id, color, size, quantity, price, selected) VALUES (:cart_id, :product_id, :color, :size, :quantity, :price, 0)');
+        $insertStmt = $pdo->prepare('INSERT INTO cart_items (cart_id, product_id, color, size, quantity, selected) VALUES (:cart_id, :product_id, :color, :size, :quantity, 0)');
         $insertStmt->execute([
             ':cart_id' => $cart_id,
             ':product_id' => $product_id,
             ':color' => $color,
             ':size' => $size,
-            ':quantity' => $quantity,
-            ':price' => $price
+            ':quantity' => $quantity
         ]);
     }
 
