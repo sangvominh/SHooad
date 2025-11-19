@@ -183,6 +183,9 @@ class SellerController {
         }
 
         $data = $this->loadDashboardData();
+        $allColors = $this->productService->getAllColors();
+        $allSizes = $this->productService->getAllSizes();
+        $allCategories = $this->productService->getAllCategories();
         include __DIR__ . '/../Views/seller/pages/add-product.php';
     }
 
@@ -348,5 +351,21 @@ class SellerController {
         // Show reset password form
         $data = ['email' => $email];
         include __DIR__ . '/../Views/seller/reset-password.php';
+    }
+
+    public function checkSKU() {
+        AuthMiddleware::checkSellerAuth();
+        header('Content-Type: application/json');
+        
+        $sku = $_GET['sku'] ?? '';
+        
+        if (empty($sku)) {
+            echo json_encode(['exists' => false]);
+            exit;
+        }
+        
+        $result = $this->productService->checkSKUExists($sku);
+        echo json_encode($result);
+        exit;
     }
 }

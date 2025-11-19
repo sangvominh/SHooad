@@ -56,7 +56,6 @@ CREATE TABLE IF NOT EXISTS products (
     description TEXT,
     price DECIMAL(10,2),
     original_price DECIMAL(10,2),
-    stock INT,
     sold INT,
     status ENUM('active','paused','deleted') DEFAULT 'active',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

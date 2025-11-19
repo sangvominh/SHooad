@@ -76,12 +76,13 @@
                     <input type="number" name="variants[${variantIndex}][stock]" value="0" min="0" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-teal-600">
                 </div>
                 <div class="flex-1">
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Price (Optional)</label>
-                    <input type="number" name="variants[${variantIndex}][price]" step="0.01" min="0" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-teal-600" placeholder="Leave empty to use product price">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Price (Optional, VND)</label>
+                    <input type="number" name="variants[${variantIndex}][price]" step="1" min="0" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-teal-600" placeholder="Leave empty to use product price">
                 </div>
                 <div class="flex-1">
                     <label class="block text-sm font-medium text-gray-700 mb-1">SKU</label>
-                    <input type="text" name="variants[${variantIndex}][sku]" value="" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-teal-600">
+                    <input type="text" name="variants[${variantIndex}][sku]" value="" class="sku-input w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-teal-600" oninput="checkSKUUniqueness(this, '')">
+                    <div class="sku-error text-xs text-red-600 mt-1 hidden"></div>
                 </div>
                 <input type="hidden" name="variants[${variantIndex}][id]" value="">
                 <button type="button" onclick="removeVariant(this)" class="px-3 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600">Remove</button>
@@ -93,6 +94,33 @@
         function removeVariant(button) {
             if (confirm('Are you sure you want to remove this variant?')) {
                 button.closest('.variant-row').remove();
+            }
+        }
+
+        async function checkSKUUniqueness(input, currentSKU) {
+            const sku = input.value.trim();
+            const errorDiv = input.parentElement.querySelector('.sku-error');
+            
+            if (!sku || sku === currentSKU) {
+                errorDiv.classList.add('hidden');
+                input.classList.remove('border-red-500');
+                return;
+            }
+
+            try {
+                const response = await fetch('/SHooad/public/seller/check-sku?sku=' + encodeURIComponent(sku));
+                const data = await response.json();
+                
+                if (data.exists) {
+                    errorDiv.textContent = `SKU đã được dùng ở sản phẩm "${data.product_name}"`;
+                    errorDiv.classList.remove('hidden');
+                    input.classList.add('border-red-500');
+                } else {
+                    errorDiv.classList.add('hidden');
+                    input.classList.remove('border-red-500');
+                }
+            } catch (error) {
+                console.error('Error checking SKU:', error);
             }
         }
     </script>
@@ -181,12 +209,13 @@
                                         <input type="number" name="variants[<?php echo $index; ?>][stock]" value="<?php echo htmlspecialchars($variant['stock']); ?>" min="0" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-teal-600">
                                     </div>
                                     <div class="flex-1">
-                                        <label class="block text-sm font-medium text-gray-700 mb-1">Price (Optional)</label>
-                                        <input type="number" name="variants[<?php echo $index; ?>][price]" value="<?php echo htmlspecialchars($variant['price'] ?? ''); ?>" step="0.01" min="0" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-teal-600" placeholder="Leave empty to use product price">
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">Price (Optional, VND)</label>
+                                        <input type="number" name="variants[<?php echo $index; ?>][price]" value="<?php echo htmlspecialchars($variant['price'] ?? ''); ?>" step="1" min="0" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-teal-600" placeholder="Leave empty to use product price">
                                     </div>
                                     <div class="flex-1">
                                         <label class="block text-sm font-medium text-gray-700 mb-1">SKU</label>
-                                        <input type="text" name="variants[<?php echo $index; ?>][sku]" value="<?php echo htmlspecialchars($variant['sku']); ?>" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-teal-600">
+                                        <input type="text" name="variants[<?php echo $index; ?>][sku]" value="<?php echo htmlspecialchars($variant['sku']); ?>" class="sku-input w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-teal-600" oninput="checkSKUUniqueness(this, '<?php echo htmlspecialchars($variant['sku']); ?>')">
+                                        <div class="sku-error text-xs text-red-600 mt-1 hidden"></div>
                                     </div>
                                     <input type="hidden" name="variants[<?php echo $index; ?>][id]" value="<?php echo $variant['id']; ?>">
                                     <button type="button" onclick="removeVariant(this)" class="px-3 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600">Remove</button>
@@ -206,16 +235,24 @@
                     <div>
                         <label for="price" class="block text-sm font-medium text-gray-900 mb-2">Price</label>
                         <div class="relative">
-                            <span class="absolute left-4 top-2.5 text-gray-600">$</span>
-                            <input type="number" id="price" name="price" value="<?php echo htmlspecialchars($product['price'] ?? '0'); ?>" step="0.01" min="0" class="w-full pl-8 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-teal-600">
+                            <span class="absolute left-4 top-2.5 text-gray-600">₫</span>
+                            <!-- <input type="number" id="price" name="price" value="<?php echo htmlspecialchars($product['price'] ?? '0'); ?>" step="0.01" min="0" class="w-full pl-8 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-teal-600"> -->
+                             <input type="number" id="price" name="price"
+                                value="<?php echo rtrim(rtrim((string)($product['price'] ?? '0'), '0'), '.'); ?>"
+                                step="0.01" min="0"
+                                class="w-full pl-8 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-teal-600">
                         </div>
                     </div>
 
                     <div>
                         <label for="original_price" class="block text-sm font-medium text-gray-900 mb-2">Original Price</label>
                         <div class="relative">
-                            <span class="absolute left-4 top-2.5 text-gray-600">$</span>
-                            <input type="number" id="original_price" name="original_price" value="<?php echo htmlspecialchars($product['original_price'] ?? '0'); ?>" step="0.01" min="0" class="w-full pl-8 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-teal-600">
+                            <span class="absolute left-4 top-2.5 text-gray-600">₫</span>
+                            <!-- <input type="number" id="original_price" name="original_price" value="<?php echo htmlspecialchars($product['original_price'] ?? '0'); ?>" step="0.01" min="0" class="w-full pl-8 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-teal-600"> -->
+                             <input type="number" id="original_price" name="original_price"
+                                value="<?php echo rtrim(rtrim((string)($product['original_price'] ?? '0'), '0'), '.'); ?>"
+                                step="0.01" min="0"
+                                class="w-full pl-8 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-teal-600">
                         </div>
                     </div>
                 </div>

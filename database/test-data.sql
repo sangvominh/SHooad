@@ -71,40 +71,40 @@ INSERT INTO categories (name) VALUES
 -- ============================
 -- 5. PRODUCTS (20 sản phẩm - chia cho 2 shop)
 -- ============================
-INSERT INTO products (shop_id, category_id, name, brand, description, price, original_price, stock, sold, status) VALUES
+INSERT INTO products (shop_id, category_id, name, brand, description, price, original_price, sold, status) VALUES
 -- SHOP 1: Fashion House (10 sản phẩm - Nam)
 -- Áo Nam
-(1, 1, 'Áo Thun Nam Basic', 'ZARA', 'Áo thun cotton 100% thoáng mát', 199000, 299000, 0, 85, 'active'),
-(1, 1, 'Áo Sơ Mi Nam Công Sở', 'H&M', 'Áo sơ mi cao cấp, form slim fit', 350000, 500000, 0, 120, 'active'),
-(1, 1, 'Áo Polo Nam', 'UNIQLO', 'Áo polo có cổ, chất liệu pique', 250000, 350000, 0, 95, 'active'),
-(1, 1, 'Áo Khoác Jean Nam', 'LEVI\'S', 'Áo khoác jean phong cách Hàn Quốc', 450000, 650000, 60, 45, 'active'),
-(1, 1, 'Áo Hoodie Nam', 'ADIDAS', 'Áo hoodie có nón, chất nỉ dày', 380000, 550000, 90, 110, 'active'),
+(1, 1, 'Áo Thun Nam Basic', 'ZARA', 'Áo thun cotton 100% thoáng mát', 199000, 299000, 85, 'active'),
+(1, 1, 'Áo Sơ Mi Nam Công Sở', 'H&M', 'Áo sơ mi cao cấp, form slim fit', 350000, 500000, 120, 'active'),
+(1, 1, 'Áo Polo Nam', 'UNIQLO', 'Áo polo có cổ, chất liệu pique', 250000, 350000, 95, 'active'),
+(1, 1, 'Áo Khoác Jean Nam', 'LEVI\'S', 'Áo khoác jean phong cách Hàn Quốc', 450000, 650000, 45, 'active'),
+(1, 1, 'Áo Hoodie Nam', 'ADIDAS', 'Áo hoodie có nón, chất nỉ dày', 380000, 550000, 110, 'active'),
 
 -- Quần Nam
-(1, 2, 'Quần Jean Nam Slim Fit', 'LEVI\'S', 'Quần jean co giãn nhẹ, form slim', 400000, 600000, 0, 88, 'active'),
-(1, 2, 'Quần Kaki Nam', 'ZARA', 'Quần kaki công sở, chống nhăn', 320000, 450000, 95, 72, 'active'),
-(1, 2, 'Quần Short Nam', 'H&M', 'Quần short thể thao, thoáng mát', 180000, 280000, 110, 135, 'active'),
-(1, 2, 'Quần Jogger Nam', 'NIKE', 'Quần jogger thể thao năng động', 350000, 500000, 75, 68, 'active'),
+(1, 2, 'Quần Jean Nam Slim Fit', 'LEVI\'S', 'Quần jean co giãn nhẹ, form slim', 400000, 600000, 88, 'active'),
+(1, 2, 'Quần Kaki Nam', 'ZARA', 'Quần kaki công sở, chống nhăn', 320000, 450000, 72, 'active'),
+(1, 2, 'Quần Short Nam', 'H&M', 'Quần short thể thao, thoáng mát', 180000, 280000, 135, 'active'),
+(1, 2, 'Quần Jogger Nam', 'NIKE', 'Quần jogger thể thao năng động', 350000, 500000, 68, 'active'),
 
 -- Phụ Kiện
-(1, 5, 'Nón Snapback', 'MLB', 'Nón lưỡi trai phong cách thể thao', 180000, 280000, 120, 88, 'active'),
+(1, 5, 'Nón Snapback', 'MLB', 'Nón lưỡi trai phong cách thể thao', 180000, 280000, 88, 'active'),
 
 -- SHOP 2: Trendy Store (10 sản phẩm - Nữ)
 -- Áo Nữ
-(2, 3, 'Áo Thun Nữ Form Rộng', 'UNIQLO', 'Áo thun oversize phong cách Hàn', 199000, 299000, 0, 165, 'active'),
-(2, 3, 'Áo Kiểu Nữ Công Sở', 'MANGO', 'Áo kiểu sơ mi nữ tính, thanh lịch', 280000, 400000, 85, 92, 'active'),
-(2, 3, 'Áo Croptop Nữ', 'ZARA', 'Áo croptop trẻ trung năng động', 150000, 250000, 0, 145, 'active'),
-(2, 3, 'Áo Khoác Cardigan Nữ', 'H&M', 'Áo khoác len nữ mỏng nhẹ', 320000, 480000, 70, 55, 'active'),
-(2, 3, 'Áo Blazer Nữ', 'ZARA', 'Áo vest nữ công sở cao cấp', 550000, 800000, 50, 38, 'active'),
+(2, 3, 'Áo Thun Nữ Form Rộng', 'UNIQLO', 'Áo thun oversize phong cách Hàn', 199000, 299000, 165, 'active'),
+(2, 3, 'Áo Kiểu Nữ Công Sở', 'MANGO', 'Áo kiểu sơ mi nữ tính, thanh lịch', 280000, 400000, 92, 'active'),
+(2, 3, 'Áo Croptop Nữ', 'ZARA', 'Áo croptop trẻ trung năng động', 150000, 250000, 145, 'active'),
+(2, 3, 'Áo Khoác Cardigan Nữ', 'H&M', 'Áo khoác len nữ mỏng nhẹ', 320000, 480000, 55, 'active'),
+(2, 3, 'Áo Blazer Nữ', 'ZARA', 'Áo vest nữ công sở cao cấp', 550000, 800000, 38, 'active'),
 
 -- Quần Nữ
-(2, 4, 'Quần Jean Nữ Skinny', 'LEVI\'S', 'Quần jean nữ ôm dáng chuẩn', 380000, 550000, 105, 98, 'active'),
-(2, 4, 'Quần Ống Rộng Nữ', 'MANGO', 'Quần ống rộng thời trang Hàn Quốc', 350000, 500000, 80, 87, 'active'),
-(2, 4, 'Quần Short Jean Nữ', 'H&M', 'Quần short jean trẻ trung', 220000, 320000, 95, 112, 'active'),
-(2, 4, 'Váy Jean Nữ', 'ZARA', 'Váy jean chữ A xinh xắn', 280000, 400000, 65, 73, 'active'),
+(2, 4, 'Quần Jean Nữ Skinny', 'LEVI\'S', 'Quần jean nữ ôm dáng chuẩn', 380000, 550000, 98, 'active'),
+(2, 4, 'Quần Ống Rộng Nữ', 'MANGO', 'Quần ống rộng thời trang Hàn Quốc', 350000, 500000, 87, 'active'),
+(2, 4, 'Quần Short Jean Nữ', 'H&M', 'Quần short jean trẻ trung', 220000, 320000, 112, 'active'),
+(2, 4, 'Váy Jean Nữ', 'ZARA', 'Váy jean chữ A xinh xắn', 280000, 400000, 73, 'active'),
 
 -- Phụ Kiện
-(2, 5, 'Túi Tote Canvas', 'MUJI', 'Túi vải canvas đa năng', 120000, 200000, 150, 132, 'active');
+(2, 5, 'Túi Tote Canvas', 'MUJI', 'Túi vải canvas đa năng', 120000, 200000, 132, 'active');
 
 -- ============================
 -- 6. PRODUCT VARIANTS (biến thể màu-size với SKU)
