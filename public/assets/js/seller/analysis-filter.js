@@ -6,6 +6,11 @@ let topProductsOrdersChart = null;
 let topProductsChart = null;
 let categoryChart = null;
 
+// Helper function to format VND currency
+function formatVND(amount) {
+    return amount.toLocaleString('vi-VN') + ' ₫';
+}
+
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', function() {
     console.log('DOM loaded, initializing analysis dashboard...');
@@ -30,10 +35,45 @@ document.addEventListener('DOMContentLoaded', function() {
     } else {
         console.error('Type selector not found!');
     }
+    
+    // Setup date range selector
+    const dateSelector = document.getElementById('dateRangeSelector');
+    if (dateSelector) {
+        dateSelector.addEventListener('change', function() {
+            const selectedDays = this.value;
+            console.log('Changing date range to:', selectedDays, 'days');
+            
+            // Update chart title
+            updateChartTitle(selectedDays);
+            
+            // Show loading state
+            showLoadingState();
+            
+            // Fetch new data from server
+            const url = `/SHooad/public/seller/analysis?type=${currentAnalysisType}&days=${selectedDays}&ajax=1`;
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Received filtered data:', data);
+                    if (currentAnalysisType === 'orders') {
+                        renderOrdersAnalysis(data);
+                    } else {
+                        renderProductsAnalysis(data);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching analysis data:', error);
+                    alert('Error loading analysis data. Please try again.');
+                })
+                .finally(() => {
+                    hideLoadingState();
+                });
+        });
+    }
 });
 
-function loadAnalysisData(type) {
-    console.log('Loading analysis data for type:', type);
+function loadAnalysisData(type, days = 30) {
+    console.log('Loading analysis data for type:', type, 'days:', days);
     console.log('Data received:', initialAnalysisData);
     
     try {
@@ -72,7 +112,7 @@ function renderOrdersAnalysis(data) {
     
     // Update stats cards
     document.getElementById('totalOrders').textContent = data.stats.total_orders.toLocaleString();
-    document.getElementById('totalRevenue').textContent = '$' + data.stats.total_revenue.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+    document.getElementById('totalRevenue').textContent = formatVND(data.stats.total_revenue);
     document.getElementById('completedOrders').textContent = data.stats.by_status.Completed.toLocaleString();
     document.getElementById('pendingOrders').textContent = data.stats.by_status.Pending.toLocaleString();
     
@@ -109,7 +149,7 @@ function renderProductsAnalysis(data) {
     
     // Update stats cards
     document.getElementById('totalProducts').textContent = data.stats.total_products.toLocaleString();
-    document.getElementById('productRevenue').textContent = '$' + data.stats.total_revenue.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+    document.getElementById('productRevenue').textContent = formatVND(data.stats.total_revenue);
     document.getElementById('lowStock').textContent = data.stats.low_stock.toLocaleString();
     
     // Render charts
@@ -163,7 +203,7 @@ function renderRevenueByDateChart(data) {
                 tooltip: {
                     callbacks: {
                         label: function(context) {
-                            return 'Revenue: $' + context.parsed.y.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                            return 'Revenue: ' + formatVND(context.parsed.y);
                         }
                     }
                 }
@@ -173,7 +213,7 @@ function renderRevenueByDateChart(data) {
                     beginAtZero: true,
                     ticks: {
                         callback: function(value) {
-                            return '$' + value.toLocaleString();
+                            return formatVND(value);
                         }
                     }
                 }
@@ -337,7 +377,7 @@ function renderRevenueByCategoryChart(data) {
                             const value = context.parsed || 0;
                             const total = context.dataset.data.reduce((a, b) => a + b, 0);
                             const percentage = ((value / total) * 100).toFixed(1);
-                            return label + ': $' + value.toLocaleString('en-US', {minimumFractionDigits: 2}) + ' (' + percentage + '%)';
+                            return label + ': ' + formatVND(value) + ' (' + percentage + '%)';
                         }
                     }
                 }
@@ -388,7 +428,7 @@ function renderOrdersTable(orders) {
             { 
                 data: 'total',
                 render: function(data) {
-                    return '$' + parseFloat(data).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                    return formatVND(parseFloat(data));
                 }
             }
         ],
@@ -458,4 +498,37 @@ function renderProductsTable(products) {
             infoFiltered: "(filtered from _MAX_ total products)"
         }
     });
+}
+
+// Loading state helpers
+function showLoadingState() {
+    const overlay = document.createElement('div');
+    overlay.id = 'loadingOverlay';
+    overlay.className = 'fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-50';
+    overlay.innerHTML = '<div class="bg-white rounded-lg p-6 flex items-center gap-3"><div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div><span class="text-gray-700 font-medium">Loading data...</span></div>';
+    document.body.appendChild(overlay);
+}
+
+function hideLoadingState() {
+    const overlay = document.getElementById('loadingOverlay');
+    if (overlay) {
+        overlay.remove();
+    }
+}
+
+// Update chart title based on selected time period
+function updateChartTitle(days) {
+    const titles = {
+        '7': 'Last 7 days',
+        '30': 'Last 30 days',
+        '90': 'Last 90 days',
+        '365': 'Last year',
+        'all': 'All time'
+    };
+    const periodText = titles[days] || 'Last 30 days';
+    
+    const chartTitle = document.getElementById('revenueChartTitle');
+    if (chartTitle) {
+        chartTitle.textContent = `Revenue by Date (${periodText})`;
+    }
 }

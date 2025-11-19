@@ -231,12 +231,18 @@ class SellerController {
         
         $session = $this->getSessionData();
         $type = $_GET['type'] ?? 'products'; // Default to products
+        $days = $_GET['days'] ?? 30; // Default to 30 days
+        
+        // Convert 'all' to string, otherwise ensure it's an integer
+        if ($days !== 'all') {
+            $days = (int)$days;
+        }
         
         // Get analysis data based on type
         if ($type === 'products') {
-            $analysisData = $this->analysisService->getProductsAnalysis($session['shop_id']);
+            $analysisData = $this->analysisService->getProductsAnalysis($session['shop_id'], $days);
         } else {
-            $analysisData = $this->analysisService->getOrdersAnalysis($session['shop_id']);
+            $analysisData = $this->analysisService->getOrdersAnalysis($session['shop_id'], $days);
         }
         
         // Load dashboard data for sidebar
