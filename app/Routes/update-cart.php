@@ -34,13 +34,40 @@ try {
         exit();
     }
 
-    // If quantity provided, validate against product stock
+    // If quantity provided, validate against product variant stock
     if ($quantity !== null) {
-        $prodStmt = $pdo->prepare('SELECT stock FROM products WHERE id = :pid');
-        $prodStmt->execute([':pid' => $cartItem['product_id']]);
-        $prod = $prodStmt->fetch(PDO::FETCH_ASSOC);
-        $stock = $prod ? intval($prod['stock']) : 0;
         if ($quantity < 1) $quantity = 1;
+        
+        // Get the color and size from the cart item (use updated values if provided, otherwise use existing)
+        $checkColor = $color !== null ? $color : $cartItem['color'];
+        $checkSize = $size !== null ? $size : $cartItem['size'];
+        
+        // If we have variant info (color/size), check variant stock
+        if ($checkColor && $checkSize) {
+            $variantStmt = $pdo->prepare('
+                SELECT pv.stock 
+                FROM product_variants pv
+                JOIN colors c ON pv.color_id = c.id
+                JOIN sizes s ON pv.size_id = s.id
+                WHERE pv.product_id = :pid 
+                AND c.name = :color 
+                AND s.name = :size
+            ');
+            $variantStmt->execute([
+                ':pid' => $cartItem['product_id'], 
+                ':color' => $checkColor, 
+                ':size' => $checkSize
+            ]);
+            $variant = $variantStmt->fetch(PDO::FETCH_ASSOC);
+            $stock = $variant ? intval($variant['stock']) : 0;
+        } else {
+            // If no variant info, get total stock from all variants
+            $stockStmt = $pdo->prepare('SELECT COALESCE(SUM(stock), 0) as total_stock FROM product_variants WHERE product_id = :pid');
+            $stockStmt->execute([':pid' => $cartItem['product_id']]);
+            $stockRow = $stockStmt->fetch(PDO::FETCH_ASSOC);
+            $stock = $stockRow ? intval($stockRow['total_stock']) : 0;
+        }
+        
         if ($stock > 0 && $quantity > $stock) {
             http_response_code(400);
             echo json_encode(['success' => false, 'message' => 'Quantity exceeds stock', 'available' => $stock]);

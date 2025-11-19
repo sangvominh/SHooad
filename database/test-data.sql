@@ -306,7 +306,6 @@
 
     -- ===== 60 DAYS AGO - Good sales period =====
     (2, 18, '0989012346', '100 Lũy Bán Bích, Q11, TP.HCM', DATE_SUB(NOW(), INTERVAL 60 DAY), 'completed', 'online', 'paid'),
-    (1, 19, '0990123457', '105 Nguyễn Văn Cừ, Q5, TP.HCM', DATE_SUB(NOW(), INTERVAL 58 DAY), 'completed', 'cod', 'paid'),
     (2, 20, '0901234568', '110 Hùng Vương, Q5, TP.HCM', DATE_SUB(NOW(), INTERVAL 55 DAY), 'completed', 'online', 'paid'),
     (1, 21, '0912345680', '115 Hậu Giang, Q6, TP.HCM', DATE_SUB(NOW(), INTERVAL 52 DAY), 'completed', 'cod', 'paid'),
 
@@ -350,7 +349,6 @@
     -- ===== TODAY - Processing/Pending orders =====
     (1, 17, '0978901235', '95 Âu Cơ, Tân Phú, TP.HCM', NOW(), 'processing', 'online', 'paid'),
     (2, 18, '0989012346', '100 Lũy Bán Bích, Q11, TP.HCM', NOW(), 'processing', 'cod', 'pending'),
-    (1, 19, '0990123457', '105 Nguyễn Văn Cừ, Q5, TP.HCM', NOW(), 'pending', 'online', 'paid'),
     (2, 20, '0901234568', '110 Hùng Vương, Q5, TP.HCM', NOW(), 'pending', 'cod', 'pending'),
 
     -- ===== CANCELLED/FAILED ORDERS (Various dates) =====
@@ -545,7 +543,16 @@
 
     -- Order 48: 2 sản phẩm - Thất bại
     (48, 14, 1, 550000, 'Áo Blazer Nữ', 'Be', 'L'),
-    (48, 16, 1, 350000, 'Quần Ống Rộng Nữ', 'Be', 'L');
+    (48, 16, 1, 350000, 'Quần Ống Rộng Nữ', 'Be', 'L'),
+
+    -- Order 49: 2 sản phẩm - Đã hoàn thành
+    (49, 5, 1, 380000, 'Áo Hoodie Nam', 'Đen', 'L'),
+    (49, 9, 1, 350000, 'Quần Jogger Nam', 'Đen', 'M'),
+
+    -- Order 50: 3 sản phẩm - Đã hoàn thành
+    (50, 11, 2, 280000, 'Áo Kiểu Nữ Công Sở', 'Hồng', 'S'),
+    (50, 17, 1, 220000, 'Quần Short Jean Nữ', 'Xanh', 'L'),
+    (50, 20, 1, 120000, 'Túi Tote Canvas', 'Đen', 'Freesize');
 
     -- ============================
     -- 11. CARTS (Giỏ hàng của một số khách)
@@ -555,42 +562,179 @@
 
     -- ============================
     -- PRODUCT VARIANTS (với giá đa dạng để test)
+    -- Lưu ý: Giữ lại product 10 (Nón) và 20 (Túi) không có variants để test trường hợp đặc biệt
     -- ============================
     INSERT INTO product_variants (product_id, color_id, size_id, sku, stock, price) VALUES
-    -- Áo Thun Nam Basic (product_id=1, base_price=199000)
-    (1, 1, 2, 'ATN-BLK-S', 25, 180000),  -- Đen-S: giá thấp hơn
-    (1, 1, 3, 'ATN-BLK-M', 30, 199000),  -- Đen-M: giá gốc
-    (1, 1, 4, 'ATN-BLK-L', 35, 220000),  -- Đen-L: giá cao hơn
-    (1, 2, 3, 'ATN-WHT-M', 20, 210000),  -- Trắng-M: giá cao hơn
-    (1, 2, 4, 'ATN-WHT-L', 15, NULL),    -- Trắng-L: không có giá riêng (dùng giá gốc)
+    -- Product 1: Áo Thun Nam Basic (base_price=199000)
+    (1, 1, 2, 'P1-BLK-S', 25, 180000),   -- Đen-S
+    (1, 1, 3, 'P1-BLK-M', 30, 199000),   -- Đen-M
+    (1, 1, 4, 'P1-BLK-L', 35, 199000),   -- Đen-L
+    (1, 1, 5, 'P1-BLK-XL', 20, 220000),  -- Đen-XL
+    (1, 2, 2, 'P1-WHT-S', 22, 180000),   -- Trắng-S
+    (1, 2, 3, 'P1-WHT-M', 28, 199000),   -- Trắng-M
+    (1, 2, 4, 'P1-WHT-L', 25, 199000),   -- Trắng-L
+    (1, 12, 3, 'P1-GRY-M', 18, 210000),  -- Xám-M
+    (1, 12, 4, 'P1-GRY-L', 15, 210000),  -- Xám-L
+    (1, 5, 3, 'P1-NVY-M', 12, NULL),     -- Xanh Navy-M (giá gốc)
 
-    -- Áo Sơ Mi Nam Công Sở (product_id=2, base_price=350000)
-    (2, 1, 3, 'ASM-BLK-M', 15, 320000),  -- Đen-M: giá thấp hơn
-    (2, 1, 4, 'ASM-BLK-L', 20, 350000),  -- Đen-L: giá gốc
-    (2, 1, 5, 'ASM-BLK-XL', 10, 380000), -- Đen-XL: giá cao hơn
-    (2, 4, 4, 'ASM-BLU-L', 12, 360000),  -- Xanh Dương-L: giá trung bình
-    (2, 4, 5, 'ASM-BLU-XL', 8, NULL),    -- Xanh Dương-XL: không có giá riêng
+    -- Product 2: Áo Sơ Mi Nam Công Sở (base_price=350000)
+    (2, 2, 3, 'P2-WHT-M', 20, 350000),   -- Trắng-M
+    (2, 2, 4, 'P2-WHT-L', 25, 350000),   -- Trắng-L
+    (2, 2, 5, 'P2-WHT-XL', 15, 380000),  -- Trắng-XL
+    (2, 1, 3, 'P2-BLK-M', 18, 350000),   -- Đen-M
+    (2, 1, 4, 'P2-BLK-L', 22, 350000),   -- Đen-L
+    (2, 4, 4, 'P2-BLU-L', 12, 360000),   -- Xanh Dương-L
+    (2, 16, 4, 'P2-SBL-L', 10, NULL),    -- Xanh Nhạt-L (giá gốc)
 
-    -- Áo Thun Nữ Form Rộng (product_id=11, base_price=199000)
-    (11, 9, 1, 'ATNF-PNK-XS', 20, 170000), -- Hồng-XS: giá thấp hơn
-    (11, 9, 2, 'ATNF-PNK-S', 25, 199000),  -- Hồng-S: giá gốc
-    (11, 9, 3, 'ATNF-PNK-M', 30, 210000),  -- Hồng-M: giá cao hơn
-    (11, 2, 2, 'ATNF-WHT-S', 18, 185000),  -- Trắng-S: giá trung bình
-    (11, 2, 3, 'ATNF-WHT-M', 22, NULL),    -- Trắng-M: không có giá riêng
+    -- Product 3: Áo Polo Nam (base_price=250000)
+    (3, 1, 2, 'P3-BLK-S', 18, 240000),   -- Đen-S
+    (3, 1, 3, 'P3-BLK-M', 25, 250000),   -- Đen-M
+    (3, 1, 4, 'P3-BLK-L', 22, 250000),   -- Đen-L
+    (3, 1, 5, 'P3-BLK-XL', 12, 270000),  -- Đen-XL
+    (3, 2, 3, 'P3-WHT-M', 20, 260000),   -- Trắng-M
+    (3, 2, 4, 'P3-WHT-L', 15, 260000),   -- Trắng-L
+    (3, 4, 3, 'P3-BLU-M', 14, 255000),   -- Xanh-M
+    (3, 3, 4, 'P3-RED-L', 10, NULL),     -- Đỏ-L (giá gốc)
 
-    -- Áo Polo Nam (product_id=3, base_price=250000) - chỉ một vài variant
-    (3, 1, 3, 'APL-BLK-M', 15, 240000),  -- Đen-M: giá thấp hơn một chút
-    (3, 2, 3, 'APL-WHT-M', 12, 260000),  -- Trắng-M: giá cao hơn một chút
+    -- Product 4: Áo Khoác Jean Nam (base_price=450000)
+    (4, 17, 3, 'P4-DBL-M', 15, 450000),  -- Xanh Đậm-M
+    (4, 17, 4, 'P4-DBL-L', 20, 450000),  -- Xanh Đậm-L
+    (4, 17, 5, 'P4-DBL-XL', 12, 480000), -- Xanh Đậm-XL
+    (4, 16, 4, 'P4-SBL-L', 10, 460000),  -- Xanh Nhạt-L
+    (4, 16, 5, 'P4-SBL-XL', 8, 480000),  -- Xanh Nhạt-XL
+    (4, 1, 3, 'P4-BLK-M', 10, NULL),     -- Đen-M (giá gốc)
 
-    -- Quần Jean Nam (product_id=6, base_price=400000) - chỉ một vài variant
-    (6, 1, 11, 'QJN-BLK-30', 18, 380000), -- Đen-30: giá thấp hơn
-    (6, 1, 12, 'QJN-BLK-31', 20, 400000), -- Đen-31: giá gốc
-    (6, 1, 13, 'QJN-BLK-32', 15, 420000), -- Đen-32: giá cao hơn
+    -- Product 5: Áo Hoodie Nam (base_price=380000)
+    (5, 1, 3, 'P5-BLK-M', 25, 380000),   -- Đen-M
+    (5, 1, 4, 'P5-BLK-L', 30, 380000),   -- Đen-L
+    (5, 1, 5, 'P5-BLK-XL', 22, 400000),  -- Đen-XL
+    (5, 12, 3, 'P5-GRY-M', 20, 380000),  -- Xám-M
+    (5, 12, 4, 'P5-GRY-L', 25, 380000),  -- Xám-L
+    (5, 5, 4, 'P5-NVY-L', 18, 390000),   -- Xanh Navy-L
+    (5, 14, 3, 'P5-GRN-M', 12, NULL),    -- Xanh Rêu-M (giá gốc)
 
-    -- Áo Croptop Nữ (product_id=13, base_price=150000) - giá thấp
-    (13, 1, 2, 'ACT-BLK-S', 15, 140000),  -- Đen-S: giá thấp hơn
-    (13, 9, 2, 'ACT-PNK-S', 12, 160000),  -- Hồng-S: giá cao hơn
-    (13, 2, 2, 'ACT-WHT-S', 10, NULL);    -- Trắng-S: không có giá riêng
+    -- Product 6: Quần Jean Nam Slim Fit (base_price=400000)
+    (6, 17, 10, 'P6-DBL-29', 15, 390000), -- Xanh Đậm-29
+    (6, 17, 11, 'P6-DBL-30', 20, 400000), -- Xanh Đậm-30
+    (6, 17, 12, 'P6-DBL-31', 25, 400000), -- Xanh Đậm-31
+    (6, 17, 13, 'P6-DBL-32', 18, 420000), -- Xanh Đậm-32
+    (6, 1, 11, 'P6-BLK-30', 20, 400000),  -- Đen-30
+    (6, 1, 12, 'P6-BLK-31', 22, 400000),  -- Đen-31
+    (6, 16, 12, 'P6-SBL-31', 12, 410000), -- Xanh Nhạt-31
+    (6, 16, 13, 'P6-SBL-32', 10, NULL),   -- Xanh Nhạt-32 (giá gốc)
+
+    -- Product 7: Quần Kaki Nam (base_price=320000)
+    (7, 13, 10, 'P7-BEG-29', 15, 320000), -- Be-29
+    (7, 13, 11, 'P7-BEG-30', 22, 320000), -- Be-30
+    (7, 13, 12, 'P7-BEG-31', 20, 320000), -- Be-31
+    (7, 13, 13, 'P7-BEG-32', 15, 340000), -- Be-32
+    (7, 1, 11, 'P7-BLK-30', 18, 320000),  -- Đen-30
+    (7, 1, 12, 'P7-BLK-31', 20, 320000),  -- Đen-31
+    (7, 12, 11, 'P7-GRY-30', 12, 330000), -- Xám-30
+    (7, 5, 12, 'P7-NVY-31', 10, NULL),    -- Xanh Navy-31 (giá gốc)
+
+    -- Product 8: Quần Short Nam (base_price=180000)
+    (8, 1, 3, 'P8-BLK-M', 30, 180000),   -- Đen-M
+    (8, 1, 4, 'P8-BLK-L', 35, 180000),   -- Đen-L
+    (8, 1, 5, 'P8-BLK-XL', 25, 190000),  -- Đen-XL
+    (8, 12, 3, 'P8-GRY-M', 28, 180000),  -- Xám-M
+    (8, 12, 4, 'P8-GRY-L', 30, 180000),  -- Xám-L
+    (8, 4, 4, 'P8-BLU-L', 20, NULL),     -- Xanh-L (giá gốc)
+
+    -- Product 9: Quần Jogger Nam (base_price=350000)
+    (9, 1, 3, 'P9-BLK-M', 20, 350000),   -- Đen-M
+    (9, 1, 4, 'P9-BLK-L', 25, 350000),   -- Đen-L
+    (9, 1, 5, 'P9-BLK-XL', 18, 370000),  -- Đen-XL
+    (9, 12, 3, 'P9-GRY-M', 18, 350000),  -- Xám-M
+    (9, 12, 4, 'P9-GRY-L', 22, 350000),  -- Xám-L
+    (9, 14, 4, 'P9-GRN-L', 12, NULL),    -- Xanh Rêu-L (giá gốc)
+
+    -- Product 10: Nón Snapback - KHÔNG CÓ VARIANTS (để test)
+
+    -- Product 11: Áo Thun Nữ Form Rộng (base_price=199000)
+    (11, 2, 1, 'P11-WHT-XS', 20, 185000), -- Trắng-XS
+    (11, 2, 2, 'P11-WHT-S', 30, 199000),  -- Trắng-S
+    (11, 2, 3, 'P11-WHT-M', 35, 199000),  -- Trắng-M
+    (11, 2, 4, 'P11-WHT-L', 25, 210000),  -- Trắng-L
+    (11, 1, 2, 'P11-BLK-S', 28, 199000),  -- Đen-S
+    (11, 1, 3, 'P11-BLK-M', 32, 199000),  -- Đen-M
+    (11, 1, 5, 'P11-BLK-XL', 20, 215000), -- Đen-XL
+    (11, 9, 2, 'P11-PNK-S', 25, 205000),  -- Hồng-S
+    (11, 9, 3, 'P11-PNK-M', 28, 205000),  -- Hồng-M
+    (11, 9, 4, 'P11-PNK-L', 22, 215000),  -- Hồng-L
+    (11, 13, 2, 'P11-BEG-S', 18, 199000), -- Be-S
+    (11, 15, 4, 'P11-LPN-L', 15, NULL),   -- Hồng Nhạt-L (giá gốc)
+
+    -- Product 12: Áo Kiểu Nữ Công Sở (base_price=280000)
+    (12, 2, 2, 'P12-WHT-S', 20, 280000),  -- Trắng-S
+    (12, 2, 3, 'P12-WHT-M', 25, 280000),  -- Trắng-M
+    (12, 2, 4, 'P12-WHT-L', 18, 290000),  -- Trắng-L
+    (12, 15, 2, 'P12-LPN-S', 18, 285000), -- Hồng Nhạt-S
+    (12, 15, 3, 'P12-LPN-M', 22, 285000), -- Hồng Nhạt-M
+    (12, 15, 4, 'P12-LPN-L', 15, 295000), -- Hồng Nhạt-L
+    (12, 16, 3, 'P12-SBL-M', 12, NULL),   -- Xanh Pastel-M (giá gốc)
+
+    -- Product 13: Áo Croptop Nữ (base_price=150000)
+    (13, 2, 1, 'P13-WHT-XS', 18, 145000), -- Trắng-XS
+    (13, 2, 2, 'P13-WHT-S', 25, 150000),  -- Trắng-S
+    (13, 2, 3, 'P13-WHT-M', 22, 150000),  -- Trắng-M
+    (13, 1, 2, 'P13-BLK-S', 20, 150000),  -- Đen-S
+    (13, 1, 3, 'P13-BLK-M', 18, 150000),  -- Đen-M
+    (13, 9, 2, 'P13-PNK-S', 15, 160000),  -- Hồng-S
+    (13, 9, 4, 'P13-PNK-L', 12, NULL),    -- Hồng-L (giá gốc)
+
+    -- Product 14: Áo Khoác Cardigan Nữ (base_price=320000)
+    (14, 13, 2, 'P14-BEG-S', 15, 320000), -- Be-S (Freesize đặc biệt)
+    (14, 13, 3, 'P14-BEG-M', 18, 320000), -- Be-M (Freesize)
+    (14, 12, 2, 'P14-GRY-S', 12, 330000), -- Xám-S (Freesize)
+    (14, 12, 3, 'P14-GRY-M', 15, 330000), -- Xám-M (Freesize)
+    (14, 9, 2, 'P14-PNK-S', 10, NULL),    -- Hồng-S (giá gốc)
+
+    -- Product 15: Áo Blazer Nữ (base_price=550000)
+    (15, 1, 2, 'P15-BLK-S', 12, 550000),  -- Đen-S
+    (15, 1, 3, 'P15-BLK-M', 18, 550000),  -- Đen-M
+    (15, 1, 4, 'P15-BLK-L', 15, 580000),  -- Đen-L
+    (15, 12, 3, 'P15-GRY-M', 10, 560000), -- Xám-M
+    (15, 12, 4, 'P15-GRY-L', 8, 580000),  -- Xám-L
+    (15, 13, 3, 'P15-BEG-M', 6, NULL),    -- Be-M (giá gốc)
+
+    -- Product 16: Quần Jean Nữ Skinny (base_price=380000)
+    (16, 17, 8, 'P16-DBL-26', 15, 380000),  -- Xanh Đậm-26
+    (16, 17, 9, 'P16-DBL-27', 22, 380000),  -- Xanh Đậm-27
+    (16, 17, 10, 'P16-DBL-28', 20, 380000), -- Xanh Đậm-28
+    (16, 17, 11, 'P16-DBL-29', 18, 400000), -- Xanh Đậm-29
+    (16, 1, 9, 'P16-BLK-27', 20, 380000),   -- Đen-27
+    (16, 1, 10, 'P16-BLK-28', 18, 380000),  -- Đen-28
+    (16, 16, 9, 'P16-SBL-27', 12, 390000),  -- Xanh Nhạt-27
+    (16, 16, 10, 'P16-SBL-28', 10, NULL),   -- Xanh Nhạt-28 (giá gốc)
+
+    -- Product 17: Quần Ống Rộng Nữ (base_price=350000)
+    (17, 1, 2, 'P17-BLK-S', 20, 350000),  -- Đen-S
+    (17, 1, 3, 'P17-BLK-M', 25, 350000),  -- Đen-M
+    (17, 1, 4, 'P17-BLK-L', 18, 370000),  -- Đen-L
+    (17, 13, 2, 'P17-BEG-S', 15, 350000), -- Be-S
+    (17, 13, 3, 'P17-BEG-M', 20, 350000), -- Be-M
+    (17, 13, 4, 'P17-BEG-L', 12, 370000), -- Be-L
+    (17, 12, 3, 'P17-GRY-M', 15, 360000), -- Xám-M
+    (17, 12, 2, 'P17-GRY-S', 10, NULL),   -- Xám-S (giá gốc)
+
+    -- Product 18: Quần Short Jean Nữ (base_price=220000)
+    (18, 4, 2, 'P18-BLU-S', 22, 220000),  -- Xanh-S
+    (18, 4, 3, 'P18-BLU-M', 28, 220000),  -- Xanh-M
+    (18, 4, 4, 'P18-BLU-L', 20, 230000),  -- Xanh-L
+    (18, 1, 2, 'P18-BLK-S', 18, 220000),  -- Đen-S
+    (18, 1, 3, 'P18-BLK-M', 22, 220000),  -- Đen-M
+    (18, 1, 4, 'P18-BLK-L', 15, NULL),    -- Đen-L (giá gốc)
+
+    -- Product 19: Váy Jean Nữ (base_price=280000)
+    (19, 17, 2, 'P19-DBL-S', 18, 280000), -- Xanh Đậm-S
+    (19, 17, 3, 'P19-DBL-M', 25, 280000), -- Xanh Đậm-M
+    (19, 17, 4, 'P19-DBL-L', 20, 290000), -- Xanh Đậm-L
+    (19, 16, 2, 'P19-SBL-S', 15, 280000), -- Xanh Nhạt-S
+    (19, 16, 3, 'P19-SBL-M', 18, 280000), -- Xanh Nhạt-M
+    (19, 16, 4, 'P19-SBL-L', 12, NULL);   -- Xanh Nhạt-L (giá gốc)
+
+    -- Product 20: Túi Tote Canvas - KHÔNG CÓ VARIANTS (để test)
 
     -- ============================
     -- 12. CART ITEMS (Sản phẩm trong giỏ)

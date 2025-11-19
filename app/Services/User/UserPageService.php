@@ -403,7 +403,9 @@ class UserPageService {
             }
 
             // Get products
-                $sql = "SELECT p.id, p.name, p.price, p.original_price, p.stock, p.sold, p.brand, c.name AS category_name,
+                $sql = "SELECT p.id, p.name, p.price, p.original_price, 
+                    COALESCE((SELECT SUM(pv.stock) FROM product_variants pv WHERE pv.product_id = p.id), 0) as stock,
+                    p.sold, p.brand, c.name AS category_name,
                     (SELECT filename FROM product_images pi2 WHERE pi2.product_id = p.id ORDER BY pi2.id ASC LIMIT 1) AS image_file
                     FROM products p
                     LEFT JOIN categories c ON c.id = p.category_id
@@ -534,7 +536,9 @@ class UserPageService {
             $customerId = intval($_SESSION['customer_id']);
             $mysqli = new mysqli('localhost', 'root', '', 'SHooad');
             if (!$mysqli->connect_error) {
-                $sql = "SELECT ci.id AS cart_item_id, ci.product_id, ci.color, ci.size, ci.quantity, ci.selected, p.name, p.price, p.original_price, p.stock, pi.filename AS image_file
+                $sql = "SELECT ci.id AS cart_item_id, ci.product_id, ci.color, ci.size, ci.quantity, ci.selected, p.name, p.price, p.original_price, 
+                        COALESCE((SELECT SUM(pv.stock) FROM product_variants pv WHERE pv.product_id = p.id), 0) as stock,
+                        pi.filename AS image_file
                         FROM carts c
                         JOIN cart_items ci ON ci.cart_id = c.id
                         JOIN products p ON p.id = ci.product_id

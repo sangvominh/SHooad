@@ -143,27 +143,15 @@ class OrderService {
                         return false;
                     }
                     continue; // Move to next item
+                } else {
+                    error_log("Product {$productId} has no valid variant for deducting stock");
+                    return false;
                 }
             }
 
-            // Fallback: Deduct from main products table
-            $stmt = $db->prepare("SELECT stock FROM products WHERE id = ?");
-            $stmt->bind_param("i", $productId);
-            $stmt->execute();
-            $result = $stmt->get_result()->fetch_assoc();
-            
-            if (!$result || $result['stock'] < $quantity) {
-                error_log("Insufficient stock for product {$productId}. Required: {$quantity}, Available: " . ($result['stock'] ?? 0));
-                return false;
-            }
-
-            // Deduct stock from products table
-            $updateStmt = $db->prepare("UPDATE products SET stock = stock - ? WHERE id = ?");
-            $updateStmt->bind_param("ii", $quantity, $productId);
-            if (!$updateStmt->execute()) {
-                error_log("Failed to deduct stock for product {$productId}");
-                return false;
-            }
+            // If no variant information, cannot deduct stock
+            error_log("Cannot deduct stock for product {$productId} without variant information");
+            return false;
         }
 
         return true;
@@ -208,13 +196,10 @@ class OrderService {
                     $stmt->bind_param("iiii", $quantity, $productId, $colorId, $sizeId);
                     $stmt->execute();
                     continue; // Move to next item
+                } else {
+                    error_log("Cannot restore stock for product {$productId} without variant information");
                 }
             }
-
-            // Fallback: Restore to main products table
-            $stmt = $db->prepare("UPDATE products SET stock = stock + ? WHERE id = ?");
-            $stmt->bind_param("ii", $quantity, $productId);
-            $stmt->execute();
         }
 
         return true;
