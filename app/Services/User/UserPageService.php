@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . '/../ProductService.php';
+require_once __DIR__ . '/../../Core/Database.php';
 
 class UserPageService {
     private $productService;
@@ -16,25 +17,24 @@ class UserPageService {
     }
 
     public function getNavigationData(): array {
-        $mysqli = new mysqli('localhost', 'root', '', 'SHooad');
+        $db = (new Database())->getConnection();
         $cats = [];
         $brands = [];
         
-        if (!$mysqli->connect_error) {
+        if (!$db->connect_error) {
             // Lấy tất cả categories
-            $cres = $mysqli->query("SELECT id, name FROM categories ORDER BY name ASC");
+            $cres = $db->query("SELECT id, name FROM categories ORDER BY name ASC");
             if ($cres) {
                 while ($r = $cres->fetch_assoc()) $cats[] = $r;
                 $cres->free();
             }
 
             // Lấy tất cả brands
-            $bres = $mysqli->query("SELECT DISTINCT brand AS name FROM products WHERE brand IS NOT NULL AND brand != '' ORDER BY brand ASC");
+            $bres = $db->query("SELECT DISTINCT brand AS name FROM products WHERE brand IS NOT NULL AND brand != '' ORDER BY brand ASC");
             if ($bres) {
                 while ($r = $bres->fetch_assoc()) $brands[] = $r;
                 $bres->free();
             }
-            $mysqli->close();
         }
         
         return [
@@ -51,22 +51,22 @@ class UserPageService {
         if ($isLoggedIn) {
             $customerId = intval($_SESSION['customer_id']);
             if ($customerId) {
-                $mysqli = new mysqli('localhost', 'root', '', 'SHooad');
-                if (!$mysqli->connect_error) {
+                $db = (new Database())->getConnection();
+                if (!$db->connect_error) {
                     // Get customer name
-                    $customerResult = $mysqli->query("SELECT name FROM customers WHERE id = " . $customerId);
+                    $customerResult = $db->query("SELECT name FROM customers WHERE id = " . $customerId);
                     if ($customerResult && $customerResult->num_rows > 0) {
                         $customerRow = $customerResult->fetch_assoc();
                         $customerName = $customerRow['name'];
                         $customerResult->free();
                     }
                     
-                    $cartResult = $mysqli->query("SELECT id FROM carts WHERE customer_id = " . $customerId);
+                    $cartResult = $db->query("SELECT id FROM carts WHERE customer_id = " . $customerId);
                     if ($cartResult && $cartResult->num_rows > 0) {
                         $cartRow = $cartResult->fetch_assoc();
                         $cartId = $cartRow['id'];
                         // Count number of distinct items, not total quantity
-                        $result = $mysqli->query("SELECT COUNT(*) AS total FROM cart_items WHERE cart_id = " . intval($cartId));
+                        $result = $db->query("SELECT COUNT(*) AS total FROM cart_items WHERE cart_id = " . intval($cartId));
                         if ($result) {
                             $row = $result->fetch_assoc();
                             $cartCount = intval($row['total']);
@@ -74,7 +74,6 @@ class UserPageService {
                         $result->free();
                         $cartResult->free();
                     }
-                    $mysqli->close();
                 }
             }
         }
@@ -89,8 +88,7 @@ class UserPageService {
     }
 
     public function getProductDetailData(int $productId): ?array {
-        $pdo = new PDO('mysql:host=localhost;dbname=SHooad;charset=utf8', 'root', '');
-        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        $pdo = (new Database())->getPDO();
 
         $sql = "SELECT p.*, 
                     sh.name as shop_name, 
@@ -172,7 +170,7 @@ class UserPageService {
      * Get product colors from database
      */
     private function getProductColorsFromDB(int $productId): array {
-        $pdo = new PDO('mysql:host=localhost;dbname=SHooad;charset=utf8', 'root', '');
+        $pdo = (new Database())->getPDO();
         
         $stmt = $pdo->prepare("
         SELECT c.id, c.name, c.hex_code, COALESCE(SUM(pv.stock), 0) AS stock
@@ -201,7 +199,7 @@ class UserPageService {
      * Get product sizes from database
      */
     private function getProductSizesFromDB(int $productId): array {
-        $pdo = new PDO('mysql:host=localhost;dbname=SHooad;charset=utf8', 'root', '');
+        $pdo = (new Database())->getPDO();
         
         $stmt = $pdo->prepare("
         SELECT s.id, s.name, COALESCE(SUM(pv.stock), 0) AS stock
@@ -228,7 +226,7 @@ class UserPageService {
      * Get product variants from database
      */
     private function getProductVariantsFromDB(int $productId): array {
-        $pdo = new PDO('mysql:host=localhost;dbname=SHooad;charset=utf8', 'root', '');
+        $pdo = (new Database())->getPDO();
         
         $stmt = $pdo->prepare("
         SELECT pv.*, c.name as color_name, c.hex_code, s.name as size_name
@@ -338,20 +336,20 @@ class UserPageService {
         $offset = ($page - 1) * $perPage;
         $sort = isset($_GET['sort']) ? trim($_GET['sort']) : 'latest';
 
-        $mysqli = new mysqli('localhost', 'root', '', 'SHooad');
+        $db = (new Database())->getConnection();
         $products = [];
         $totalCount = 0;
 
-        if (!$mysqli->connect_error) {
+        if (!$db->connect_error) {
             $where = ["p.status = 'active'"];
             
             if (!empty($selectedBrand)) {
-                $where[] = "p.brand = '" . $mysqli->real_escape_string($selectedBrand) . "'";
+                $where[] = "p.brand = '" . $db->real_escape_string($selectedBrand) . "'";
             }
             
             if (!empty($selectedCategory)) {
-                $catName = $mysqli->real_escape_string($selectedCategory);
-                $catRes = $mysqli->query("SELECT id FROM categories WHERE name = '" . $catName . "' LIMIT 1");
+                $catName = $db->real_escape_string($selectedCategory);
+                $catRes = $db->query("SELECT id FROM categories WHERE name = '" . $catName . "' LIMIT 1");
                 if ($catRes && $catRow = $catRes->fetch_assoc()) {
                     $catId = intval($catRow['id']);
                     $where[] = "p.category_id = " . $catId;
@@ -397,7 +395,7 @@ class UserPageService {
 
             // Count total
             $countSql = "SELECT COUNT(*) AS cnt FROM products p " . $whereSql;
-            $countRes = $mysqli->query($countSql);
+            $countRes = $db->query($countSql);
             if ($countRes && $r = $countRes->fetch_assoc()) {
                 $totalCount = intval($r['cnt']);
             }
@@ -413,7 +411,7 @@ class UserPageService {
                     " . $orderSql . "
                     LIMIT " . intval($perPage) . " OFFSET " . intval($offset);
 
-            $res = $mysqli->query($sql);
+            $res = $db->query($sql);
             if ($res) {
                 while ($row = $res->fetch_assoc()) {
                     $thumbnail = '';
@@ -439,7 +437,6 @@ class UserPageService {
                 }
                 $res->free();
             }
-            $mysqli->close();
         }
 
         return [
@@ -452,10 +449,10 @@ class UserPageService {
     }
 
     public function getFiltersData(): array {
-        $mysqli = new mysqli('localhost', 'root', '', 'SHooad');
+        $db = (new Database())->getConnection();
         $filters = ['categories' => [], 'brands' => [], 'sizes' => [], 'colors' => [], 'ratings' => []];
         
-        if (!$mysqli->connect_error) {
+        if (!$db->connect_error) {
             // Top categories by sold
             $catSql = "SELECT c.id, c.name, COALESCE(SUM(p.sold),0) AS total_sold, COUNT(p.id) AS product_count
                        FROM categories c
@@ -463,7 +460,7 @@ class UserPageService {
                        GROUP BY c.id, c.name
                        ORDER BY total_sold DESC
                        LIMIT 100";
-            $cres = $mysqli->query($catSql);
+            $cres = $db->query($catSql);
             if ($cres) {
                 while ($crow = $cres->fetch_assoc()) {
                     $filters['categories'][] = ['id' => $crow['id'], 'name' => $crow['name'], 'count' => intval($crow['product_count']), 'sold' => intval($crow['total_sold'])];
@@ -478,7 +475,7 @@ class UserPageService {
                          GROUP BY p.brand
                          ORDER BY total_sold DESC
                          LIMIT 100";
-            $bres = $mysqli->query($brandSql);
+            $bres = $db->query($brandSql);
             if ($bres) {
                 while ($brow = $bres->fetch_assoc()) {
                     $filters['brands'][] = ['name' => $brow['brand'], 'count' => intval($brow['product_count']), 'sold' => intval($brow['total_sold'])];
@@ -492,7 +489,7 @@ class UserPageService {
                         INNER JOIN product_variants pv ON pv.size_id = s.id
                         ORDER BY s.sort_order, s.name
                         LIMIT 100";
-            $sres = $mysqli->query($sizeSql);
+            $sres = $db->query($sizeSql);
             if ($sres) {
                 while ($srow = $sres->fetch_assoc()) {
                     $filters['sizes'][] = $srow['size'];
@@ -506,7 +503,7 @@ class UserPageService {
                          INNER JOIN product_variants pv ON pv.color_id = c.id
                          ORDER BY c.name
                          LIMIT 100";
-            $cres2 = $mysqli->query($colorSql);
+            $cres2 = $db->query($colorSql);
             if ($cres2) {
                 while ($crow2 = $cres2->fetch_assoc()) {
                     $filters['colors'][] = ['name' => $crow2['color'], 'code' => $crow2['code']];
@@ -516,15 +513,13 @@ class UserPageService {
 
             // Ratings distribution - Skip if rating column doesn't exist
             // $ratSql = "SELECT FLOOR(rating) AS stars, COUNT(*) AS cnt FROM products WHERE rating IS NOT NULL GROUP BY FLOOR(rating) ORDER BY stars DESC";
-            // $rres = $mysqli->query($ratSql);
+            // $rres = $db->query($ratSql);
             // if ($rres) {
             //     while ($rrow = $rres->fetch_assoc()) {
             //         $filters['ratings'][] = ['stars' => intval($rrow['stars']), 'count' => intval($rrow['cnt'])];
             //     }
             //     $rres->free();
             // }
-
-            $mysqli->close();
         }
         
         return $filters;
@@ -534,8 +529,8 @@ class UserPageService {
         $cart_items = [];
         if (isset($_SESSION['customer_id'])) {
             $customerId = intval($_SESSION['customer_id']);
-            $mysqli = new mysqli('localhost', 'root', '', 'SHooad');
-            if (!$mysqli->connect_error) {
+            $db = (new Database())->getConnection();
+            if (!$db->connect_error) {
                 $sql = "SELECT ci.id AS cart_item_id, ci.product_id, ci.color, ci.size, ci.quantity, ci.selected, p.name, p.price, p.original_price, 
                         COALESCE((SELECT SUM(pv.stock) FROM product_variants pv WHERE pv.product_id = p.id), 0) as stock,
                         pi.filename AS image_file
@@ -547,7 +542,7 @@ class UserPageService {
                         GROUP BY ci.id
                         ORDER BY ci.id DESC";
 
-                $res = $mysqli->query($sql);
+                $res = $db->query($sql);
                 if ($res) {
                     while ($row = $res->fetch_assoc()) {
                         $thumb = $row['image_file'];
@@ -573,7 +568,6 @@ class UserPageService {
                     }
                     $res->free();
                 }
-                $mysqli->close();
             }
         }
         return $cart_items;
@@ -681,8 +675,7 @@ class UserPageService {
     }
 
     public function getShopDetailData(int $shopId): ?array {
-        $pdo = new PDO('mysql:host=localhost;dbname=SHooad;charset=utf8', 'root', '');
-        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        $pdo = (new Database())->getPDO();
 
         // Get shop information
         $shopSql = "SELECT 

@@ -23,8 +23,8 @@ $productId = $product['id'] ?? 0;
 ?>
 
 <!-- Product Detail Container -->
-<div class="container mx-auto px-4 py-12" data-stock="<?php echo htmlspecialchars($product['stock'] ?? 0); ?>" data-product-id="<?php echo $productId; ?>">
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+<div class="container mx-auto px-2 sm:px-4 py-4 sm:py-8 lg:py-12 max-w-7xl" data-stock="<?php echo htmlspecialchars($product['stock'] ?? 0); ?>" data-product-id="<?php echo $productId; ?>">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 lg:gap-8">
         <!-- Product Gallery -->
         <?php include __DIR__ . '/components/product-gallery.php'; ?>
         

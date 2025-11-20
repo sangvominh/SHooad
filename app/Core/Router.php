@@ -12,13 +12,13 @@ switch ($module) {
         $controller->home();
         break;
     case 'seller':
-        require_once __DIR__ . '/../routes/seller.php';
+        require_once __DIR__ . '/../Routes/seller.php';
         break;
     case 'customer':
-        require_once __DIR__ . '/../routes/customer.php';
+        require_once __DIR__ . '/../Routes/customer.php';
         break;
     case 'user': // Support legacy 'user' for backward compatibility
-        require_once __DIR__ . '/../routes/customer.php';
+        require_once __DIR__ . '/../Routes/customer.php';
         break;
     default:
         echo "404 - Page not found";

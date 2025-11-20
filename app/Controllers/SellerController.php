@@ -1,11 +1,11 @@
 <?php
-require_once __DIR__ . '/../services/Seller/AuthSellerService.php';
-require_once __DIR__ . '/../services/Seller/SellerService.php';
-require_once __DIR__ . '/../services/Seller/SellerAnalysisService.php';
-require_once __DIR__ . '/../services/ProductService.php';
-require_once __DIR__ . '/../services/OrderService.php';
+require_once __DIR__ . '/../Services/Seller/AuthSellerService.php';
+require_once __DIR__ . '/../Services/Seller/SellerService.php';
+require_once __DIR__ . '/../Services/Seller/SellerAnalysisService.php';
+require_once __DIR__ . '/../Services/ProductService.php';
+require_once __DIR__ . '/../Services/OrderService.php';
 require_once __DIR__ . '/../middleware/AuthMiddleware.php';
-require_once __DIR__ . '/../services/FlashMessageService.php';
+require_once __DIR__ . '/../Services/FlashMessageService.php';
 
 class SellerController {
     private $authService;

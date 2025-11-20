@@ -1,5 +1,58 @@
 /* Custom styles if needed */
 
+/* Fix horizontal scroll on mobile */
+html {
+  overflow-x: hidden;
+  max-width: 100vw;
+  box-sizing: border-box;
+}
+
+*, *::before, *::after {
+  box-sizing: inherit;
+}
+
+body {
+  overflow-x: hidden;
+  max-width: 100vw;
+  position: relative;
+  margin: 0;
+  padding: 0;
+}
+
+/* Ensure all containers don't overflow */
+.container {
+  max-width: 100%;
+}
+
+/* Fix for images and media */
+img, video, iframe {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Prevent text overflow */
+pre, code {
+  overflow-x: auto;
+  max-width: 100%;
+}
+
+/* Hide scrollbar for product galleries */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Ensure grid doesn't overflow */
+@media (max-width: 640px) {
+  .grid {
+    max-width: 100%;
+  }
+}
+
 @layer components {
   .dropdown-item {
     @apply block w-full text-left px-4 py-2 hover:bg-gray-100 transition;

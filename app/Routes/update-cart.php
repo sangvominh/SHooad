@@ -21,8 +21,8 @@ try {
         exit();
     }
 
-    $pdo = new PDO('mysql:host=localhost;dbname=SHooad;charset=utf8mb4', 'root', '');
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    require_once __DIR__ . '/../Core/Database.php';
+    $pdo = (new Database())->getPDO();
 
     // Verify ownership
     $stmt = $pdo->prepare('SELECT ci.* FROM cart_items ci JOIN carts c ON ci.cart_id = c.id WHERE ci.id = :item_id AND c.customer_id = :customer_id');

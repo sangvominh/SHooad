@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . '/../Models/Product.php';
+require_once __DIR__ . '/../Core/Database.php';
 
 class ProductService {
     private $productModel;
@@ -122,13 +123,13 @@ class ProductService {
      * Get product colors from database
      */
     public function getProductColors(int $productId): array {
-        $mysqli = new mysqli('localhost', 'root', '', 'SHooad');
+        $db = (new Database())->getConnection();
         
-        if ($mysqli->connect_error) {
+        if ($db->connect_error) {
             return [];
         }
         
-        $stmt = $mysqli->prepare("
+        $stmt = $db->prepare("
         SELECT c.id, c.name, c.hex_code, COALESCE(SUM(pv.stock), 0) AS stock
         FROM product_variants pv
         JOIN colors c ON pv.color_id = c.id
@@ -159,13 +160,13 @@ class ProductService {
      * Get product sizes from database
      */
     public function getProductSizes(int $productId): array {
-        $mysqli = new mysqli('localhost', 'root', '', 'SHooad');
+        $db = (new Database())->getConnection();
         
-        if ($mysqli->connect_error) {
+        if ($db->connect_error) {
             return [];
         }
         
-        $stmt = $mysqli->prepare("
+        $stmt = $db->prepare("
         SELECT s.id, s.name, COALESCE(SUM(pv.stock), 0) AS stock
         FROM product_variants pv
         JOIN sizes s ON pv.size_id = s.id
@@ -195,13 +196,13 @@ class ProductService {
      * Get product variant stock for specific color-size combination
      */
     public function getVariantStock(int $productId, int $colorId, int $sizeId): int {
-        $mysqli = new mysqli('localhost', 'root', '', 'SHooad');
+        $db = (new Database())->getConnection();
         
-        if ($mysqli->connect_error) {
+        if ($db->connect_error) {
             return 0;
         }
         
-        $stmt = $mysqli->prepare("
+        $stmt = $db->prepare("
             SELECT stock
             FROM product_variants
             WHERE product_id = ? AND color_id = ? AND size_id = ?

@@ -142,10 +142,11 @@ class UserController {
             $email = $_POST['email'] ?? '';
             
             if (!empty($name) && !empty($email)) {
-                $mysqli = new mysqli('localhost', 'root', '', 'SHooad');
+                require_once __DIR__ . '/../Core/Database.php';
+                $db = (new Database())->getConnection();
                 
                 // Check if email already exists for another user
-                $checkStmt = $mysqli->prepare("SELECT id FROM customers WHERE email = ? AND id != ?");
+                $checkStmt = $db->prepare("SELECT id FROM customers WHERE email = ? AND id != ?");
                 $checkStmt->bind_param("si", $email, $customerId);
                 $checkStmt->execute();
                 $result = $checkStmt->get_result();
@@ -153,7 +154,7 @@ class UserController {
                 if ($result->num_rows > 0) {
                     FlashMessageService::setFlashMessage('error', 'Email already exists!');
                 } else {
-                    $stmt = $mysqli->prepare("UPDATE customers SET name = ?, email = ? WHERE id = ?");
+                    $stmt = $db->prepare("UPDATE customers SET name = ?, email = ? WHERE id = ?");
                     $stmt->bind_param("ssi", $name, $email, $customerId);
                     
                     if ($stmt->execute()) {
@@ -163,8 +164,6 @@ class UserController {
                         FlashMessageService::setFlashMessage('error', 'Failed to update profile!');
                     }
                 }
-                
-                $mysqli->close();
             }
         }
         
@@ -182,14 +181,15 @@ class UserController {
             $isDefault = isset($_POST['is_default']) ? 1 : 0;
             
             if (!empty($fullName) && !empty($phone) && !empty($address)) {
-                $mysqli = new mysqli('localhost', 'root', '', 'SHooad');
+                require_once __DIR__ . '/../Core/Database.php';
+                $db = (new Database())->getConnection();
                 
                 // If setting as default, unset other default addresses
                 if ($isDefault) {
-                    $mysqli->query("UPDATE customer_addresses SET is_default = 0 WHERE customer_id = " . $customerId);
+                    $db->query("UPDATE customer_addresses SET is_default = 0 WHERE customer_id = " . $customerId);
                 }
                 
-                $stmt = $mysqli->prepare("INSERT INTO customer_addresses (customer_id, full_name, phone, address, is_default) VALUES (?, ?, ?, ?, ?)");
+                $stmt = $db->prepare("INSERT INTO customer_addresses (customer_id, full_name, phone, address, is_default) VALUES (?, ?, ?, ?, ?)");
                 $stmt->bind_param("isssi", $customerId, $fullName, $phone, $address, $isDefault);
                 
                 if ($stmt->execute()) {
@@ -197,8 +197,6 @@ class UserController {
                 } else {
                     FlashMessageService::setFlashMessage('error', 'Failed to add address!');
                 }
-                
-                $mysqli->close();
             }
         }
         
@@ -227,9 +225,10 @@ class UserController {
                 
                 if ($customer && password_verify($currentPassword, $customer['password'])) {
                     $newPasswordHash = password_hash($newPassword, PASSWORD_DEFAULT);
-                    $mysqli = new mysqli('localhost', 'root', '', 'SHooad');
+                    require_once __DIR__ . '/../Core/Database.php';
+                    $db = (new Database())->getConnection();
                     
-                    $stmt = $mysqli->prepare("UPDATE customers SET password = ? WHERE id = ?");
+                    $stmt = $db->prepare("UPDATE customers SET password = ? WHERE id = ?");
                     $stmt->bind_param("si", $newPasswordHash, $customerId);
                     
                     if ($stmt->execute()) {
@@ -237,8 +236,6 @@ class UserController {
                     } else {
                         FlashMessageService::setFlashMessage('error', 'Failed to change password!');
                     }
-                    
-                    $mysqli->close();
                 } else {
                     FlashMessageService::setFlashMessage('error', 'Current password is incorrect!');
                 }
@@ -260,10 +257,11 @@ class UserController {
             $isDefault = isset($_POST['is_default']) ? 1 : 0;
             
             if (!empty($addressId) && !empty($fullName) && !empty($phone) && !empty($address)) {
-                $mysqli = new mysqli('localhost', 'root', '', 'SHooad');
+                require_once __DIR__ . '/../Core/Database.php';
+                $db = (new Database())->getConnection();
                 
                 // Verify address belongs to customer
-                $checkStmt = $mysqli->prepare("SELECT id FROM customer_addresses WHERE id = ? AND customer_id = ?");
+                $checkStmt = $db->prepare("SELECT id FROM customer_addresses WHERE id = ? AND customer_id = ?");
                 $checkStmt->bind_param("ii", $addressId, $customerId);
                 $checkStmt->execute();
                 $result = $checkStmt->get_result();
@@ -271,10 +269,10 @@ class UserController {
                 if ($result->num_rows > 0) {
                     // If setting as default, unset other default addresses
                     if ($isDefault) {
-                        $mysqli->query("UPDATE customer_addresses SET is_default = 0 WHERE customer_id = " . $customerId);
+                        $db->query("UPDATE customer_addresses SET is_default = 0 WHERE customer_id = " . $customerId);
                     }
                     
-                    $stmt = $mysqli->prepare("UPDATE customer_addresses SET full_name = ?, phone = ?, address = ?, is_default = ? WHERE id = ? AND customer_id = ?");
+                    $stmt = $db->prepare("UPDATE customer_addresses SET full_name = ?, phone = ?, address = ?, is_default = ? WHERE id = ? AND customer_id = ?");
                     $stmt->bind_param("sssiii", $fullName, $phone, $address, $isDefault, $addressId, $customerId);
                     
                     if ($stmt->execute()) {
@@ -285,8 +283,6 @@ class UserController {
                 } else {
                     FlashMessageService::setFlashMessage('error', 'Address not found!');
                 }
-                
-                $mysqli->close();
             }
         }
         
@@ -301,9 +297,10 @@ class UserController {
             $customerId = $_SESSION['customer_id'];
             
             if (!empty($addressId)) {
-                $mysqli = new mysqli('localhost', 'root', '', 'SHooad');
+                require_once __DIR__ . '/../Core/Database.php';
+                $db = (new Database())->getConnection();
                 
-                $stmt = $mysqli->prepare("DELETE FROM customer_addresses WHERE id = ? AND customer_id = ?");
+                $stmt = $db->prepare("DELETE FROM customer_addresses WHERE id = ? AND customer_id = ?");
                 $stmt->bind_param("ii", $addressId, $customerId);
                 
                 if ($stmt->execute()) {
@@ -311,8 +308,6 @@ class UserController {
                 } else {
                     FlashMessageService::setFlashMessage('error', 'Failed to delete address!');
                 }
-                
-                $mysqli->close();
             }
         }
         

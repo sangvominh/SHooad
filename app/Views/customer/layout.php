@@ -11,19 +11,21 @@
         <?php echo $additionalStyles; ?>
     <?php endif; ?>
 </head>
-<body class="<?php echo $bodyClass ?? 'bg-white'; ?>">
+<body class="<?php echo $bodyClass ?? 'bg-white'; ?> overflow-x-hidden">
     <?php if (session_status() == PHP_SESSION_NONE) session_start(); ?>
     
-    <!-- Header -->
-    <?php include __DIR__ . '/partials/header.php'; ?>
-    
-    <!-- Navigation -->
-    <?php include __DIR__ . '/partials/navigation.php'; ?>
-    
-    <!-- Main Content -->
-    <main>
-        <?php echo $content ?? ''; ?>
-    </main>
+    <div class="w-full">
+        <!-- Header -->
+        <?php include __DIR__ . '/partials/header.php'; ?>
+        
+        <!-- Navigation -->
+        <?php include __DIR__ . '/partials/navigation.php'; ?>
+        
+        <!-- Main Content -->
+        <main class="w-full">
+            <?php echo $content ?? ''; ?>
+        </main>
+    </div>
     
     <!-- Default Scripts -->
     <script src="/SHooad/public/assets/js/customer/dropdown.js"></script>

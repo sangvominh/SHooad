@@ -3,17 +3,19 @@
 require_once __DIR__ . '/../../../Helpers/LanguageHelper.php';
 $lang = LanguageHelper::getCurrentLanguage();
 ?>
-<header class="bg-white text-gray-900 shadow-md">
+<header class="bg-white text-gray-900 shadow-md w-full relative z-40">
     <!-- Top Bar -->
-    <div class="container mx-auto px-2 md:px-4 py-2 md:py-4 flex flex-wrap justify-between items-center gap-2">
-        <!-- Logo -->
-        <a href="/SHooad/public/" class="text-xl md:text-2xl font-bold whitespace-nowrap">
-            SHooad
-        </a>
+    <div class="w-full relative">
+        <div class="container mx-auto px-2 md:px-4 py-2 md:py-4">
+            <div class="flex flex-wrap justify-between items-center gap-2">
+                <!-- Logo -->
+                <a href="/SHooad/public/" class="text-xl md:text-2xl font-bold whitespace-nowrap shrink-0">
+                    SHooad
+                </a>
 
-        <!-- Search Bar -->
-        <div class="flex-1 min-w-[180px] max-w-md md:max-w-none md:mx-8">
-            <div class="flex relative" id="searchWrapper">
+                <!-- Search Bar -->
+                <div class="flex-1 min-w-[180px] max-w-md md:max-w-none md:mx-8">
+                    <div class="flex relative" id="searchWrapper">
                 <input
                     type="text"
                     id="searchInput"
@@ -42,13 +44,13 @@ $lang = LanguageHelper::getCurrentLanguage();
         <div class="flex gap-3 md:gap-4 items-center shrink-0">
             
             <!-- Language Switcher -->
-            <div class="relative group">
+            <div class="relative group z-50">
                 <button class="flex items-center gap-1.5 px-2 md:px-3 py-1.5 border border-gray-300 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition">
                     <i class="fas fa-globe text-gray-600 text-sm md:text-base"></i>
                     <span class="text-xs md:text-sm font-medium text-gray-700 uppercase"><?= $lang ?></span>
                     <i class="fas fa-chevron-down text-xs text-gray-500"></i>
                 </button>
-                <div class="absolute right-0 mt-2 w-40 bg-white rounded-lg shadow-xl border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-[9999]">
+                <div class="absolute right-0 mt-2 w-40 bg-white rounded-lg shadow-xl border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-[60]">
                     <a href="/SHooad/public/customer/set-language?lang=vi&redirect=<?= urlencode($_SERVER['REQUEST_URI']) ?>" 
                        class="flex items-center gap-2 px-4 py-2.5 hover:bg-gray-100 transition <?= $lang === 'vi' ? 'bg-blue-50 text-blue-600 font-semibold' : 'text-gray-700' ?>">
                         <img src="https://flagcdn.com/w20/vn.png" alt="Tiếng Việt" class="w-5 h-3.5 object-cover">
@@ -94,12 +96,12 @@ $lang = LanguageHelper::getCurrentLanguage();
 
             <!-- Account -->
             <?php if ($isLoggedIn): ?>
-                <div class="relative" id="avatarContainer">
+                <div class="relative z-50" id="avatarContainer">
                     <a href="/SHooad/public/customer/profile" class="hover:opacity-80 transition flex items-center gap-2 px-3 py-1.5 rounded-full bg-white hover:border-blue-500" id="avatarMenuBtn">
                         <img src="<?= htmlspecialchars($avatarPath) ?>" alt="avatar" class="object-cover w-8 h-8 rounded-full" />
                         <span class="text-gray-900 font-medium text-sm hidden md:inline"><?= htmlspecialchars($customerName) ?></span>
                     </a>
-                    <div class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl z-[9999] hidden border border-gray-200" id="avatarDropdown">
+                    <div class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl z-[60] hidden border border-gray-200" id="avatarDropdown">
                         <div class="py-1">
                             <a href="/SHooad/public/customer/profile" class="block px-4 py-2 text-gray-800 hover:bg-gray-100 transition"><?= LanguageHelper::t('header.profile') ?></a>
                             <a href="/SHooad/public/customer/logout" class="block px-4 py-2 text-gray-800 hover:bg-gray-100 transition"><?= LanguageHelper::t('header.logout') ?></a>
@@ -113,6 +115,7 @@ $lang = LanguageHelper::getCurrentLanguage();
                     </button>
                 </a>
             <?php endif; ?>
+            </div>
         </div>
     </div>
 </header>

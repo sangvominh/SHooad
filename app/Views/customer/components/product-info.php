@@ -1,15 +1,15 @@
 <!-- Product Information Section -->
-<div class="flex flex-col gap-6">
+<div class="flex flex-col gap-4 sm:gap-6 max-w-full">
     <!-- Product Title -->
     <div>
-        <h1 class="text-3xl font-bold text-gray-900"><?php echo htmlspecialchars($product['name']); ?></h1>
+        <h1 class="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 break-words"><?php echo htmlspecialchars($product['name']); ?></h1>
     </div>
     
     <!-- Price & Rating -->
-    <div class="border-y border-gray-200 py-4">
-        <div class="flex items-center justify-between flex-wrap gap-4">
+    <div class="border-y border-gray-200 py-3 sm:py-4">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
             <!-- Price -->
-            <div id="priceContainer" class="flex items-center gap-3">
+            <div id="priceContainer" class="flex flex-wrap items-center gap-2 sm:gap-3 max-w-full">
                 <?php 
                 $hasPriceRange = isset($product['price_range']) && $product['price_range'];
                 $minPrice = $product['min_price'] ?? $product['price'] ?? '';
@@ -21,15 +21,15 @@
                     if ($original !== '' && $original > $maxPrice) {
                         $discount = round((($original - $maxPrice) / $original) * 100);
                     ?>
-                        <div class="flex items-center gap-2">
-                            <span class="text-3xl font-bold text-red-600"><?php echo number_format($minPrice, 0, ',', '.'); ?>₫ - <?php echo number_format($maxPrice, 0, ',', '.'); ?>₫</span>
-                            <span class="bg-red-100 text-red-600 px-2 py-1 rounded text-sm font-bold">-<?php echo $discount; ?>%</span>
+                        <div class="flex flex-wrap items-center gap-2">
+                            <span class="text-lg sm:text-2xl lg:text-3xl font-bold text-red-600"><?php echo number_format($minPrice, 0, ',', '.'); ?>₫ - <?php echo number_format($maxPrice, 0, ',', '.'); ?>₫</span>
+                            <span class="bg-red-100 text-red-600 px-2 py-1 rounded text-xs sm:text-sm font-bold whitespace-nowrap">-<?php echo $discount; ?>%</span>
                         </div>
-                        <span class="text-lg text-gray-400 line-through"><?php echo number_format($original, 0, ',', '.'); ?>₫</span>
+                        <span class="text-sm sm:text-base lg:text-lg text-gray-400 line-through whitespace-nowrap"><?php echo number_format($original, 0, ',', '.'); ?>₫</span>
                     <?php 
                     } else {
                     ?>
-                        <span class="text-3xl font-bold text-gray-900"><?php echo number_format($minPrice, 0, ',', '.'); ?>₫ - <?php echo number_format($maxPrice, 0, ',', '.'); ?>₫</span>
+                        <span class="text-lg sm:text-2xl lg:text-3xl font-bold text-gray-900"><?php echo number_format($minPrice, 0, ',', '.'); ?>₫ - <?php echo number_format($maxPrice, 0, ',', '.'); ?>₫</span>
                     <?php 
                     }
                 } else {
@@ -39,34 +39,34 @@
                     if ($original !== '' && $original != $price && $original > $price) {
                         $discount = round((($original - $price) / $original) * 100);
                     ?>
-                        <div class="flex items-center gap-2">
-                            <span class="text-3xl font-bold text-red-600"><?php echo number_format($price, 0, ',', '.'); ?>₫</span>
-                            <span class="bg-red-100 text-red-600 px-2 py-1 rounded text-sm font-bold">-<?php echo $discount; ?>%</span>
+                        <div class="flex flex-wrap items-center gap-2">
+                            <span class="text-lg sm:text-2xl lg:text-3xl font-bold text-red-600"><?php echo number_format($price, 0, ',', '.'); ?>₫</span>
+                            <span class="bg-red-100 text-red-600 px-2 py-1 rounded text-xs sm:text-sm font-bold whitespace-nowrap">-<?php echo $discount; ?>%</span>
                         </div>
-                        <span class="text-lg text-gray-400 line-through"><?php echo number_format($original, 0, ',', '.'); ?>₫</span>
+                        <span class="text-sm sm:text-base lg:text-lg text-gray-400 line-through whitespace-nowrap"><?php echo number_format($original, 0, ',', '.'); ?>₫</span>
                     <?php 
                     } else {
                     ?>
-                        <span class="text-3xl font-bold text-gray-900"><?php echo number_format($price, 0, ',', '.'); ?>₫</span>
+                        <span class="text-lg sm:text-2xl lg:text-3xl font-bold text-gray-900"><?php echo number_format($price, 0, ',', '.'); ?>₫</span>
                     <?php } ?>
                 <?php } ?>
             </div>
             <!-- Rating -->
-            <div class="flex items-center gap-2">
+            <div class="flex flex-wrap items-center gap-1 sm:gap-2">
                 <div class="flex">
                     <?php
                     $rating = floatval($product['rating'] ?? 0);
                     for ($i = 1; $i <= 5; $i++) {
                         if ($i <= floor($rating)) {
-                            echo '<span class="text-yellow-400 text-lg">★</span>';
+                            echo '<span class="text-yellow-400 text-base sm:text-lg">★</span>';
                         } else {
-                            echo '<span class="text-gray-300 text-lg">★</span>';
+                            echo '<span class="text-gray-300 text-base sm:text-lg">★</span>';
                         }
                     }
                     ?>
                 </div>
-                <span class="font-semibold text-gray-900"><?php echo number_format($product['rating'], 1); ?></span>
-                <span class="text-gray-500">(<?php echo $product['reviews_count']; ?> đánh giá)</span>
+                <span class="font-semibold text-gray-900 text-sm sm:text-base"><?php echo number_format($product['rating'], 1); ?></span>
+                <span class="text-gray-500 text-xs sm:text-sm">(<?php echo $product['reviews_count']; ?> đánh giá)</span>
             </div>
         </div>
     </div>

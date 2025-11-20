@@ -35,8 +35,8 @@ try {
     }
 
     // Connect to database
-    $pdo = new PDO('mysql:host=localhost;dbname=SHooad;charset=utf8mb4', 'root', '');
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    require_once __DIR__ . '/../Core/Database.php';
+    $pdo = (new Database())->getPDO();
 
     // Check product exists
     $productStmt = $pdo->prepare('SELECT id FROM products WHERE id = :pid AND status = "active"');

@@ -11,24 +11,26 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="/SHooad/public/assets/css/custom.css">
 </head>
-<body class="bg-white">
-    <!-- Header -->
-    <?php include 'partials/header.php'; ?>
-    
-    <!-- Sticky Navigation -->
-    <?php include 'partials/navigation.php'; ?>
-    
-    <!-- Banner Section -->
-    <?php include 'partials/banner.php'; ?>
-    
-    <!-- Categories Section -->
-    <?php include 'partials/categories-section.php'; ?>
+<body class="bg-white overflow-x-hidden">
+    <div class="w-full overflow-x-hidden">
+        <!-- Header -->
+        <?php include 'partials/header.php'; ?>
+        
+        <!-- Sticky Navigation -->
+        <?php include 'partials/navigation.php'; ?>
+        
+        <!-- Banner Section -->
+        <?php include 'partials/banner.php'; ?>
+        
+        <!-- Categories Section -->
+        <?php include 'partials/categories-section.php'; ?>
 
-    <!-- Popular Products Section -->
-    <?php include 'partials/products-section.php'; ?>
+        <!-- Popular Products Section -->
+        <?php include 'partials/products-section.php'; ?>
 
-    <!-- Footer -->
-    <?php include 'partials/footer.php'; ?>
+        <!-- Footer -->
+        <?php include 'partials/footer.php'; ?>
+    </div>
     
     <!-- Scripts -->
     <script src="/SHooad/public/assets/js/customer/dropdown.js"></script>

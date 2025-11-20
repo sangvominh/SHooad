@@ -15,33 +15,32 @@ foreach ($selectedItems as $item) {
 }
 
 // Get delivery companies
-$mysqli = new mysqli('localhost', 'root', '', 'SHooad');
+require_once __DIR__ . '/../../Core/Database.php';
+$db = (new Database())->getConnection();
 $deliveryCompanies = [];
-if (!$mysqli->connect_error) {
-    $result = $mysqli->query("SELECT * FROM delivery_companies ORDER BY name ASC");
+if (!$db->connect_error) {
+    $result = $db->query("SELECT * FROM delivery_companies ORDER BY name ASC");
     if ($result) {
         while ($row = $result->fetch_assoc()) {
             $deliveryCompanies[] = $row;
         }
         $result->free();
     }
-    $mysqli->close();
 }
 
 // Get customer saved addresses
 $customerAddresses = [];
 if (isset($_SESSION['customer_id'])) {
-    $mysqli = new mysqli('localhost', 'root', '', 'SHooad');
-    if (!$mysqli->connect_error) {
+    $db = (new Database())->getConnection();
+    if (!$db->connect_error) {
         $customerId = intval($_SESSION['customer_id']);
-        $result = $mysqli->query("SELECT * FROM customer_addresses WHERE customer_id = $customerId ORDER BY is_default DESC, created_at DESC");
+        $result = $db->query("SELECT * FROM customer_addresses WHERE customer_id = $customerId ORDER BY is_default DESC, created_at DESC");
         if ($result) {
             while ($row = $result->fetch_assoc()) {
                 $customerAddresses[] = $row;
             }
             $result->free();
         }
-        $mysqli->close();
     }
 }
 
