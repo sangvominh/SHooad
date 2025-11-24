@@ -22,7 +22,12 @@ class Order {
     }
 
     public function getOrder(int $order_id): ?array {
-        $stmt = $this->db->prepare("SELECT * FROM orders WHERE id = ?");
+        $stmt = $this->db->prepare("
+            SELECT o.*, dc.name as delivery_company_name, dc.shipping_fee as delivery_company_fee
+            FROM orders o
+            LEFT JOIN delivery_companies dc ON o.delivery_company_id = dc.id
+            WHERE o.id = ?
+        ");
         $stmt->bind_param("i", $order_id);
         $stmt->execute();
         $result = $stmt->get_result()->fetch_assoc();

@@ -183,6 +183,9 @@ class SellerController {
         }
 
         $data = $this->loadDashboardData();
+        $allColors = $this->productService->getAllColors();
+        $allSizes = $this->productService->getAllSizes();
+        $allCategories = $this->productService->getAllCategories();
         include __DIR__ . '/../Views/seller/pages/add-product.php';
     }
 
@@ -228,12 +231,18 @@ class SellerController {
         
         $session = $this->getSessionData();
         $type = $_GET['type'] ?? 'products'; // Default to products
+        $days = $_GET['days'] ?? 30; // Default to 30 days
+        
+        // Convert 'all' to string, otherwise ensure it's an integer
+        if ($days !== 'all') {
+            $days = (int)$days;
+        }
         
         // Get analysis data based on type
         if ($type === 'products') {
-            $analysisData = $this->analysisService->getProductsAnalysis($session['shop_id']);
+            $analysisData = $this->analysisService->getProductsAnalysis($session['shop_id'], $days);
         } else {
-            $analysisData = $this->analysisService->getOrdersAnalysis($session['shop_id']);
+            $analysisData = $this->analysisService->getOrdersAnalysis($session['shop_id'], $days);
         }
         
         // Load dashboard data for sidebar
@@ -348,5 +357,21 @@ class SellerController {
         // Show reset password form
         $data = ['email' => $email];
         include __DIR__ . '/../Views/seller/reset-password.php';
+    }
+
+    public function checkSKU() {
+        AuthMiddleware::checkSellerAuth();
+        header('Content-Type: application/json');
+        
+        $sku = $_GET['sku'] ?? '';
+        
+        if (empty($sku)) {
+            echo json_encode(['exists' => false]);
+            exit;
+        }
+        
+        $result = $this->productService->checkSKUExists($sku);
+        echo json_encode($result);
+        exit;
     }
 }

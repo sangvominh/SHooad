@@ -44,7 +44,7 @@ try {
     // Fetch selected items (active products only)
     $itemsStmt = $pdo->prepare('
         SELECT ci.id AS cart_item_id, ci.product_id, ci.quantity, ci.color, ci.size,
-               p.name AS product_name, p.price, p.stock, p.shop_id
+               p.name AS product_name, p.price, p.shop_id
         FROM cart_items ci
         JOIN products p ON ci.product_id = p.id
         WHERE ci.cart_id = :cart_id AND ci.selected = 1 AND p.status = "active"
@@ -62,12 +62,37 @@ try {
     // Validate stock and group by shop
     $itemsByShop = [];
     foreach ($items as $it) {
-        if ((int)$it['quantity'] > (int)$it['stock']) {
+        $quantity = (int)$it['quantity'];
+        $color = $it['color'];
+        $size = $it['size'];
+        
+        // Check variant stock if color and size are specified
+        if ($color && $size) {
+            $variantStmt = $pdo->prepare('
+                SELECT pv.stock 
+                FROM product_variants pv
+                JOIN colors c ON pv.color_id = c.id
+                JOIN sizes s ON pv.size_id = s.id
+                WHERE pv.product_id = :pid AND c.name = :color AND s.name = :size
+            ');
+            $variantStmt->execute([':pid' => $it['product_id'], ':color' => $color, ':size' => $size]);
+            $variant = $variantStmt->fetch(PDO::FETCH_ASSOC);
+            $stock = $variant ? (int)$variant['stock'] : 0;
+        } else {
+            // If no variant info, get total stock from all variants
+            $stockStmt = $pdo->prepare('SELECT COALESCE(SUM(stock), 0) as total_stock FROM product_variants WHERE product_id = :pid');
+            $stockStmt->execute([':pid' => $it['product_id']]);
+            $stockRow = $stockStmt->fetch(PDO::FETCH_ASSOC);
+            $stock = $stockRow ? (int)$stockRow['total_stock'] : 0;
+        }
+        
+        if ($quantity > $stock) {
             $pdo->rollBack();
             http_response_code(400);
             echo json_encode(['success' => false, 'message' => 'Sản phẩm ' . $it['product_name'] . ' không đủ hàng'], JSON_UNESCAPED_UNICODE);
             exit();
         }
+        
         $shopId = (int)$it['shop_id'];
         if (!isset($itemsByShop[$shopId])) $itemsByShop[$shopId] = [];
         $itemsByShop[$shopId][] = $it;

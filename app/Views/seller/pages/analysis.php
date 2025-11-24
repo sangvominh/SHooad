@@ -19,21 +19,37 @@
             <!-- Page Content -->
             <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-50 p-6">
                 <!-- Page Header with Dropdown -->
-                <div class="mb-6 flex justify-between items-center">
-                    <div>
-                        <h1 class="text-3xl font-bold text-gray-800">Analysis Dashboard</h1>
-                        <p class="text-gray-600 mt-1">Comprehensive analytics for your shop</p>
-                        <?php if (empty($analysisData)): ?>
-                        <p class="text-red-600 mt-2 text-sm">⚠️ Warning: No analysis data available</p>
-                        <?php endif; ?>
+                <div class="mb-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <div>
+                            <h1 class="text-3xl font-bold text-gray-800">Analysis Dashboard</h1>
+                            <p class="text-gray-600 mt-1">Comprehensive analytics for your shop</p>
+                            <?php if (empty($analysisData)): ?>
+                            <p class="text-red-600 mt-2 text-sm">⚠️ Warning: No analysis data available</p>
+                            <?php endif; ?>
+                        </div>
+                        
+                        <!-- Type Selector Dropdown -->
+                        <div class="relative">
+                            <select id="analysisTypeSelector" class="px-6 py-3 bg-white border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-700 font-medium cursor-pointer">
+                                <option value="orders" <?php echo (isset($_GET['type']) && $_GET['type'] === 'orders') ? 'selected' : ''; ?>>Orders Analysis</option>
+                                <option value="products" <?php echo (!isset($_GET['type']) || $_GET['type'] === 'products') ? 'selected' : ''; ?>>Products Analysis</option>
+                            </select>
+                        </div>
                     </div>
                     
-                    <!-- Type Selector Dropdown -->
-                    <div class="relative">
-                        <select id="analysisTypeSelector" class="px-6 py-3 bg-white border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-700 font-medium cursor-pointer">
-                            <option value="orders" <?php echo (isset($_GET['type']) && $_GET['type'] === 'orders') ? 'selected' : ''; ?>>Orders Analysis</option>
-                            <option value="products" <?php echo (!isset($_GET['type']) || $_GET['type'] === 'products') ? 'selected' : ''; ?>>Products Analysis</option>
-                        </select>
+                    <!-- Date Range Filter -->
+                    <div class="bg-white rounded-lg shadow-sm p-4 border border-gray-200">
+                        <div class="flex items-center gap-4">
+                            <label class="text-sm font-medium text-gray-700">Time Period:</label>
+                            <select id="dateRangeSelector" class="px-4 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700 cursor-pointer">
+                                <option value="7">Last 7 days</option>
+                                <option value="30" selected>Last 30 days</option>
+                                <option value="90">Last 90 days</option>
+                                <option value="365">Last year</option>
+                                <option value="all">All time</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
 
@@ -68,7 +84,7 @@
                                     <p id="totalRevenue" class="text-3xl font-bold text-green-600 mt-2">-</p>
                                 </div>
                                 <div class="p-3 bg-green-100 rounded-full">
-                                    <i class="fas fa-dollar-sign text-green-600 text-xl"></i>
+                                    <i class="fas fa-dong-sign text-green-600 text-xl"></i>
                                 </div>
                             </div>
                         </div>
@@ -139,7 +155,7 @@
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
                         <!-- Revenue by Date Chart -->
                         <div class="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
-                            <h3 class="text-lg font-semibold text-gray-800 mb-4">Revenue by Date (Last 30 Days)</h3>
+                            <h3 id="revenueChartTitle" class="text-lg font-semibold text-gray-800 mb-4">Revenue by Date (Last 30 Days)</h3>
                             <canvas id="revenueByDateChart"></canvas>
                         </div>
 

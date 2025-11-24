@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Đặt hàng thành công - SHooad</title>
+    <title><?php require_once __DIR__ . '/../../Helpers/LanguageHelper.php'; LanguageHelper::init(); echo LanguageHelper::t('order_success.title'); ?> - SHooad</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -18,8 +18,8 @@
             </div>
             
             <!-- Success Message -->
-            <h1 class="text-3xl font-bold text-gray-900 mb-2">Đặt hàng thành công!</h1>
-            <p class="text-gray-600 mb-6">Cảm ơn bạn đã đặt hàng tại SHooad</p>
+            <h1 class="text-3xl font-bold text-gray-900 mb-2"><?= LanguageHelper::t('order_success.title') ?></h1>
+            <p class="text-gray-600 mb-6"><?= LanguageHelper::t('order_success.thank_you') ?></p>
             
             <!-- Order Info -->
             <?php
@@ -27,23 +27,22 @@
             if ($order_id > 0):
             ?>
             <div class="bg-gray-50 rounded-lg p-4 mb-6">
-                <p class="text-sm text-gray-500 mb-1">Mã đơn hàng</p>
+                <p class="text-sm text-gray-500 mb-1"><?= LanguageHelper::t('order_success.order_code') ?></p>
                 <p class="text-2xl font-bold text-blue-600">#<?= str_pad($order_id, 6, '0', STR_PAD_LEFT) ?></p>
             </div>
             <?php endif; ?>
             
             <p class="text-gray-600 mb-8">
-                Chúng tôi đã nhận được đơn hàng của bạn và sẽ xử lý trong thời gian sớm nhất. 
-                Bạn sẽ nhận được email xác nhận đơn hàng ngay lập tức.
+                <?= LanguageHelper::t('order_success.order_received') ?>
             </p>
             
             <!-- Action Buttons -->
             <div class="space-y-3">
                 <a href="/SHooad/public/customer/orders" class="block w-full bg-blue-600 text-white font-semibold py-3 rounded-lg hover:bg-blue-700 transition">
-                    Xem đơn hàng của tôi
+                    <?= LanguageHelper::t('order_success.view_orders') ?>
                 </a>
                 <a href="/SHooad/public/customer" class="block w-full bg-gray-200 text-gray-700 font-semibold py-3 rounded-lg hover:bg-gray-300 transition">
-                    Tiếp tục mua sắm
+                    <?= LanguageHelper::t('order_success.continue_shopping') ?>
                 </a>
             </div>
         </div>

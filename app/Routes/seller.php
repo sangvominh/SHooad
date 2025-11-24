@@ -51,6 +51,10 @@ switch ($path) {
         $seller_controller->addProduct();
         break;
         
+    case 'check-sku':
+        $seller_controller->checkSKU();
+        break;
+        
     case 'analysis':
         $seller_controller->analysis();
         break;

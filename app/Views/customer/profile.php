@@ -49,20 +49,20 @@ require_once __DIR__ . '/../../Helpers/LanguageHelper.php';
                     <!-- Personal Information -->
                     <div class="bg-white rounded-lg shadow-md p-6">
                         <div class="flex justify-between items-center mb-6">
-                            <h2 class="text-xl font-semibold text-gray-900">Personal Information</h2>
+                            <h2 class="text-xl font-semibold text-gray-900"><?= LanguageHelper::t('profile.personal_info') ?></h2>
                             <button onclick="openEditProfileModal()" class="text-blue-600 hover:text-blue-700 font-medium">
-                                <i class="fas fa-edit mr-1"></i>Edit
+                                <i class="fas fa-edit mr-1"></i><?= LanguageHelper::t('profile.edit') ?>
                             </button>
                         </div>
                         
                         <div class="space-y-4">
                             <div class="flex items-start">
-                                <div class="w-32 text-gray-600 font-medium">Full Name:</div>
+                                <div class="w-32 text-gray-600 font-medium"><?= LanguageHelper::t('profile.full_name_label') ?></div>
                                 <div class="flex-1 text-gray-900"><?= htmlspecialchars($customer['name']) ?></div>
                             </div>
                             
                             <div class="flex items-start">
-                                <div class="w-32 text-gray-600 font-medium">Email:</div>
+                                <div class="w-32 text-gray-600 font-medium"><?= LanguageHelper::t('profile.email_label') ?></div>
                                 <div class="flex-1 text-gray-900"><?= htmlspecialchars($customer['email']) ?></div>
                             </div>
                         </div>
@@ -71,9 +71,9 @@ require_once __DIR__ . '/../../Helpers/LanguageHelper.php';
                     <!-- Addresses Section -->
                     <div class="bg-white rounded-lg shadow-md p-6">
                         <div class="flex justify-between items-center mb-6">
-                            <h2 class="text-xl font-semibold text-gray-900">Saved Addresses</h2>
+                            <h2 class="text-xl font-semibold text-gray-900"><?= LanguageHelper::t('profile.saved_addresses') ?></h2>
                             <button onclick="openAddAddressModal()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition">
-                                <i class="fas fa-plus mr-2"></i>Add New
+                                <i class="fas fa-plus mr-2"></i><?= LanguageHelper::t('profile.add_new') ?>
                             </button>
                         </div>
 
@@ -86,7 +86,7 @@ require_once __DIR__ . '/../../Helpers/LanguageHelper.php';
                                                     <div class="flex items-center gap-2 mb-2">
                                                         <h3 class="font-semibold text-gray-900"><?= htmlspecialchars($address['full_name']) ?></h3>
                                                         <?php if ($address['is_default']): ?>
-                                                            <span class="px-2 py-0.5 bg-blue-100 text-blue-800 text-xs font-medium rounded">Default</span>
+                                                            <span class="px-2 py-0.5 bg-blue-100 text-blue-800 text-xs font-medium rounded"><?= LanguageHelper::t('profile.default') ?></span>
                                                         <?php endif; ?>
                                                     </div>
                                                     <p class="text-gray-600 mb-1">
@@ -113,8 +113,8 @@ require_once __DIR__ . '/../../Helpers/LanguageHelper.php';
                             <?php else: ?>
                                 <div class="text-center py-12">
                                     <i class="fas fa-map-marked-alt text-gray-300 text-5xl mb-4"></i>
-                                    <p class="text-gray-500 text-lg">No saved addresses yet</p>
-                                    <p class="text-gray-400 mt-2">Add an address to make checkout faster</p>
+                                    <p class="text-gray-500 text-lg"><?= LanguageHelper::t('profile.no_addresses') ?></p>
+                                    <p class="text-gray-400 mt-2"><?= LanguageHelper::t('profile.add_address_msg') ?></p>
                             </div>
                         <?php endif; ?>
                     </div>
@@ -122,9 +122,9 @@ require_once __DIR__ . '/../../Helpers/LanguageHelper.php';
                     <!-- My Orders Section -->
                     <div class="bg-white rounded-lg shadow-md p-6">
                         <div class="flex justify-between items-center mb-6">
-                            <h2 class="text-xl font-semibold text-gray-900">My Orders</h2>
+                            <h2 class="text-xl font-semibold text-gray-900"><?= LanguageHelper::t('profile.my_orders') ?></h2>
                             <a href="/SHooad/public/customer/orders" class="text-blue-600 hover:text-blue-700 font-medium">
-                                View All <i class="fas fa-arrow-right ml-1"></i>
+                                <?= LanguageHelper::t('profile.view_all') ?> <i class="fas fa-arrow-right ml-1"></i>
                             </a>
                         </div>
 
@@ -132,16 +132,17 @@ require_once __DIR__ . '/../../Helpers/LanguageHelper.php';
                         <div class="grid grid-cols-3 md:grid-cols-6 gap-2 mb-6">
                             <?php
                             $statuses = [
-                                'pending' => ['icon' => 'fa-clock', 'label' => 'Pending', 'color' => 'yellow'],
-                                'processing' => ['icon' => 'fa-box', 'label' => 'Processing', 'color' => 'blue'],
-                                'delivering' => ['icon' => 'fa-truck', 'label' => 'Shipping', 'color' => 'indigo'],
-                                'completed' => ['icon' => 'fa-check-double', 'label' => 'Completed', 'color' => 'green'],
-                                'cancelled' => ['icon' => 'fa-times-circle', 'label' => 'Cancelled', 'color' => 'red'],
-                                'failed' => ['icon' => 'fa-exclamation-triangle', 'label' => 'Failed', 'color' => 'red']
+                                'pending' => ['icon' => 'fa-clock', 'color' => 'yellow'],
+                                'processing' => ['icon' => 'fa-box', 'color' => 'blue'],
+                                'delivering' => ['icon' => 'fa-truck', 'color' => 'indigo'],
+                                'completed' => ['icon' => 'fa-check-double', 'color' => 'green'],
+                                'cancelled' => ['icon' => 'fa-times-circle', 'color' => 'red'],
+                                'failed' => ['icon' => 'fa-exclamation-triangle', 'color' => 'red']
                             ];
                             
                             foreach ($statuses as $status => $info):
                                 $count = $orderStatusCounts[$status] ?? 0;
+                                $labelKey = ($status === 'delivering') ? 'shipping' : $status;
                             ?>
                                 <a href="/SHooad/public/customer/orders?status=<?= $status ?>" 
                                    class="flex flex-col items-center p-4 border border-gray-200 rounded-lg hover:border-<?= $info['color'] ?>-500 hover:bg-<?= $info['color'] ?>-50 transition group">
@@ -154,7 +155,7 @@ require_once __DIR__ . '/../../Helpers/LanguageHelper.php';
                                         <?php endif; ?>
                                     </div>
                                     <span class="text-xs text-gray-600 group-hover:text-<?= $info['color'] ?>-600 text-center">
-                                        <?= $info['label'] ?>
+                                        <?= LanguageHelper::t('profile.' . $labelKey) ?>
                                     </span>
                                 </a>
                             <?php endforeach; ?>
@@ -185,7 +186,7 @@ require_once __DIR__ . '/../../Helpers/LanguageHelper.php';
                                             </div>
                                             <a href="/SHooad/public/customer/order-detail?id=<?= $order['id'] ?>" 
                                                class="text-blue-600 hover:text-blue-700 text-sm font-medium">
-                                                View Detail
+                                                <?= LanguageHelper::t('profile.view_detail') ?>
                                             </a>
                                         </div>
                                     </div>
@@ -194,11 +195,11 @@ require_once __DIR__ . '/../../Helpers/LanguageHelper.php';
                         <?php else: ?>
                             <div class="text-center py-12">
                                 <i class="fas fa-shopping-bag text-gray-300 text-5xl mb-4"></i>
-                                <p class="text-gray-500 text-lg">No orders yet</p>
-                                <p class="text-gray-400 mt-2">Start shopping to create your first order</p>
+                                <p class="text-gray-500 text-lg"><?= LanguageHelper::t('profile.no_orders') ?></p>
+                                <p class="text-gray-400 mt-2"><?= LanguageHelper::t('profile.start_shopping') ?></p>
                                 <a href="/SHooad/public/customer/products" 
                                    class="inline-block mt-4 bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium transition">
-                                    Browse Products
+                                    <?= LanguageHelper::t('profile.browse_products') ?>
                                 </a>
                             </div>
                         <?php endif; ?>
@@ -209,19 +210,19 @@ require_once __DIR__ . '/../../Helpers/LanguageHelper.php';
                 <div class="space-y-6">
                     <!-- Quick Actions -->
                     <div class="bg-white rounded-lg shadow-md p-6">
-                        <h2 class="text-xl font-semibold text-gray-900 mb-4">Quick Actions</h2>
+                        <h2 class="text-xl font-semibold text-gray-900 mb-4"><?= LanguageHelper::t('profile.quick_actions') ?></h2>
                         <div class="space-y-2">
                             <a href="/SHooad/public/customer/orders" class="flex items-center p-3 rounded-lg hover:bg-gray-50 transition group">
                                 <i class="fas fa-list-ul text-gray-400 group-hover:text-blue-600 mr-3"></i>
-                                <span class="text-gray-700 group-hover:text-blue-600">All Orders</span>
+                                <span class="text-gray-700 group-hover:text-blue-600"><?= LanguageHelper::t('profile.all_orders') ?></span>
                             </a>
                             <a href="/SHooad/public/customer/cart" class="flex items-center p-3 rounded-lg hover:bg-gray-50 transition group">
                                 <i class="fas fa-shopping-cart text-gray-400 group-hover:text-blue-600 mr-3"></i>
-                                <span class="text-gray-700 group-hover:text-blue-600">My Cart</span>
+                                <span class="text-gray-700 group-hover:text-blue-600"><?= LanguageHelper::t('profile.my_cart') ?></span>
                             </a>
                             <button onclick="openChangePasswordModal()" class="w-full flex items-center p-3 rounded-lg hover:bg-gray-50 transition group">
                                 <i class="fas fa-key text-gray-400 group-hover:text-blue-600 mr-3"></i>
-                                <span class="text-gray-700 group-hover:text-blue-600">Change Password</span>
+                                <span class="text-gray-700 group-hover:text-blue-600"><?= LanguageHelper::t('profile.change_password') ?></span>
                             </button>
                             <a href="/SHooad/public/customer/logout" class="flex items-center p-3 rounded-lg hover:bg-red-50 transition group">
                                 <i class="fas fa-sign-out-alt text-gray-400 group-hover:text-red-600 mr-3"></i>
@@ -234,8 +235,8 @@ require_once __DIR__ . '/../../Helpers/LanguageHelper.php';
         <?php else: ?>
             <div class="bg-white rounded-lg shadow-md p-12 text-center">
                 <i class="fas fa-user-slash text-gray-300 text-6xl mb-4"></i>
-                <h2 class="text-2xl font-bold text-gray-900 mb-2">Profile Not Found</h2>
-                <p class="text-gray-600">Unable to load your profile information.</p>
+                <h2 class="text-2xl font-bold text-gray-900 mb-2"><?= LanguageHelper::t('profile.profile_not_found') ?></h2>
+                <p class="text-gray-600"><?= LanguageHelper::t('profile.unable_load_profile') ?></p>
             </div>
         <?php endif; ?>
     </div>

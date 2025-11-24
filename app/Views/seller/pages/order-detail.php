@@ -85,14 +85,24 @@ function formatVND($amount) {
                         </div>
                         <div class="divide-y divide-gray-200">
                             <?php foreach ($order_items as $item): ?>
-                            <div class="px-6 py-4 flex justify-between items-center hover:bg-gray-50 transition-colors">
-                                <div>
-                                    <p class="font-medium text-gray-900"><?php echo htmlspecialchars($item['product_name']); ?></p>
-                                    <p class="text-sm text-gray-600">Price: <?php echo formatVND($item['price']); ?></p>
-                                </div>
-                                <div class="text-right">
-                                    <p class="text-sm text-gray-600 mb-1">Qty: <span class="font-medium"><?php echo $item['quantity']; ?></span></p>
-                                    <p class="font-medium text-gray-900"><?php echo formatVND($item['price'] * $item['quantity']); ?></p>
+                            <div class="px-6 py-4 hover:bg-gray-50 transition-colors">
+                                <div class="flex justify-between items-start mb-2">
+                                    <div class="flex-1">
+                                        <p class="font-medium text-gray-900"><?php echo htmlspecialchars($item['product_name']); ?></p>
+                                        <div class="flex gap-3 mt-1 text-sm text-gray-600">
+                                            <?php if (!empty($item['product_color'])): ?>
+                                            <span>Color: <span class="font-medium"><?php echo htmlspecialchars($item['product_color']); ?></span></span>
+                                            <?php endif; ?>
+                                            <?php if (!empty($item['product_size'])): ?>
+                                            <span>Size: <span class="font-medium"><?php echo htmlspecialchars($item['product_size']); ?></span></span>
+                                            <?php endif; ?>
+                                        </div>
+                                        <p class="text-sm text-gray-600 mt-1">Price: <?php echo formatVND($item['price']); ?></p>
+                                    </div>
+                                    <div class="text-right ml-4">
+                                        <p class="text-sm text-gray-600 mb-1">Qty: <span class="font-medium"><?php echo $item['quantity']; ?></span></p>
+                                        <p class="font-medium text-gray-900"><?php echo formatVND($item['price'] * $item['quantity']); ?></p>
+                                    </div>
                                 </div>
                             </div>
                             <?php endforeach; ?>
@@ -161,9 +171,17 @@ function formatVND($amount) {
                     <!-- Shipping Address -->
                     <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
                         <h3 class="font-bold text-gray-900 mb-4">Shipping Address</h3>
-                        <div>
-                            <p class="text-xs text-gray-600 uppercase tracking-wide mb-2">Address</p>
-                            <p class="text-gray-900"><?php echo htmlspecialchars($shipping_address); ?></p>
+                        <div class="space-y-3">
+                            <div>
+                                <p class="text-xs text-gray-600 uppercase tracking-wide mb-2">Address</p>
+                                <p class="text-gray-900"><?php echo htmlspecialchars($shipping_address); ?></p>
+                            </div>
+                            <?php if (!empty($order['delivery_company_name'])): ?>
+                            <div>
+                                <p class="text-xs text-gray-600 uppercase tracking-wide mb-1">Delivery Company</p>
+                                <p class="text-gray-900"><?php echo htmlspecialchars($order['delivery_company_name']); ?></p>
+                            </div>
+                            <?php endif; ?>
                         </div>
                     </div>
                 </div>

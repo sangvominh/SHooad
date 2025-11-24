@@ -24,7 +24,7 @@ class ProductService {
      * Create product with images - Business logic layer
      */
     public function createProductWithImages(int $shop_id, array $postData, array $files): ?int {
-        // Prepare product data
+        // Prepare product data (without stock - it will be calculated from variants)
         $productData = [
             'shop_id' => $shop_id,
             'name' => $postData['name'] ?? '',
@@ -32,9 +32,8 @@ class ProductService {
             'description' => $postData['description'] ?? '',
             'price' => $postData['price'] ?? 0,
             'original_price' => $postData['original_price'] ?? 0,
-            'stock' => $postData['stock'] ?? 0,
             'category_id' => $postData['category_id'] ?? null,
-            'status' => $postData['status'] ?? 'active'
+            'status' => $postData['status'] ?? 'paused'  // Default to paused until variants are added
         ];
 
         // Create product
@@ -43,6 +42,11 @@ class ProductService {
         // Upload images if product created successfully
         if ($product_id && !empty($files['name'][0])) {
             $this->uploadProductImages($product_id, $files);
+        }
+
+        // Save variants if provided
+        if ($product_id && !empty($postData['variants'])) {
+            $this->saveProductVariants($product_id, $postData['variants']);
         }
 
         return $product_id;
@@ -58,7 +62,6 @@ class ProductService {
             'description' => $postData['description'] ?? '',
             'price' => $postData['price'] ?? 0,
             'original_price' => $postData['original_price'] ?? 0,
-            'stock' => $postData['stock'] ?? 0,
             'category_id' => !empty($postData['category_id']) ? $postData['category_id'] : null,
             'status' => $postData['status'] ?? 'active'
         ];
@@ -221,6 +224,45 @@ class ProductService {
         return $this->productModel->getProductVariants($productId);
     }
 
+    public function saveProductVariants(int $productId, array $variants): bool {
+        // Save or update multiple variants for a product
+        foreach ($variants as $variantData) {
+            // Skip if no color and no size (invalid variant)
+            if (empty($variantData['color_id']) && empty($variantData['size_id'])) {
+                continue;
+            }
+
+            // Skip if SKU is empty
+            if (empty($variantData['sku'])) {
+                continue;
+            }
+
+            if (!empty($variantData['id'])) {
+                // Update existing variant - don't include product_id
+                $data = [
+                    'color_id' => !empty($variantData['color_id']) ? $variantData['color_id'] : null,
+                    'size_id' => !empty($variantData['size_id']) ? $variantData['size_id'] : null,
+                    'sku' => $variantData['sku'],
+                    'stock' => $variantData['stock'] ?? 0,
+                    'price' => !empty($variantData['price']) ? $variantData['price'] : null
+                ];
+                $this->productModel->updateProductVariant($variantData['id'], $data);
+            } else {
+                // Create new variant - include product_id
+                $data = [
+                    'product_id' => $productId,
+                    'color_id' => !empty($variantData['color_id']) ? $variantData['color_id'] : null,
+                    'size_id' => !empty($variantData['size_id']) ? $variantData['size_id'] : null,
+                    'sku' => $variantData['sku'],
+                    'stock' => $variantData['stock'] ?? 0,
+                    'price' => !empty($variantData['price']) ? $variantData['price'] : null
+                ];
+                $this->productModel->createProductVariant($data);
+            }
+        }
+        return true;
+    }
+
     public function createProductVariant(array $data): ?int {
         return $this->productModel->createProductVariant($data);
     }
@@ -248,5 +290,9 @@ class ProductService {
     // Search products by name for realtime suggestions
     public function searchByName(string $query, int $limit = 8): array {
         return $this->productModel->searchByName($query, $limit);
+    }
+
+    public function checkSKUExists(string $sku): array {
+        return $this->productModel->checkSKUExists($sku);
     }
 }

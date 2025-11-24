@@ -8,11 +8,11 @@ class Product {
     }
 
     public function getProductByShop($shop_id, $limit = null, $orderBy = null) {
-        // Calculate total stock from product_variants if available, fallback to products.stock
+        // Calculate total stock from product_variants
         $sql = "SELECT p.*, 
                 COALESCE(
                     (SELECT SUM(pv.stock) FROM product_variants pv WHERE pv.product_id = p.id),
-                    p.stock
+                    0
                 ) as calculated_stock
                 FROM products p 
                 WHERE p.shop_id = ?";
@@ -50,7 +50,7 @@ class Product {
             SELECT p.*, 
             COALESCE(
                 (SELECT SUM(pv.stock) FROM product_variants pv WHERE pv.product_id = p.id),
-                p.stock
+                0
             ) as calculated_stock
             FROM products p 
             WHERE p.id = ?
@@ -80,7 +80,7 @@ class Product {
         $values = [];
         $types = '';
         
-        $allFields = ['shop_id', 'name', 'brand', 'description', 'price', 'original_price', 'stock', 'category_id', 'status'];
+        $allFields = ['shop_id', 'name', 'brand', 'description', 'price', 'original_price', 'category_id', 'status'];
         
         foreach ($allFields as $field) {
             $value = $data[$field] ?? null;
@@ -89,7 +89,7 @@ class Product {
                 $placeholders[] = '?';
                 $values[] = $value;
                 
-                if ($field === 'shop_id' || $field === 'stock' || $field === 'category_id') {
+                if ($field === 'shop_id' || $field === 'category_id') {
                     $types .= 'i';
                 } elseif ($field === 'price' || $field === 'original_price') {
                     $types .= 'd';
@@ -257,7 +257,15 @@ class Product {
         foreach ($data as $key => $value) {
             $fields[] = "$key = ?";
             $values[] = $value;
-            $types .= is_int($value) ? 'i' : (is_float($value) ? 'd' : 's');
+            
+            // Handle types properly including NULL values
+            if ($value === null || $key === 'color_id' || $key === 'size_id' || $key === 'stock') {
+                $types .= 'i';
+            } elseif ($key === 'price') {
+                $types .= 'd';
+            } else {
+                $types .= 's';
+            }
         }
 
         $values[] = $variantId;
@@ -292,5 +300,28 @@ class Product {
         $stmt = $this->db->prepare("SELECT * FROM categories ORDER BY name");
         $stmt->execute();
         return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+    }
+
+    public function checkSKUExists(string $sku): array {
+        $stmt = $this->db->prepare("
+            SELECT pv.sku, p.id as product_id, p.name as product_name
+            FROM product_variants pv
+            JOIN products p ON pv.product_id = p.id
+            WHERE pv.sku = ?
+            LIMIT 1
+        ");
+        $stmt->bind_param("s", $sku);
+        $stmt->execute();
+        $result = $stmt->get_result()->fetch_assoc();
+        
+        if ($result) {
+            return [
+                'exists' => true,
+                'product_id' => $result['product_id'],
+                'product_name' => $result['product_name']
+            ];
+        }
+        
+        return ['exists' => false];
     }
 }
