@@ -1,4 +1,7 @@
 <?php
+require_once __DIR__ . '/../../Helpers/LanguageHelper.php';
+LanguageHelper::init();
+
 // Get filter params from query
 $selectedCategory = isset($_GET['category']) ? trim($_GET['category']) : '';
 $selectedBrand = isset($_GET['brand']) ? trim($_GET['brand']) : '';
@@ -30,14 +33,14 @@ $offset = ($page - 1) * $perPage;
                 <div class="flex items-center gap-3">
                     <button id="openFiltersBtn" class="inline-flex items-center gap-2 px-3 py-2 bg-white border border-gray-200 rounded text-sm lg:hidden">
                         <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4h18M3 12h18M3 20h18"/></svg>
-                        <span>Filter</span>
+                        <span><?php echo LanguageHelper::t('filters.filter'); ?></span>
                     </button>
                     <div class="text-sm text-gray-600">
-                        Showing <span class="font-semibold">
+                        <?php echo LanguageHelper::t('filters.showing'); ?> <span class="font-semibold">
                         <?php
                         $start = $totalCount > 0 ? ($offset + 1) : 0;
                         $end = min($offset + $perPage, $totalCount);
-                        echo $start . '-' . $end . ' of ' . $totalCount . ' results';
+                        echo $start . '-' . $end . ' ' . LanguageHelper::t('filters.of') . ' ' . $totalCount . ' ' . LanguageHelper::t('filters.results');
                         ?>
                         </span>
                     </div>
@@ -47,10 +50,10 @@ $offset = ($page - 1) * $perPage;
                     <form method="get" id="sortForm">
                         <?php $qs = $_GET; ?>
                         <select name="sort" class="px-3 py-2 border border-gray-300 rounded text-sm" onchange="document.getElementById('sortForm').submit()">
-                            <option value="latest" <?php if ($sort === 'latest') echo 'selected'; ?>>Sort by latest</option>
-                            <option value="price-asc" <?php if ($sort === 'price-asc') echo 'selected'; ?>>Price: low to high</option>
-                            <option value="price-desc" <?php if ($sort === 'price-desc') echo 'selected'; ?>>Price: high to low</option>
-                            <option value="best-sellers" <?php if ($sort === 'best-sellers') echo 'selected'; ?>>Popularity</option>
+                            <option value="latest" <?php if ($sort === 'latest') echo 'selected'; ?>><?php echo LanguageHelper::t('filters.sort_latest'); ?></option>
+                            <option value="price-asc" <?php if ($sort === 'price-asc') echo 'selected'; ?>><?php echo LanguageHelper::t('filters.sort_price_asc'); ?></option>
+                            <option value="price-desc" <?php if ($sort === 'price-desc') echo 'selected'; ?>><?php echo LanguageHelper::t('filters.sort_price_desc'); ?></option>
+                            <option value="best-sellers" <?php if ($sort === 'best-sellers') echo 'selected'; ?>><?php echo LanguageHelper::t('filters.sort_popularity'); ?></option>
                         </select>
                         <?php foreach ($qs as $key => $value) { if ($key !== 'sort' && $key !== 'page') echo '<input type="hidden" name="' . htmlspecialchars($key) . '" value="' . htmlspecialchars($value) . '">'; } ?>
                         <input type="hidden" name="page" value="1">
@@ -81,9 +84,9 @@ $offset = ($page - 1) * $perPage;
                         <!-- Prev -->
                         <li>
                             <?php if ($page > 1): ?>
-                                <a href="<?php echo htmlspecialchars($makeUrl($page-1)); ?>" class="px-3 py-2 border border-gray-300 bg-white rounded hover:bg-gray-50">Prev</a>
+                                <a href="<?php echo htmlspecialchars($makeUrl($page-1)); ?>" class="px-3 py-2 border border-gray-300 bg-white rounded hover:bg-gray-50"><?php echo LanguageHelper::t('filters.prev'); ?></a>
                             <?php else: ?>
-                                <span class="px-3 py-2 border border-gray-200 bg-gray-100 text-gray-400 rounded cursor-not-allowed">Prev</span>
+                                <span class="px-3 py-2 border border-gray-200 bg-gray-100 text-gray-400 rounded cursor-not-allowed"><?php echo LanguageHelper::t('filters.prev'); ?></span>
                             <?php endif; ?>
                         </li>
 
@@ -113,9 +116,9 @@ $offset = ($page - 1) * $perPage;
                         <!-- Next -->
                         <li>
                             <?php if ($page < $totalPages): ?>
-                                <a href="<?php echo htmlspecialchars($makeUrl($page+1)); ?>" class="px-3 py-2 border border-gray-300 bg-white rounded hover:bg-gray-50">Next</a>
+                                <a href="<?php echo htmlspecialchars($makeUrl($page+1)); ?>" class="px-3 py-2 border border-gray-300 bg-white rounded hover:bg-gray-50"><?php echo LanguageHelper::t('filters.next'); ?></a>
                             <?php else: ?>
-                                <span class="px-3 py-2 border border-gray-200 bg-gray-100 text-gray-400 rounded cursor-not-allowed">Next</span>
+                                <span class="px-3 py-2 border border-gray-200 bg-gray-100 text-gray-400 rounded cursor-not-allowed"><?php echo LanguageHelper::t('filters.next'); ?></span>
                             <?php endif; ?>
                         </li>
                     </ul>
@@ -130,8 +133,8 @@ $offset = ($page - 1) * $perPage;
             <div id="mobileFilterBackdrop" class="absolute inset-0 bg-black opacity-40"></div>
             <div class="absolute left-0 top-0 bottom-0 w-80 bg-white p-4 overflow-auto">
                 <div class="flex items-center justify-between mb-4">
-                    <h3 class="text-lg font-semibold">Filter</h3>
-                    <button id="closeFiltersBtn" class="px-2 py-1 text-sm text-gray-600">Close</button>
+                    <h3 class="text-lg font-semibold"><?php echo LanguageHelper::t('filters.filter'); ?></h3>
+                    <button id="closeFiltersBtn" class="px-2 py-1 text-sm text-gray-600"><?php echo LanguageHelper::t('modal.cancel'); ?></button>
                 </div>
                 <?php include __DIR__ . '/partials/sidebar-filters.php'; ?>
             </div>

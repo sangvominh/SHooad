@@ -1,3 +1,8 @@
+<?php
+require_once __DIR__ . '/../../../Helpers/LanguageHelper.php';
+LanguageHelper::init();
+?>
+
 <!-- Product Information Section -->
 <div class="flex flex-col gap-6">
     <!-- Product Title -->
@@ -66,7 +71,7 @@
                     ?>
                 </div>
                 <span class="font-semibold text-gray-900"><?php echo number_format($product['rating'], 1); ?></span>
-                <span class="text-gray-500">(<?php echo $product['reviews_count']; ?> đánh giá)</span>
+                <span class="text-gray-500">(<?php echo $product['reviews_count']; ?> <?php echo LanguageHelper::t('product.reviews'); ?>)</span>
             </div>
         </div>
     </div>
@@ -74,7 +79,7 @@
     <!-- Color Selection -->
     <?php if (!empty($product['colors'])): ?>
     <div>
-        <p class="font-semibold mb-3">Màu sắc: <span class="text-red-500">*</span></p>
+        <p class="font-semibold mb-3"><?php echo LanguageHelper::t('product.color'); ?>: <span class="text-red-500">*</span></p>
         <div class="flex gap-3 flex-wrap" id="colorGroup">
             <?php foreach ($product['colors'] as $idx => $color): ?>
             <div class="relative">
@@ -92,11 +97,11 @@
                         <span class="text-sm font-medium"><?php echo htmlspecialchars($color['name']); ?></span>
                     </div>
                     <?php if ($color['stock'] <= 0): ?>
-                    <span class="text-xs text-red-500 font-semibold">Hết hàng</span>
+                    <span class="text-xs text-red-500 font-semibold"><?php echo LanguageHelper::t('product.out_of_stock'); ?></span>
                     <?php elseif ($color['stock'] <= 10): ?>
-                    <span class="text-xs text-orange-500">Còn <?php echo $color['stock']; ?> sản phẩm</span>
+                    <span class="text-xs text-orange-500"><?php echo str_replace(':count', $color['stock'], LanguageHelper::t('product.stock_remaining')); ?></span>
                     <?php else: ?>
-                    <span class="text-xs text-green-600">Còn <?php echo $color['stock']; ?> sản phẩm</span>
+                    <span class="text-xs text-green-600"><?php echo str_replace(':count', $color['stock'], LanguageHelper::t('product.stock_remaining')); ?></span>
                     <?php endif; ?>
                 </label>
             </div>
@@ -108,7 +113,7 @@
     <!-- Size Selection -->
     <?php if (!empty($product['sizes'])): ?>
     <div>
-        <p class="font-semibold mb-3">Kích thước: <span class="text-red-500">*</span></p>
+        <p class="font-semibold mb-3"><?php echo LanguageHelper::t('product.size'); ?>: <span class="text-red-500">*</span></p>
         <div class="flex gap-2 flex-wrap" id="sizeGroup">
             <?php foreach ($product['sizes'] as $idx => $size): ?>
             <div class="relative group">
@@ -122,11 +127,11 @@
                            <?php echo $size['stock'] <= 0 ? 'disabled' : ''; ?>>
                     <span class="text-sm font-medium"><?php echo htmlspecialchars($size['name']); ?></span>
                     <?php if ($size['stock'] <= 0): ?>
-                    <span class="text-xs text-red-500 font-semibold">Hết</span>
+                    <span class="text-xs text-red-500 font-semibold"><?php echo LanguageHelper::t('product.out_of_stock'); ?></span>
                     <?php elseif ($size['stock'] <= 10): ?>
-                    <span class="text-xs text-orange-500">Còn <?php echo $size['stock']; ?></span>
+                    <span class="text-xs text-orange-500"><?php echo str_replace(':count', $size['stock'], LanguageHelper::t('product.stock_remaining')); ?></span>
                     <?php else: ?>
-                    <span class="text-xs text-green-600">Còn <?php echo $size['stock']; ?></span>
+                    <span class="text-xs text-green-600"><?php echo str_replace(':count', $size['stock'], LanguageHelper::t('product.stock_remaining')); ?></span>
                     <?php endif; ?>
                 </label>
             </div>
@@ -137,7 +142,7 @@
     
     <!-- Quantity Selection -->
     <div>
-        <p class="font-semibold mb-3">Số lượng:</p>
+        <p class="font-semibold mb-3"><?php echo LanguageHelper::t('product.quantity'); ?>:</p>
         <div class="flex items-center gap-2 w-fit">
             <button type="button" id="qtyMinus" class="w-8 h-8 border border-gray-300 flex items-center justify-center hover:bg-gray-100 transition">−</button>
             <input type="number" id="qtyInput" value="1" min="1" class="w-12 h-8 text-center border border-gray-300 rounded" style="appearance: textfield;">
@@ -160,10 +165,10 @@
     <!-- Action Buttons -->
     <div class="flex flex-col sm:flex-row gap-3">
         <button id="addToCartBtn" type="submit" disabled class="flex-1 bg-gray-400 text-white py-3 rounded-lg font-semibold cursor-not-allowed transition">
-            <i class="fas fa-shopping-cart mr-2"></i>Thêm vào giỏ
+            <i class="fas fa-shopping-cart mr-2"></i><?php echo LanguageHelper::t('product.add_to_cart'); ?>
         </button>
         <button id="buyNowBtn" type="button" disabled class="flex-1 bg-gray-400 text-gray-700 py-3 rounded-lg font-semibold cursor-not-allowed transition">
-            <i class="fas fa-bolt mr-2"></i>Mua ngay
+            <i class="fas fa-bolt mr-2"></i><?php echo LanguageHelper::t('product.buy_now'); ?>
         </button>
     </div>
 </div>
@@ -181,6 +186,16 @@
   document.addEventListener('DOMContentLoaded', function() {
     const API_BASE = '/SHooad/app/Routes';
     const PRODUCT_ID = <?php echo (int)$productId; ?>;
+    
+    // Translation strings
+    const LANG = {
+      out_of_stock: '<?php echo LanguageHelper::t('product.out_of_stock'); ?>',
+      stock_remaining: '<?php echo LanguageHelper::t('product.stock_remaining'); ?>',
+      add_to_cart_success: '<?php echo LanguageHelper::t('cart.add_to_cart_success'); ?>',
+      add_to_cart_error: '<?php echo LanguageHelper::t('cart.add_to_cart_error'); ?>',
+      error_occurred: '<?php echo LanguageHelper::t('cart.error_occurred'); ?>'
+    };
+    
     // Quantity input handlers
     var qtyInput = document.getElementById('qtyInput');
     var minusBtn = document.getElementById('qtyMinus');
@@ -384,7 +399,10 @@
           label.classList.toggle('hover:border-blue-600', available);
           label.classList.toggle('hover:bg-blue-50', available);
           if (stockSpan) {
-            stockSpan.textContent = available ? (info.stock <= 10 ? `Còn ${info.stock}` : `Còn ${info.stock}`) : 'Hết';
+            const stockText = available 
+              ? LANG.stock_remaining.replace(':count', info.stock)
+              : LANG.out_of_stock;
+            stockSpan.textContent = stockText;
             stockSpan.className = 'text-xs ' + (available ? (info.stock <= 10 ? 'text-orange-500' : 'text-green-600') : 'text-red-500 font-semibold');
           }
           if (!available && input.checked) {
@@ -422,7 +440,10 @@
           label.classList.toggle('hover:border-blue-600', available);
           label.classList.toggle('hover:bg-blue-50', available);
           if (stockSpan) {
-            stockSpan.textContent = available ? (info.stock <= 10 ? `Còn ${info.stock} sản phẩm` : `Còn ${info.stock} sản phẩm`) : 'Hết hàng';
+            const stockText = available 
+              ? LANG.stock_remaining.replace(':count', info.stock + ' sản phẩm')
+              : LANG.out_of_stock;
+            stockSpan.textContent = stockText;
             stockSpan.className = 'text-xs ' + (available ? (info.stock <= 10 ? 'text-orange-500' : 'text-green-600') : 'text-red-500 font-semibold');
           }
           if (!available && input.checked) {
@@ -495,7 +516,7 @@
             // Hiển thị thông báo thành công
             var successMsg = document.createElement('div');
             successMsg.className = 'fixed top-20 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 animate-fade-in';
-            successMsg.textContent = 'Đã thêm vào giỏ hàng thành công!';
+            successMsg.textContent = LANG.add_to_cart_success;
             document.body.appendChild(successMsg);
             
             setTimeout(function() {
@@ -504,12 +525,12 @@
               setTimeout(function() { successMsg.remove(); }, 500);
             }, 2000);
           } else {
-            alert('Lỗi: ' + (data.message || 'Không thể thêm sản phẩm vào giỏ hàng'));
+            alert(LANG.add_to_cart_error + ': ' + (data.message || ''));
           }
         })
         .catch(function(err) {
           console.error('Error:', err);
-          alert('An error occurred: ' + err.message);
+          alert(LANG.error_occurred + ': ' + err.message);
         });
       });
     }
@@ -529,8 +550,9 @@
           return;
         }
         
-        // First add to cart
+        // Add to cart with buy_now flag
         var formData = new FormData(addToCartForm);
+        formData.append('buy_now', '1'); // Flag to indicate buy now action
         
         try {
           const response = await fetch('/SHooad/app/Routes/add-to-cart.php', {
@@ -541,14 +563,14 @@
           const data = await response.json();
           
           if (data.success) {
-            // Redirect to cart/checkout
-            window.location.href = '/SHooad/public/customer/cart';
+            // Redirect directly to checkout
+            window.location.href = '/SHooad/public/customer/checkout';
           } else {
-            alert('Lỗi: ' + (data.message || 'Không thể thêm sản phẩm'));
+            alert(LANG.add_to_cart_error + ': ' + (data.message || ''));
           }
         } catch (err) {
           console.error('Error:', err);
-          alert('Có lỗi xảy ra: ' + err.message);
+          alert(LANG.error_occurred + ': ' + err.message);
         }
       });
     }
@@ -610,7 +632,8 @@
       priceContainer.innerHTML = priceHtml;
     }
 
-    // Initial price update
+    // Initial price update and button validation
     updatePriceForVariant();
+    validateFormAndUpdateButtons();
   });
 </script>

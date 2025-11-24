@@ -278,83 +278,83 @@
     -- ============================
     -- 9. ORDERS (50 đơn hàng - đa dạng trạng thái)
     -- ============================
-    INSERT INTO orders (shop_id, customer_id, customer_phone, shipping_address, date, status, payment_method, payment_status) VALUES
+    INSERT INTO orders (shop_id, customer_id, customer_phone, shipping_address, date, status, payment_method, payment_status, shipping_fee, delivery_company_id) VALUES
     -- ===== 1 YEAR AGO (Nov 2024) - Completed orders =====
-    (1, 1, '0912345678', '15 Lê Lợi, Q1, TP.HCM', DATE_SUB(NOW(), INTERVAL 365 DAY), 'completed', 'cod', 'paid'),
-    (2, 2, '0923456789', '20 Nguyễn Trãi, Q5, TP.HCM', DATE_SUB(NOW(), INTERVAL 360 DAY), 'completed', 'online', 'paid'),
-    (1, 3, '0934567890', '25 Võ Văn Tần, Q3, TP.HCM', DATE_SUB(NOW(), INTERVAL 350 DAY), 'completed', 'cod', 'paid'),
+    (1, 1, '0912345678', '15 Lê Lợi, Q1, TP.HCM', DATE_SUB(NOW(), INTERVAL 365 DAY), 'completed', 'cod', 'paid', 30000, 1),
+    (2, 2, '0923456789', '20 Nguyễn Trãi, Q5, TP.HCM', DATE_SUB(NOW(), INTERVAL 360 DAY), 'completed', 'online', 'paid', 25000, 2),
+    (1, 3, '0934567890', '25 Võ Văn Tần, Q3, TP.HCM', DATE_SUB(NOW(), INTERVAL 350 DAY), 'completed', 'cod', 'paid', 35000, 3),
 
     -- ===== 6 MONTHS AGO (May 2025) - Mix statuses =====
-    (2, 4, '0945678901', '30 Điện Biên Phủ, Q10, TP.HCM', DATE_SUB(NOW(), INTERVAL 180 DAY), 'completed', 'online', 'paid'),
-    (1, 5, '0956789012', '35 Cách Mạng Tháng 8, Q3, TP.HCM', DATE_SUB(NOW(), INTERVAL 175 DAY), 'completed', 'cod', 'paid'),
-    (2, 6, '0967890123', '40 Phan Xích Long, Phú Nhuận, TP.HCM', DATE_SUB(NOW(), INTERVAL 170 DAY), 'completed', 'online', 'paid'),
-    (1, 7, '0978901234', '45 Lý Thường Kiệt, Q10, TP.HCM', DATE_SUB(NOW(), INTERVAL 165 DAY), 'completed', 'cod', 'paid'),
+    (2, 4, '0945678901', '30 Điện Biên Phủ, Q10, TP.HCM', DATE_SUB(NOW(), INTERVAL 180 DAY), 'completed', 'online', 'paid', 28000, 4),
+    (1, 5, '0956789012', '35 Cách Mạng Tháng 8, Q3, TP.HCM', DATE_SUB(NOW(), INTERVAL 175 DAY), 'completed', 'cod', 'paid', 30000, 1),
+    (2, 6, '0967890123', '40 Phan Xích Long, Phú Nhuận, TP.HCM', DATE_SUB(NOW(), INTERVAL 170 DAY), 'completed', 'online', 'paid', 25000, 2),
+    (1, 7, '0978901234', '45 Lý Thường Kiệt, Q10, TP.HCM', DATE_SUB(NOW(), INTERVAL 165 DAY), 'completed', 'cod', 'paid', 35000, 3),
 
     -- ===== 120 DAYS AGO - Higher revenue period =====
-    (2, 8, '0989012345', '50 Hai Bà Trưng, Q1, TP.HCM', DATE_SUB(NOW(), INTERVAL 120 DAY), 'completed', 'online', 'paid'),
-    (1, 9, '0990123456', '55 Trần Hưng Đạo, Q1, TP.HCM', DATE_SUB(NOW(), INTERVAL 118 DAY), 'completed', 'cod', 'paid'),
-    (2, 10, '0901234567', '60 Pasteur, Q1, TP.HCM', DATE_SUB(NOW(), INTERVAL 115 DAY), 'completed', 'online', 'paid'),
-    (1, 11, '0912345679', '65 Nguyễn Thị Minh Khai, Q3, TP.HCM', DATE_SUB(NOW(), INTERVAL 110 DAY), 'completed', 'cod', 'paid'),
-    (2, 12, '0923456780', '70 Lê Văn Sỹ, Q3, TP.HCM', DATE_SUB(NOW(), INTERVAL 105 DAY), 'completed', 'online', 'paid'),
+    (2, 8, '0989012345', '50 Hai Bà Trưng, Q1, TP.HCM', DATE_SUB(NOW(), INTERVAL 120 DAY), 'completed', 'online', 'paid', 28000, 4),
+    (1, 9, '0990123456', '55 Trần Hưng Đạo, Q1, TP.HCM', DATE_SUB(NOW(), INTERVAL 118 DAY), 'completed', 'cod', 'paid', 30000, 1),
+    (2, 10, '0901234567', '60 Pasteur, Q1, TP.HCM', DATE_SUB(NOW(), INTERVAL 115 DAY), 'completed', 'online', 'paid', 25000, 2),
+    (1, 11, '0912345679', '65 Nguyễn Thị Minh Khai, Q3, TP.HCM', DATE_SUB(NOW(), INTERVAL 110 DAY), 'completed', 'cod', 'paid', 35000, 3),
+    (2, 12, '0923456780', '70 Lê Văn Sỹ, Q3, TP.HCM', DATE_SUB(NOW(), INTERVAL 105 DAY), 'completed', 'online', 'paid', 28000, 4),
 
     -- ===== 90 DAYS AGO - Mix revenue =====
-    (1, 13, '0934567891', '75 Trường Chinh, Tân Bình, TP.HCM', DATE_SUB(NOW(), INTERVAL 90 DAY), 'completed', 'cod', 'paid'),
-    (2, 14, '0945678902', '80 Hoàng Văn Thụ, Tân Bình, TP.HCM', DATE_SUB(NOW(), INTERVAL 88 DAY), 'completed', 'online', 'paid'),
-    (1, 15, '0956789013', '85 Cộng Hòa, Tân Bình, TP.HCM', DATE_SUB(NOW(), INTERVAL 85 DAY), 'completed', 'cod', 'paid'),
-    (2, 16, '0967890124', '90 Lạc Long Quân, Q11, TP.HCM', DATE_SUB(NOW(), INTERVAL 82 DAY), 'completed', 'online', 'paid'),
-    (1, 17, '0978901235', '95 Âu Cơ, Tân Phú, TP.HCM', DATE_SUB(NOW(), INTERVAL 80 DAY), 'completed', 'cod', 'paid'),
+    (1, 13, '0934567891', '75 Trường Chinh, Tân Bình, TP.HCM', DATE_SUB(NOW(), INTERVAL 90 DAY), 'completed', 'cod', 'paid', 30000, 1),
+    (2, 14, '0945678902', '80 Hoàng Văn Thụ, Tân Bình, TP.HCM', DATE_SUB(NOW(), INTERVAL 88 DAY), 'completed', 'online', 'paid', 25000, 2),
+    (1, 15, '0956789013', '85 Cộng Hòa, Tân Bình, TP.HCM', DATE_SUB(NOW(), INTERVAL 85 DAY), 'completed', 'cod', 'paid', 35000, 3),
+    (2, 16, '0967890124', '90 Lạc Long Quân, Q11, TP.HCM', DATE_SUB(NOW(), INTERVAL 82 DAY), 'completed', 'online', 'paid', 28000, 4),
+    (1, 17, '0978901235', '95 Âu Cơ, Tân Phú, TP.HCM', DATE_SUB(NOW(), INTERVAL 80 DAY), 'completed', 'cod', 'paid', 30000, 1),
 
     -- ===== 60 DAYS AGO - Good sales period =====
-    (2, 18, '0989012346', '100 Lũy Bán Bích, Q11, TP.HCM', DATE_SUB(NOW(), INTERVAL 60 DAY), 'completed', 'online', 'paid'),
-    (2, 20, '0901234568', '110 Hùng Vương, Q5, TP.HCM', DATE_SUB(NOW(), INTERVAL 55 DAY), 'completed', 'online', 'paid'),
-    (1, 21, '0912345680', '115 Hậu Giang, Q6, TP.HCM', DATE_SUB(NOW(), INTERVAL 52 DAY), 'completed', 'cod', 'paid'),
+    (2, 18, '0989012346', '100 Lũy Bán Bích, Q11, TP.HCM', DATE_SUB(NOW(), INTERVAL 60 DAY), 'completed', 'online', 'paid', 25000, 2),
+    (2, 20, '0901234568', '110 Hùng Vương, Q5, TP.HCM', DATE_SUB(NOW(), INTERVAL 55 DAY), 'completed', 'online', 'paid', 35000, 3),
+    (1, 21, '0912345680', '115 Hậu Giang, Q6, TP.HCM', DATE_SUB(NOW(), INTERVAL 52 DAY), 'completed', 'cod', 'paid', 28000, 4),
 
     -- ===== 45 DAYS AGO - Mid range =====
-    (2, 22, '0923456781', '120 Minh Phụng, Q6, TP.HCM', DATE_SUB(NOW(), INTERVAL 45 DAY), 'completed', 'online', 'paid'),
-    (1, 23, '0934567892', '125 Phạm Văn Đồng, Thủ Đức, TP.HCM', DATE_SUB(NOW(), INTERVAL 43 DAY), 'completed', 'cod', 'paid'),
-    (2, 24, '0945678903', '130 Võ Văn Ngân, Thủ Đức, TP.HCM', DATE_SUB(NOW(), INTERVAL 40 DAY), 'completed', 'online', 'paid'),
+    (2, 22, '0923456781', '120 Minh Phụng, Q6, TP.HCM', DATE_SUB(NOW(), INTERVAL 45 DAY), 'completed', 'online', 'paid', 30000, 1),
+    (1, 23, '0934567892', '125 Phạm Văn Đồng, Thủ Đức, TP.HCM', DATE_SUB(NOW(), INTERVAL 43 DAY), 'completed', 'cod', 'paid', 25000, 2),
+    (2, 24, '0945678903', '130 Võ Văn Ngân, Thủ Đức, TP.HCM', DATE_SUB(NOW(), INTERVAL 40 DAY), 'completed', 'online', 'paid', 35000, 3),
 
     -- ===== 30 DAYS AGO - Last month orders =====
-    (1, 25, '0956789014', '135 Kha Vạn Cân, Thủ Đức, TP.HCM', DATE_SUB(NOW(), INTERVAL 30 DAY), 'completed', 'cod', 'paid'),
-    (2, 26, '0967890125', '140 Quang Trung, Gò Vấp, TP.HCM', DATE_SUB(NOW(), INTERVAL 28 DAY), 'completed', 'online', 'paid'),
-    (1, 27, '0978901236', '145 Nguyễn Oanh, Gò Vấp, TP.HCM', DATE_SUB(NOW(), INTERVAL 26 DAY), 'completed', 'cod', 'paid'),
-    (2, 28, '0989012347', '150 Phan Văn Trị, Gò Vấp, TP.HCM', DATE_SUB(NOW(), INTERVAL 24 DAY), 'completed', 'online', 'paid'),
-    (1, 29, '0990123458', '155 Lê Đức Thọ, Gò Vấp, TP.HCM', DATE_SUB(NOW(), INTERVAL 22 DAY), 'completed', 'cod', 'paid'),
-    (2, 30, '0901234569', '160 Nguyễn Thái Sơn, Gò Vấp, TP.HCM', DATE_SUB(NOW(), INTERVAL 20 DAY), 'completed', 'online', 'paid'),
+    (1, 25, '0956789014', '135 Kha Vạn Cân, Thủ Đức, TP.HCM', DATE_SUB(NOW(), INTERVAL 30 DAY), 'completed', 'cod', 'paid', 28000, 4),
+    (2, 26, '0967890125', '140 Quang Trung, Gò Vấp, TP.HCM', DATE_SUB(NOW(), INTERVAL 28 DAY), 'completed', 'online', 'paid', 30000, 1),
+    (1, 27, '0978901236', '145 Nguyễn Oanh, Gò Vấp, TP.HCM', DATE_SUB(NOW(), INTERVAL 26 DAY), 'completed', 'cod', 'paid', 25000, 2),
+    (2, 28, '0989012347', '150 Phan Văn Trị, Gò Vấp, TP.HCM', DATE_SUB(NOW(), INTERVAL 24 DAY), 'completed', 'online', 'paid', 35000, 3),
+    (1, 29, '0990123458', '155 Lê Đức Thọ, Gò Vấp, TP.HCM', DATE_SUB(NOW(), INTERVAL 22 DAY), 'completed', 'cod', 'paid', 28000, 4),
+    (2, 30, '0901234569', '160 Nguyễn Thái Sơn, Gò Vấp, TP.HCM', DATE_SUB(NOW(), INTERVAL 20 DAY), 'completed', 'online', 'paid', 30000, 1),
 
     -- ===== 15-20 DAYS AGO - Recent completed =====
-    (1, 1, '0912345678', '15 Lê Lợi, Q1, TP.HCM', DATE_SUB(NOW(), INTERVAL 18 DAY), 'completed', 'cod', 'paid'),
-    (2, 2, '0923456789', '20 Nguyễn Trãi, Q5, TP.HCM', DATE_SUB(NOW(), INTERVAL 16 DAY), 'completed', 'online', 'paid'),
-    (1, 3, '0934567890', '25 Võ Văn Tần, Q3, TP.HCM', DATE_SUB(NOW(), INTERVAL 14 DAY), 'completed', 'cod', 'paid'),
-    (2, 4, '0945678901', '30 Điện Biên Phủ, Q10, TP.HCM', DATE_SUB(NOW(), INTERVAL 12 DAY), 'completed', 'online', 'paid'),
+    (1, 1, '0912345678', '15 Lê Lợi, Q1, TP.HCM', DATE_SUB(NOW(), INTERVAL 18 DAY), 'completed', 'cod', 'paid', 25000, 2),
+    (2, 2, '0923456789', '20 Nguyễn Trãi, Q5, TP.HCM', DATE_SUB(NOW(), INTERVAL 16 DAY), 'completed', 'online', 'paid', 35000, 3),
+    (1, 3, '0934567890', '25 Võ Văn Tần, Q3, TP.HCM', DATE_SUB(NOW(), INTERVAL 14 DAY), 'completed', 'cod', 'paid', 28000, 4),
+    (2, 4, '0945678901', '30 Điện Biên Phủ, Q10, TP.HCM', DATE_SUB(NOW(), INTERVAL 12 DAY), 'completed', 'online', 'paid', 30000, 1),
 
     -- ===== 7-10 DAYS AGO - Last week orders =====
-    (1, 5, '0956789012', '35 Cách Mạng Tháng 8, Q3, TP.HCM', DATE_SUB(NOW(), INTERVAL 10 DAY), 'completed', 'cod', 'paid'),
-    (2, 6, '0967890123', '40 Phan Xích Long, Phú Nhuận, TP.HCM', DATE_SUB(NOW(), INTERVAL 9 DAY), 'completed', 'online', 'paid'),
-    (1, 7, '0978901234', '45 Lý Thường Kiệt, Q10, TP.HCM', DATE_SUB(NOW(), INTERVAL 8 DAY), 'completed', 'cod', 'paid'),
-    (2, 8, '0989012345', '50 Hai Bà Trưng, Q1, TP.HCM', DATE_SUB(NOW(), INTERVAL 7 DAY), 'completed', 'online', 'paid'),
+    (1, 5, '0956789012', '35 Cách Mạng Tháng 8, Q3, TP.HCM', DATE_SUB(NOW(), INTERVAL 10 DAY), 'completed', 'cod', 'paid', 25000, 2),
+    (2, 6, '0967890123', '40 Phan Xích Long, Phú Nhuận, TP.HCM', DATE_SUB(NOW(), INTERVAL 9 DAY), 'completed', 'online', 'paid', 35000, 3),
+    (1, 7, '0978901234', '45 Lý Thường Kiệt, Q10, TP.HCM', DATE_SUB(NOW(), INTERVAL 8 DAY), 'completed', 'cod', 'paid', 28000, 4),
+    (2, 8, '0989012345', '50 Hai Bà Trưng, Q1, TP.HCM', DATE_SUB(NOW(), INTERVAL 7 DAY), 'completed', 'online', 'paid', 30000, 1),
 
     -- ===== 3-6 DAYS AGO - Very recent completed =====
-    (1, 9, '0990123456', '55 Trần Hưng Đạo, Q1, TP.HCM', DATE_SUB(NOW(), INTERVAL 6 DAY), 'completed', 'cod', 'paid'),
-    (2, 10, '0901234567', '60 Pasteur, Q1, TP.HCM', DATE_SUB(NOW(), INTERVAL 5 DAY), 'completed', 'online', 'paid'),
-    (1, 11, '0912345679', '65 Nguyễn Thị Minh Khai, Q3, TP.HCM', DATE_SUB(NOW(), INTERVAL 4 DAY), 'completed', 'cod', 'paid'),
-    (2, 12, '0923456780', '70 Lê Văn Sỹ, Q3, TP.HCM', DATE_SUB(NOW(), INTERVAL 3 DAY), 'completed', 'online', 'paid'),
+    (1, 9, '0990123456', '55 Trần Hưng Đạo, Q1, TP.HCM', DATE_SUB(NOW(), INTERVAL 6 DAY), 'completed', 'cod', 'paid', 25000, 2),
+    (2, 10, '0901234567', '60 Pasteur, Q1, TP.HCM', DATE_SUB(NOW(), INTERVAL 5 DAY), 'completed', 'online', 'paid', 35000, 3),
+    (1, 11, '0912345679', '65 Nguyễn Thị Minh Khai, Q3, TP.HCM', DATE_SUB(NOW(), INTERVAL 4 DAY), 'completed', 'cod', 'paid', 28000, 4),
+    (2, 12, '0923456780', '70 Lê Văn Sỹ, Q3, TP.HCM', DATE_SUB(NOW(), INTERVAL 3 DAY), 'completed', 'online', 'paid', 30000, 1),
 
     -- ===== 1-2 DAYS AGO - Yesterday and 2 days ago (Paid/Delivering) =====
-    (1, 13, '0934567891', '75 Trường Chinh, Tân Bình, TP.HCM', DATE_SUB(NOW(), INTERVAL 2 DAY), 'completed', 'online', 'paid'),
-    (2, 14, '0945678902', '80 Hoàng Văn Thụ, Tân Bình, TP.HCM', DATE_SUB(NOW(), INTERVAL 2 DAY), 'delivering', 'cod', 'pending'),
-    (1, 15, '0956789013', '85 Cộng Hòa, Tân Bình, TP.HCM', DATE_SUB(NOW(), INTERVAL 1 DAY), 'completed', 'online', 'paid'),
-    (2, 16, '0967890124', '90 Lạc Long Quân, Q11, TP.HCM', DATE_SUB(NOW(), INTERVAL 1 DAY), 'delivering', 'cod', 'pending'),
+    (1, 13, '0934567891', '75 Trường Chinh, Tân Bình, TP.HCM', DATE_SUB(NOW(), INTERVAL 2 DAY), 'completed', 'online', 'paid', 25000, 2),
+    (2, 14, '0945678902', '80 Hoàng Văn Thụ, Tân Bình, TP.HCM', DATE_SUB(NOW(), INTERVAL 2 DAY), 'delivering', 'cod', 'pending', 35000, 3),
+    (1, 15, '0956789013', '85 Cộng Hòa, Tân Bình, TP.HCM', DATE_SUB(NOW(), INTERVAL 1 DAY), 'completed', 'online', 'paid', 28000, 4),
+    (2, 16, '0967890124', '90 Lạc Long Quân, Q11, TP.HCM', DATE_SUB(NOW(), INTERVAL 1 DAY), 'delivering', 'cod', 'pending', 30000, 1),
 
     -- ===== TODAY - Processing/Pending orders =====
-    (1, 17, '0978901235', '95 Âu Cơ, Tân Phú, TP.HCM', NOW(), 'processing', 'online', 'paid'),
-    (2, 18, '0989012346', '100 Lũy Bán Bích, Q11, TP.HCM', NOW(), 'processing', 'cod', 'pending'),
-    (2, 20, '0901234568', '110 Hùng Vương, Q5, TP.HCM', NOW(), 'pending', 'cod', 'pending'),
+    (1, 17, '0978901235', '95 Âu Cơ, Tân Phú, TP.HCM', NOW(), 'processing', 'online', 'paid', 25000, 2),
+    (2, 18, '0989012346', '100 Lũy Bán Bích, Q11, TP.HCM', NOW(), 'processing', 'cod', 'pending', 35000, 3),
+    (2, 20, '0901234568', '110 Hùng Vương, Q5, TP.HCM', NOW(), 'pending', 'cod', 'pending', 28000, 4),
 
     -- ===== CANCELLED/FAILED ORDERS (Various dates) =====
-    (1, 21, '0912345680', '115 Hậu Giang, Q6, TP.HCM', DATE_SUB(NOW(), INTERVAL 5 DAY), 'cancelled', 'cod', 'pending'),
-    (2, 22, '0923456781', '120 Minh Phụng, Q6, TP.HCM', DATE_SUB(NOW(), INTERVAL 15 DAY), 'cancelled', 'online', 'refunded'),
-    (1, 23, '0934567892', '125 Phạm Văn Đồng, Thủ Đức, TP.HCM', DATE_SUB(NOW(), INTERVAL 8 DAY), 'failed', 'cod', 'pending');
+    (1, 21, '0912345680', '115 Hậu Giang, Q6, TP.HCM', DATE_SUB(NOW(), INTERVAL 5 DAY), 'cancelled', 'cod', 'pending', 30000, 1),
+    (2, 22, '0923456781', '120 Minh Phụng, Q6, TP.HCM', DATE_SUB(NOW(), INTERVAL 15 DAY), 'cancelled', 'online', 'refunded', 25000, 2),
+    (1, 23, '0934567892', '125 Phạm Văn Đồng, Thủ Đức, TP.HCM', DATE_SUB(NOW(), INTERVAL 8 DAY), 'failed', 'cod', 'pending', 35000, 3);
 
     -- ============================
     -- 10. ORDER ITEMS (Chi tiết đơn hàng)

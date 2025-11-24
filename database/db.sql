@@ -169,8 +169,13 @@ CREATE TABLE IF NOT EXISTS orders (
     payment_method ENUM('cod', 'online') DEFAULT 'cod',
     payment_status ENUM('pending', 'paid', 'failed', 'refunded') DEFAULT 'pending',
 
+    -- Shipping information
+    shipping_fee DECIMAL(10,2) DEFAULT 0,
+    delivery_company_id INT NULL,
+
     FOREIGN KEY (shop_id) REFERENCES shops(id),
-    FOREIGN KEY (customer_id) REFERENCES customers(id)
+    FOREIGN KEY (customer_id) REFERENCES customers(id),
+    FOREIGN KEY (delivery_company_id) REFERENCES delivery_companies(id)
 );
 
 -- ============================

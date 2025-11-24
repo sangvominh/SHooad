@@ -17,9 +17,10 @@ try {
     $size = isset($_POST['size']) ? trim($_POST['size']) : '';
     $quantity = isset($_POST['quantity']) ? intval($_POST['quantity']) : 0;
     $customer_id = $_SESSION['customer_id'];
+    $buy_now = isset($_POST['buy_now']) && $_POST['buy_now'] == '1'; // Check if this is a "buy now" action
 
     // Debug log
-    error_log('Add to cart attempt - Customer: ' . $customer_id . ', Product: ' . $product_id . ', Color: ' . $color . ', Size: ' . $size . ', Qty: ' . $quantity);
+    error_log('Add to cart attempt - Customer: ' . $customer_id . ', Product: ' . $product_id . ', Color: ' . $color . ', Size: ' . $size . ', Qty: ' . $quantity . ', Buy Now: ' . ($buy_now ? 'yes' : 'no'));
 
     // Validation
     if (!$product_id || $quantity < 1) {
@@ -103,20 +104,41 @@ try {
     $existingItem = $checkItemStmt->fetch(PDO::FETCH_ASSOC);
 
     if ($existingItem) {
-        // Update existing item quantity (keep current selected state)
+        // Update existing item quantity
         $newQuantity = $existingItem['quantity'] + $quantity;
-        $updateStmt = $pdo->prepare('UPDATE cart_items SET quantity = :quantity WHERE id = :id');
+        // If buy_now, set selected=1, otherwise keep current selected state
+        if ($buy_now) {
+            // First, unselect all other items to ensure only this item is selected for checkout
+            $unselectStmt = $pdo->prepare('UPDATE cart_items SET selected = 0 WHERE cart_id = :cart_id');
+            $unselectStmt->execute([':cart_id' => $cart_id]);
+            // Then update this item
+            $updateStmt = $pdo->prepare('UPDATE cart_items SET quantity = :quantity, selected = 1 WHERE id = :id');
+        } else {
+            $updateStmt = $pdo->prepare('UPDATE cart_items SET quantity = :quantity WHERE id = :id');
+        }
         $updateStmt->execute([':quantity' => $newQuantity, ':id' => $existingItem['id']]);
+        $item_id = $existingItem['id'];
     } else {
-        // Insert new item with selected=0 by default (user must manually select)
-        $insertStmt = $pdo->prepare('INSERT INTO cart_items (cart_id, product_id, color, size, quantity, selected) VALUES (:cart_id, :product_id, :color, :size, :quantity, 0)');
+        // Insert new item
+        // If buy_now, first unselect all other items, then insert with selected=1
+        if ($buy_now) {
+            $unselectStmt = $pdo->prepare('UPDATE cart_items SET selected = 0 WHERE cart_id = :cart_id');
+            $unselectStmt->execute([':cart_id' => $cart_id]);
+            $selected = 1;
+        } else {
+            $selected = 0;
+        }
+        
+        $insertStmt = $pdo->prepare('INSERT INTO cart_items (cart_id, product_id, color, size, quantity, selected) VALUES (:cart_id, :product_id, :color, :size, :quantity, :selected)');
         $insertStmt->execute([
             ':cart_id' => $cart_id,
             ':product_id' => $product_id,
             ':color' => $color,
             ':size' => $size,
-            ':quantity' => $quantity
+            ':quantity' => $quantity,
+            ':selected' => $selected
         ]);
+        $item_id = $pdo->lastInsertId();
     }
 
     // Get total cart items count (number of items, not quantity)

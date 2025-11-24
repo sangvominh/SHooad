@@ -139,12 +139,13 @@ $total = $subtotal + $shipping + $tax;
                             class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
                     </div>
                     
-                    <div>
+                    <!-- TODO: Uncomment when note field is added to database -->
+                    <!-- <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1"><?= LanguageHelper::t('checkout.note') ?></label>
                         <textarea name="note" rows="2"
                             class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                             placeholder="<?= LanguageHelper::t('checkout.note_placeholder') ?>"></textarea>
-                    </div>
+                    </div> -->
                 </form>
             </div>
             
@@ -477,12 +478,13 @@ document.addEventListener('DOMContentLoaded', function() {
             formData.append('shipping_address', shippingAddress);
             
             var emailField = document.querySelector('input[name="email"]');
-            var noteField = document.querySelector('textarea[name="note"]');
+            // TODO: Uncomment when note field is added to database
+            // var noteField = document.querySelector('textarea[name="note"]');
             var paymentMethodField = document.querySelector('input[name="payment_method"]:checked');
             var deliveryCompanyField = document.querySelector('input[name="delivery_company"]:checked');
             
             formData.append('email', emailField ? emailField.value : '');
-            formData.append('note', noteField ? noteField.value : '');
+            // formData.append('note', noteField ? noteField.value : '');
             var paymentMethod = paymentMethodField ? paymentMethodField.value : 'cod';
             formData.append('payment_method', paymentMethod);
             formData.append('delivery_company_id', deliveryCompanyField ? deliveryCompanyField.value : '1');
